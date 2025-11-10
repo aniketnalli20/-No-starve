@@ -158,14 +158,103 @@ $listings = $listingsStmt->fetchAll();
             </nav>
         </div>
     </header>
-<section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
+    <section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
         <div class="wrap">
-            <h2 class="hero-title">Help us build hope and homes</h2>
-            <p class="hero-sub">together Against Food Waste.</p>
+            <h1 class="hero-title">Rescue Surplus Food. Feed More People.</h1>
+            <p class="hero-sub">Join donors, NGOs, and volunteers combating hunger and waste every day.</p>
+            <div class="hero-actions">
+              <a class="btn accent pill" href="<?= h($BASE_PATH) ?>create_campaign.php">Donate Food</a>
+              <a class="btn secondary pill" href="<?= h($BASE_PATH) ?>communityns.php">Explore Community</a>
+            </div>
+            <form class="search-bar" role="search" method="get" action="<?= h($BASE_PATH) ?>index.php">
+              <div class="search-fields">
+                <input type="text" name="city" placeholder="Search by city" value="<?= h($cityFilter) ?>" aria-label="City" />
+                <input type="text" name="pincode" placeholder="Pincode" value="<?= h($pincodeFilter) ?>" aria-label="Pincode" />
+                <select name="category" aria-label="Category">
+                  <option value="">All categories</option>
+                  <?php foreach ([
+                    'grains' => 'Grains',
+                    'cooked' => 'Cooked Meals',
+                    'produce' => 'Fresh Produce',
+                    'packaged' => 'Packaged',
+                    'bakery' => 'Bakery',
+                  ] as $val => $label): ?>
+                    <option value="<?= h($val) ?>"<?= $categoryFilter === $val ? ' selected' : '' ?>><?= h($label) ?></option>
+                  <?php endforeach; ?>
+                </select>
+                <button class="btn accent pill" type="submit">Search</button>
+              </div>
+              <?php if ($cityFilter !== '' || $pincodeFilter !== '' || $categoryFilter !== ''): ?>
+                <div class="search-meta" aria-live="polite">Showing results for 
+                  <?= $cityFilter !== '' ? '<span class="chip">' . h($cityFilter) . '</span>' : '' ?>
+                  <?= $pincodeFilter !== '' ? '<span class="chip">' . h($pincodeFilter) . '</span>' : '' ?>
+                  <?= $categoryFilter !== '' ? '<span class="chip">' . h($categoryFilter) . '</span>' : '' ?>
+                </div>
+              <?php endif; ?>
+            </form>
+            <div class="stats">
+              <div class="stat"><span class="stat-num">250k+</span><span class="stat-label">Meals Saved</span></div>
+              <div class="stat"><span class="stat-num">1.5k+</span><span class="stat-label">Donors</span></div>
+              <div class="stat"><span class="stat-num">800+</span><span class="stat-label">Partners</span></div>
+            </div>
         </div>
     </section>
 
     <main>
+        <!-- Trending donations grid -->
+        <section class="container" aria-label="Trending Donations">
+          <h2 class="section-title">Trending Donations Near You</h2>
+          <div class="listings-grid">
+            <?php if (!$listings): ?>
+              <p class="muted">No open donations found. Try adjusting filters or check back soon.</p>
+            <?php else: ?>
+              <?php foreach ($listings as $l): ?>
+                <?php
+                  $expires = $l['expires_at'] ? time_ago($l['expires_at']) : 'No expiry';
+                  $img = $l['image_url'] ?: ($heroUrl ?: null);
+                ?>
+                <article class="listing-card">
+                  <div class="media">
+                    <?php if ($img): ?>
+                      <img src="<?= h($img) ?>" alt="Donation image" loading="lazy" />
+                    <?php else: ?>
+                      <div class="media-fallback" aria-hidden="true"></div>
+                    <?php endif; ?>
+                    <span class="badge"><?= h($l['category'] ?: 'general') ?></span>
+                  </div>
+                  <div class="content">
+                    <h3 class="title"><?= h($l['item']) ?> <small class="qty">· <?= h($l['quantity']) ?></small></h3>
+                    <p class="meta">By <?= h($l['donor_name']) ?> in <?= h($l['city']) ?> <?= $l['pincode'] ? ('(' . h($l['pincode']) . ')') : '' ?></p>
+                    <p class="meta">Expires: <?= h($expires) ?></p>
+                  </div>
+                  <div class="actions">
+                    <?php
+                      $hasAddr = trim((string)$l['address']) !== '';
+                      $mapUrl = $hasAddr
+                        ? ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$l['address']))
+                        : ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$l['city']));
+                    ?>
+                    <a class="btn secondary" href="<?= h($mapUrl) ?>" target="_blank" rel="noopener">View Map</a>
+                    <details class="claim">
+                      <summary class="btn accent">Claim</summary>
+                      <form method="post">
+                        <input type="hidden" name="action" value="claim_listing" />
+                        <input type="hidden" name="listing_id" value="<?= h((string)$l['id']) ?>" />
+                        <div class="claim-grid">
+                          <input type="text" name="ngo_name" placeholder="NGO (optional)" />
+                          <input type="text" name="claimer_name" placeholder="Your name" required />
+                          <input type="text" name="claimer_contact" placeholder="Contact (optional)" />
+                          <input type="text" name="notes" placeholder="Notes (optional)" />
+                        </div>
+                        <button type="submit" class="btn accent pill">Confirm Claim</button>
+                      </form>
+                    </details>
+                  </div>
+                </article>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+        </section>
         <!-- Core content: mission and process -->
         <section id="content" class="content-grid" aria-label="Core content">
         <section id="mission" class="card-plain is-highlight card-horizontal" aria-label="Our Mission">
