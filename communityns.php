@@ -3,6 +3,10 @@ require_once __DIR__ . '/app.php';
 
 // Endorsement actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'endorse') {
+    if (!is_logged_in()) {
+        header('Location: ' . $BASE_PATH . 'login.php?next=communityns.php');
+        exit;
+    }
     $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
     $type = isset($_POST['type']) ? trim((string)$_POST['type']) : '';
     if ($id > 0 && in_array($type, ['campaign','contributor'], true)) {
@@ -74,7 +78,7 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
             <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
             <nav id="primary-navigation" class="nav-links" role="navigation" aria-label="Primary">
                 <a href="<?= h($BASE_PATH) ?>index.php#hero"<?= $currentPath === 'index.php' ? ' class="active"' : '' ?>>Home</a>
-                <a href="<?= h($BASE_PATH) ?>create_campaign.php"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
+                <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
                 <a href="<?= h($BASE_PATH) ?>communityns.php"<?= $currentPath === 'communityns.php' ? ' class="active"' : '' ?>>Community</a>
                 <?php if (is_logged_in()): ?>
                     <a href="<?= h($BASE_PATH) ?>logout.php">Logout</a>

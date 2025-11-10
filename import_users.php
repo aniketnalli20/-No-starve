@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
             <nav id="primary-navigation" class="nav-links" role="navigation" aria-label="Primary">
                 <a href="<?= h($BASE_PATH) ?>index.php#hero">Home</a>
-                <a href="<?= h($BASE_PATH) ?>create_campaign.php">Create Campaign</a>
+                <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a>
                 <a href="<?= h($BASE_PATH) ?>communityns.php">Community</a>
                 <a href="<?= h($BASE_PATH) ?>import_users.php"<?= $currentPath === 'import_users.php' ? ' class="active"' : '' ?>>Import Users</a>
                 <?php if (is_logged_in()): ?>
