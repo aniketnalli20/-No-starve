@@ -367,6 +367,7 @@ $listings = $listingsStmt->fetchAll();
   })();
   // Break text into lines of 8 words for elements with .break-8
   (function() {
+    // Break text into lines of 10 words for elements with .break-10
     const WORDS_PER_LINE = 10;
     const targets = document.querySelectorAll('.break-10');
     targets.forEach(el => {
