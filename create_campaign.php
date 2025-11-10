@@ -26,9 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <header class="site-header" role="banner">
         <div class="container header-inner">
             <a href="/index.php#hero" class="brand" aria-label="No Starve home">No Starve</a>
+            <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
             <nav id="primary-navigation" class="nav-links" role="navigation" aria-label="Primary">
-                <a href="/index.php#hero">Home</a>
-                <a href="/create_campaign.php">Create Campaign</a>
+                <a href="/index.php#hero"<?= $currentPath === 'index.php' ? ' class="active"' : '' ?>>Home</a>
+                <a href="/create_campaign.php"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
+                <a href="/communityns.php"<?= $currentPath === 'communityns.php' ? ' class="active"' : '' ?>>Community</a>
             </nav>
         </div>
     </header>

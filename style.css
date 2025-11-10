@@ -502,6 +502,7 @@ ul { list-style: none; padding-left: 0; }
 .nav-links { display: none; flex-direction: column; gap: 6px; width: 100%; }
 .nav-links a { color: var(--text); text-decoration: none; padding: 8px 12px; border-radius: 8px; font-size: clamp(0.95rem, 0.6vw + 0.7rem, 1.1rem); }
 .nav-links a:hover, .nav-links a:focus-visible { background: #f7f7f7; }
+.nav-links a.active { background: #efefef; border: 1px solid var(--border); }
 .nav-links.open { display: flex; }
 @media (min-width: 768px) {
   .nav-toggle { display: none; }
