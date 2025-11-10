@@ -21,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Create Campaign · No Starve</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/uploads/favicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/uploads/favicon.png">
 </head>
 <body>
     <header class="site-header" role="banner">

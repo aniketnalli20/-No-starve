@@ -137,6 +137,9 @@ $listings = $listingsStmt->fetchAll();
     <link rel="stylesheet" href="style.css" />
     <!-- Using local Inter font from /fonts; external font links removed -->
     <meta name="description" content="Connect donors with NGOs to rescue surplus food in India." />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/uploads/favicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/uploads/favicon.png">
 </head>
 <body>
     <header class="site-header" role="banner">

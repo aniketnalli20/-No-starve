@@ -63,6 +63,9 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Community · No Starve</title>
     <link rel="stylesheet" href="/style.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/uploads/favicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/uploads/favicon.png">
 </head>
 <body>
     <header class="site-header" role="banner">
@@ -137,10 +140,8 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                               $closingCls = 'ok';
                               $closingText = (string)$c['closing_time'];
                               if ($diff !== null) {
-                                if ($diff <= 0) { $closingCls = 'closed'; $closingText = 'Closed'; }
-                                else if ($diff <= 2 * 3600) { $closingCls = 'soon'; $closingText = 'in ' . max(1, floor($diff/60)) . 'm'; }
-                                else if ($diff < 48 * 3600) { $closingText = 'in ' . floor($diff/3600) . 'h'; }
-                                else { $closingText = 'in ' . floor($diff/86400) . 'd'; }
+                                if ($diff <= 0) { $closingCls = 'closed'; }
+                                else if ($diff <= 2 * 3600) { $closingCls = 'soon'; }
                               }
                             ?>
                             <p class="closing-indicator <?= h($closingCls) ?>"><strong>Closing:</strong> <?= h($closingText) ?></p>
