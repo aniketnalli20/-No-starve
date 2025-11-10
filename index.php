@@ -155,6 +155,11 @@ $listings = $listingsStmt->fetchAll();
                 <a href="#hero"<?= $currentPath === 'index.php' ? ' class="active"' : '' ?>>Home</a>
                 <a href="<?= h($BASE_PATH) ?>create_campaign.php"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
                 <a href="<?= h($BASE_PATH) ?>communityns.php"<?= $currentPath === 'communityns.php' ? ' class="active"' : '' ?>>Community</a>
+                <?php if (is_logged_in()): ?>
+                  <a href="<?= h($BASE_PATH) ?>logout.php">Logout</a>
+                <?php else: ?>
+                  <a href="<?= h($BASE_PATH) ?>login.php"<?= $currentPath === 'login.php' ? ' class="active"' : '' ?>>Login</a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>
@@ -163,7 +168,7 @@ $listings = $listingsStmt->fetchAll();
             <h1 class="hero-title break-100">We face challenges to create real change, cutting food waste and feeding those in need.</h1>
             <p class="hero-sub break-100">Together Against Food Waste</p>
             <div class="hero-actions">
-              <a class="btn accent pill" href="<?= h($BASE_PATH) ?>create_campaign.php">Donate Food</a>
+              <a class="btn accent pill" href="<?= h($BASE_PATH) ?>create_campaign.php">Get Started</a>
               <a class="btn secondary pill" href="<?= h($BASE_PATH) ?>communityns.php">Explore Community</a>
             </div>
             <form class="search-bar" role="search" method="get" action="<?= h($BASE_PATH) ?>index.php">
@@ -174,10 +179,11 @@ $listings = $listingsStmt->fetchAll();
                   <option value="">All categories</option>
                   <?php foreach ([
                     'grains' => 'Grains',
-                    'cooked' => 'Cooked Meals',
-                    'produce' => 'Fresh Produce',
-                    'packaged' => 'Packaged',
+                    'cooked_meals' => 'Cooked Meals',
+                    'fresh_produces' => 'Fresh Produces',
                     'bakery' => 'Bakery',
+                    'feasts' => 'Feasts',
+                    'langar' => 'Langar',
                   ] as $val => $label): ?>
                     <option value="<?= h($val) ?>"<?= $categoryFilter === $val ? ' selected' : '' ?>><?= h($label) ?></option>
                   <?php endforeach; ?>

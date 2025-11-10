@@ -76,6 +76,11 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                 <a href="<?= h($BASE_PATH) ?>index.php#hero"<?= $currentPath === 'index.php' ? ' class="active"' : '' ?>>Home</a>
                 <a href="<?= h($BASE_PATH) ?>create_campaign.php"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
                 <a href="<?= h($BASE_PATH) ?>communityns.php"<?= $currentPath === 'communityns.php' ? ' class="active"' : '' ?>>Community</a>
+                <?php if (is_logged_in()): ?>
+                    <a href="<?= h($BASE_PATH) ?>logout.php">Logout</a>
+                <?php else: ?>
+                    <a href="<?= h($BASE_PATH) ?>login.php"<?= $currentPath === 'login.php' ? ' class="active"' : '' ?>>Login</a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>

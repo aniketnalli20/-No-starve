@@ -23,6 +23,13 @@ try {
 }
 
 // Initialize schema if not exists
+$pdo->exec('CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
 $pdo->exec('CREATE TABLE IF NOT EXISTS reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reporter_name VARCHAR(255) NOT NULL,
@@ -90,6 +97,7 @@ try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN longitude DOUBLE'); } catch (
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN community VARCHAR(255)'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN endorse_campaign INT DEFAULT 0'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN endorse_contributor INT DEFAULT 0'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN category VARCHAR(100)'); } catch (Throwable $e) {}
 
 // Track individual endorsement events for auditing/analytics
 $pdo->exec('CREATE TABLE IF NOT EXISTS endorsements (
