@@ -172,19 +172,19 @@ $listings = $listingsStmt->fetchAll();
           <h2 class="section-title">How No Starve Works</h2>
           <div class="steps-grid">
             <div class="step">
-              <h3>Food Donation Made Easy</h3>
+              <h3><span class="title-icon" aria-hidden="true">🍱</span> Food Donation Made Easy</h3>
               <p>Donors—restaurants, caterers, event organizers, and individuals—can quickly register and list their surplus food using our user-friendly platform.</p>
             </div>
             <div class="step">
-              <h3>Smart Matching</h3>
+              <h3><span class="title-icon" aria-hidden="true">📍</span> Smart Matching</h3>
               <p>Our system instantly matches available food donations with verified NGOs and volunteers nearby, optimizing routes and timing through location-based technology in Ghodbunder, Mira Bhayandar, Maharashtra 401107.</p>
             </div>
             <div class="step">
-              <h3>Safe Pickup and Delivery</h3>
+              <h3><span class="title-icon" aria-hidden="true">🚚</span> Safe Pickup and Delivery</h3>
               <p>Trained volunteers manage the transportation of food, following strict hygiene and safety protocols to maintain quality.</p>
             </div>
             <div class="step">
-              <h3>Feeding Communities</h3>
+              <h3><span class="title-icon" aria-hidden="true">🍽️</span> Feeding Communities</h3>
               <p>The donated food is distributed immediately to local shelters, orphanages, and underprivileged families, ensuring that no food goes to waste and more people gain access to nutritious meals.</p>
             </div>
           </div>
@@ -198,10 +198,10 @@ $listings = $listingsStmt->fetchAll();
         <section id="pillars" class="card-plain is-highlight" aria-label="Our Pillars of Impact">
           <h2 class="section-title">Our Pillars of Impact</h2>
           <div class="pillars-grid">
-            <div class="pillar"><h3>Food Waste Reduction</h3><p>Minimizing daily food waste through efficient collection and redistribution.</p></div>
-            <div class="pillar"><h3>Hunger Alleviation</h3><p>Supporting vulnerable populations with reliable food access.</p></div>
-            <div class="pillar"><h3>Community Empowerment</h3><p>Creating a network of dedicated volunteers and NGOs working in unison.</p></div>
-            <div class="pillar"><h3>Awareness & Education</h3><p>Promoting responsible food habits and spreading knowledge about food safety and sustainability.</p></div>
+            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">♻️</span> Food Waste Reduction</h3><p>Minimizing daily food waste through efficient collection and redistribution.</p></div>
+            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">🍛</span> Hunger Alleviation</h3><p>Supporting vulnerable populations with reliable food access.</p></div>
+            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">👥</span> Community Empowerment</h3><p>Creating a network of dedicated volunteers and NGOs working in unison.</p></div>
+            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">📣</span> Awareness & Education</h3><p>Promoting responsible food habits and spreading knowledge about food safety and sustainability.</p></div>
           </div>
         </section>
 

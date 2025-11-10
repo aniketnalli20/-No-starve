@@ -95,33 +95,37 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
             </form>
         </section>
 
-        <section class="cards-grid" id="community-campaigns">
+        <section class="cards-grid card-plain card-fullbleed" id="community-campaigns">
             <?php if (empty($campaigns)): ?>
                 <div class="card-plain"><p>No campaigns yet.</p></div>
             <?php else: ?>
                 <?php foreach ($campaigns as $c): ?>
-                    <div class="card-plain" id="campaign-<?= h((string)$c['id']) ?>">
-                        <div class="card-title"><?= h($c['title'] ?: ('Campaign #' . $c['id'])) ?></div>
-                        <p class="muted">By <?= h($c['contributor_name'] ?: 'Unknown') ?> · Community: <span class="chip"><?= h($c['community'] ?: 'General') ?></span></p>
+                    <div class="card-plain card-horizontal" id="campaign-<?= h((string)$c['id']) ?>">
                         <?php if (!empty($c['image_url'])): ?>
-                            <img src="<?= h($c['image_url']) ?>" alt="Campaign image" style="width:100%; border-radius:12px; margin:8px 0; border:1px solid var(--border);"/>
+                            <div class="card-media">
+                                <img src="<?= h($c['image_url']) ?>" alt="Campaign image" />
+                            </div>
                         <?php endif; ?>
-                        <p><?= h($c['summary']) ?></p>
-                        <p class="muted">Crowd Size: <?= h((string)$c['crowd_size']) ?> · Location: <?= h($c['location']) ?> · Closing: <?= h($c['closing_time']) ?></p>
-                        <div class="actions" style="justify-content:flex-start; gap:8px;">
-                            <form method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="endorse"/>
-                                <input type="hidden" name="type" value="campaign"/>
-                                <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
-                                <button class="btn" type="submit">Endorse Campaign (<?= h((string)($c['endorse_campaign'] ?? 0)) ?>)</button>
-                            </form>
-                            <form method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="endorse"/>
-                                <input type="hidden" name="type" value="contributor"/>
-                                <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
-                                <button class="btn" type="submit">Endorse Contributor (<?= h((string)($c['endorse_contributor'] ?? 0)) ?>)</button>
-                            </form>
-                            <button class="btn" type="button" onclick="shareCampaign(<?= h((string)$c['id']) ?>)">Share</button>
+                        <div class="card-content">
+                            <div class="card-title"><?= h($c['title'] ?: ('Campaign #' . $c['id'])) ?></div>
+                            <p class="muted">By <?= h($c['contributor_name'] ?: 'Unknown') ?> · Community: <span class="chip"><?= h($c['community'] ?: 'General') ?></span></p>
+                            <p><?= h($c['summary']) ?></p>
+                            <p class="muted">Crowd Size: <?= h((string)$c['crowd_size']) ?> · Location: <?= h($c['location']) ?> · Closing: <?= h($c['closing_time']) ?></p>
+                            <div class="actions" style="justify-content:flex-start; gap:8px;">
+                                <form method="post" style="display:inline;">
+                                    <input type="hidden" name="action" value="endorse"/>
+                                    <input type="hidden" name="type" value="campaign"/>
+                                    <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
+                                    <button class="btn" type="submit">Endorse Campaign (<?= h((string)($c['endorse_campaign'] ?? 0)) ?>)</button>
+                                </form>
+                                <form method="post" style="display:inline;">
+                                    <input type="hidden" name="action" value="endorse"/>
+                                    <input type="hidden" name="type" value="contributor"/>
+                                    <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
+                                    <button class="btn" type="submit">Endorse Contributor (<?= h((string)($c['endorse_contributor'] ?? 0)) ?>)</button>
+                                </form>
+                                <button class="btn" type="button" onclick="shareCampaign(<?= h((string)$c['id']) ?>)">Share</button>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
