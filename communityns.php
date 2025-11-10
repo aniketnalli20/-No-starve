@@ -175,9 +175,21 @@ if (is_logged_in() && !empty($campaigns)) {
                               $metaLine = 'Crowd Size: ' . (string)$c['crowd_size'] . ' · Location: ' . (string)$c['location'] . ' · Community: ' . ((string)($c['community'] ?: 'General'));
                               $hasDuplicateMeta = stripos($summaryText, 'crowd') !== false || stripos($summaryText, 'location') !== false;
                             ?>
+                            <?php 
+                              // Compute closing metadata before rendering info rows
+                              $closingTs = strtotime((string)$c['closing_time']);
+                              $nowTs = time();
+                              $diff = $closingTs !== false ? ($closingTs - $nowTs) : null;
+                              $closingCls = 'ok';
+                              $closingText = (string)$c['closing_time'];
+                              if ($diff !== null) {
+                                if ($diff <= 0) { $closingCls = 'closed'; }
+                                else if ($diff <= 2 * 3600) { $closingCls = 'soon'; }
+                              }
+                              if ($closingTs !== false) { $closingText = date('M j, Y g:i A', $closingTs); }
+                            ?>
                             <div class="tweet-info">
                                 <div class="info-row">
-                                    <svg class="icon" viewBox="0 0 24 24"><path d="M7 2h10v3H7z"/><path d="M5 5h14v17H5z"/><path d="M8 10h3v3H8zM13 10h3v3h-3zM8 15h3v3H8zM13 15h3v3h-3z"/></svg>
                                     <strong>Closing:</strong> <?= h($closingText) ?>
                                 </div>
                                 <?php if (!$hasDuplicateMeta): ?>
@@ -195,19 +207,7 @@ if (is_logged_in() && !empty($campaigns)) {
                                 </div>
                                 <?php endif; ?>
                             </div>
-                            <?php 
-                              $closingTs = strtotime((string)$c['closing_time']);
-                              $nowTs = time();
-                              $diff = $closingTs !== false ? ($closingTs - $nowTs) : null;
-                              $closingCls = 'ok';
-                              $closingText = (string)$c['closing_time'];
-                              if ($diff !== null) {
-                                if ($diff <= 0) { $closingCls = 'closed'; }
-                                else if ($diff <= 2 * 3600) { $closingCls = 'soon'; }
-                              }
-                              if ($closingTs !== false) { $closingText = date('M j, Y g:i A', $closingTs); }
-                            ?>
-                            <div class="closing-indicator <?= h($closingCls) ?>" style="margin-top:4px;"><strong>Status:</strong> <?= h($closingText) ?></div>
+                            
                         </div>
                         <?php if (!empty($c['image_url'])): ?>
                             <div class="tweet-media">
