@@ -47,6 +47,7 @@ function create_campaign(array $data, ?array $imageFile = null): int {
     global $pdo;
 
     $contributorName = trim((string)($data['contributor_name'] ?? ''));
+    $community = isset($data['community']) ? trim((string)$data['community']) : '';
     $location = trim((string)($data['location'] ?? ''));
     $crowdSize = isset($data['crowd_size']) && $data['crowd_size'] !== '' ? (int)$data['crowd_size'] : null;
     $closingTime = isset($data['closing_time']) ? trim((string)$data['closing_time']) : null;
@@ -82,8 +83,8 @@ function create_campaign(array $data, ?array $imageFile = null): int {
     $latitude = isset($data['latitude']) && $data['latitude'] !== '' ? (float)$data['latitude'] : null;
     $longitude = isset($data['longitude']) && $data['longitude'] !== '' ? (float)$data['longitude'] : null;
 
-    $stmt = $pdo->prepare('INSERT INTO campaigns (title, summary, area, target_meals, start_date, end_date, status, created_at, contributor_name, location, crowd_size, image_url, closing_time, latitude, longitude)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $pdo->prepare('INSERT INTO campaigns (title, summary, area, target_meals, start_date, end_date, status, created_at, contributor_name, community, location, crowd_size, image_url, closing_time, latitude, longitude)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->execute([
         $title,
         $summary,
@@ -94,6 +95,7 @@ function create_campaign(array $data, ?array $imageFile = null): int {
         $status,
         gmdate('c'),
         $contributorName,
+        $community,
         $location,
         $crowdSize,
         $imageUrl,
