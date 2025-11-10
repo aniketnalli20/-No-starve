@@ -169,7 +169,8 @@ $listings = $listingsStmt->fetchAll();
         <section id="home-panels" class="grid">
             <div class="card">
                 <h2>Our Mission</h2>
-                <p>We reduce food waste and hunger in India by connecting surplus food from donors to NGOs and communities in need — quickly, safely, and locally.</p>
+                <p>Our Mission
+We reduce food waste and hunger in India by connecting surplus food from donors to NGOs and communities in need — quickly, safely, and locally.</p>
             </div>
             <div class="card">
                 <h2>How It Works</h2>
