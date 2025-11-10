@@ -379,8 +379,10 @@ ul { list-style: none; padding-left: 0; }
 /* Full-bleed card for Create page to prevent overlap */
 .card-plain.card-fullbleed {
   width: 100vw;
+  max-width: none; /* override base card max-width */
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
+  margin-top: 12px; /* keep a bit of spacing below sticky header */
   min-height: 100vh;
   box-sizing: border-box;
   padding: var(--content-pad);

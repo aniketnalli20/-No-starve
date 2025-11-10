@@ -90,3 +90,15 @@ try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN longitude DOUBLE'); } catch (
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN community VARCHAR(255)'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN endorse_campaign INT DEFAULT 0'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN endorse_contributor INT DEFAULT 0'); } catch (Throwable $e) {}
+
+// Track individual endorsement events for auditing/analytics
+$pdo->exec('CREATE TABLE IF NOT EXISTS endorsements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    campaign_id INT NOT NULL,
+    kind VARCHAR(32) NOT NULL, -- "campaign" or "contributor"
+    contributor_name VARCHAR(255) NULL,
+    ip VARCHAR(64) NULL,
+    user_agent TEXT NULL,
+    created_at DATETIME NOT NULL,
+    CONSTRAINT fk_endorsements_campaign FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
