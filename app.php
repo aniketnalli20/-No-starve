@@ -79,8 +79,11 @@ function create_campaign(array $data, ?array $imageFile = null): int {
         $imageUrl = 'uploads/' . $fname;
     }
 
-    $stmt = $pdo->prepare('INSERT INTO campaigns (title, summary, area, target_meals, start_date, end_date, status, created_at, contributor_name, location, crowd_size, image_url, closing_time)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $latitude = isset($data['latitude']) && $data['latitude'] !== '' ? (float)$data['latitude'] : null;
+    $longitude = isset($data['longitude']) && $data['longitude'] !== '' ? (float)$data['longitude'] : null;
+
+    $stmt = $pdo->prepare('INSERT INTO campaigns (title, summary, area, target_meals, start_date, end_date, status, created_at, contributor_name, location, crowd_size, image_url, closing_time, latitude, longitude)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->execute([
         $title,
         $summary,
@@ -95,6 +98,8 @@ function create_campaign(array $data, ?array $imageFile = null): int {
         $crowdSize,
         $imageUrl,
         $closingTime,
+        $latitude,
+        $longitude,
     ]);
 
     return (int)$pdo->lastInsertId();

@@ -77,3 +77,5 @@ try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN location TEXT'); } catch (Thr
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN crowd_size INTEGER'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN image_url TEXT'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN closing_time TEXT'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN latitude REAL'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN longitude REAL'); } catch (Throwable $e) {}

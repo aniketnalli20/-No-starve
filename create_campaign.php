@@ -61,7 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-field">
                     <label for="location">Location</label>
-                    <input type="text" id="location" name="location" required>
+                    <input type="text" id="location" name="location" required autocomplete="off" aria-autocomplete="list" aria-controls="location-suggestions">
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    <div id="location-suggestions" class="card-plain" role="listbox" style="position: absolute; z-index: 10; display: none; max-height: 220px; overflow: auto;"></div>
                 </div>
 
                 <div class="form-field">
@@ -85,6 +88,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </section>
     </main>
+
+    <script>
+    (function(){
+        const input = document.getElementById('location');
+        const box = document.getElementById('location-suggestions');
+        const latEl = document.getElementById('latitude');
+        const lonEl = document.getElementById('longitude');
+        let timer = null;
+
+        function hideSuggestions(){ box.style.display = 'none'; box.innerHTML=''; }
+
+        function renderSuggestions(items){
+            if (!items || items.length === 0) { hideSuggestions(); return; }
+            box.innerHTML = '';
+            items.forEach(function(it, idx){
+                const opt = document.createElement('div');
+                opt.setAttribute('role','option');
+                opt.textContent = it.label || (it.lat + ',' + it.lon);
+                opt.style.padding = '8px 10px';
+                opt.style.cursor = 'pointer';
+                opt.addEventListener('mousedown', function(e){ e.preventDefault(); });
+                opt.addEventListener('click', function(){
+                    input.value = it.label;
+                    latEl.value = it.lat || '';
+                    lonEl.value = it.lon || '';
+                    hideSuggestions();
+                });
+                box.appendChild(opt);
+            });
+            const rect = input.getBoundingClientRect();
+            box.style.width = rect.width + 'px';
+            box.style.display = 'block';
+        }
+
+        input.addEventListener('input', function(){
+            latEl.value = '';
+            lonEl.value = '';
+            const q = input.value.trim();
+            if (timer) clearTimeout(timer);
+            if (!q) { hideSuggestions(); return; }
+            timer = setTimeout(function(){
+                fetch('/geocode.php?q=' + encodeURIComponent(q))
+                  .then(function(r){ return r.json(); })
+                  .then(function(json){ renderSuggestions(json.results || []); })
+                  .catch(function(){ hideSuggestions(); });
+            }, 250);
+        });
+
+        document.addEventListener('click', function(e){
+            if (e.target !== input && !box.contains(e.target)) hideSuggestions();
+        });
+    })();
+    </script>
 
     <footer class="site-footer">
         <div class="container footer-inner">
