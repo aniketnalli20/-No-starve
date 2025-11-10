@@ -260,39 +260,48 @@ ul { list-style: none; padding-left: 0; }
 .btn.cta:hover { filter: brightness(1.05); box-shadow: 0 12px 28px rgba(26,122,255,0.4); }
 .btn.cta .icon { display: inline-block; margin-right: 8px; font-weight: 700; }
 
-/* From Uiverse.io by CristianMontoya98 — scoped to Create page only */
-.create-page .btn {
-  width: 6.5em;
-  height: 2.3em;
-  margin: 0.5em;
-  background: black;
-  color: white;
-  border: none;
-  border-radius: 0.625em;
-  font-size: 20px;
-  font-weight: bold;
+/* From Uiverse.io by BHARGAVPATEL1244 — scoped to Create page submit button */
+.create-page .btn-bhargav {
+  outline: none;
   cursor: pointer;
+  border: none;
+  padding: 0.9rem 2rem;
+  margin: 0;
+  font-family: inherit;
+  font-size: 17px;
   position: relative;
-  z-index: 1;
+  display: inline-block;
+  letter-spacing: 0.05rem;
+  font-weight: 700;
+  border-radius: 500px;
   overflow: hidden;
+  background: #66ff66;
+  color: ghostwhite;
 }
-.create-page .btn:hover { color: black; }
-.create-page .btn::after {
-  content: "";
-  background: white;
+.create-page .btn-bhargav span {
+  position: relative;
+  z-index: 10;
+  transition: color 0.4s;
+}
+.create-page .btn-bhargav:hover span { color: black; }
+.create-page .btn-bhargav::before,
+.create-page .btn-bhargav::after {
   position: absolute;
-  z-index: -1;
-  left: -20%;
-  right: -20%;
   top: 0;
-  bottom: 0;
-  transform: skewX(-45deg) scale(0, 1);
-  transition: all 0.5s;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
-.create-page .btn:hover::after {
-  transform: skewX(-45deg) scale(1, 1);
-  transition: all 0.5s;
+.create-page .btn-bhargav::before {
+  content: "";
+  background: #000;
+  width: 120%;
+  left: -10%;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
 }
+.create-page .btn-bhargav:hover::before { transform: translate3d(100%, 0, 0); }
 
 /* From Uiverse.io by Allyhere: Donate-style CTA used for Create Campaign */
 .btn-donate {

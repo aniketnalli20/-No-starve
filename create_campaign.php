@@ -87,11 +87,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="hidden" id="longitude" name="longitude">
                     <div id="location-suggestions" class="card-plain" role="listbox" style="position: absolute; z-index: 10; display: none; max-height: 220px; overflow: auto;"></div>
                     <div class="actions" style="margin-top: 8px; justify-content: flex-start;">
-                        <button class="btn" id="use-my-location" type="button">Use My Location</button>
+                        <button id="use-my-location" type="button">Use My Location</button>
                     </div>
                     <div id="map" class="card-plain" style="width: 100%; aspect-ratio: 1 / 1; max-width: 360px; margin-top: 12px;"></div>
                     <div class="actions" style="margin-top: 10px; justify-content: flex-start;">
-                        <button class="btn" type="submit">Create</button>
+                        <button class="btn btn-bhargav" type="submit"><span>Create Campaign</span></button>
                     </div>
                 </div>
 
