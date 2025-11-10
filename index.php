@@ -201,64 +201,7 @@ $listings = $listingsStmt->fetchAll();
     </section>
 
     <main>
-        <!-- Trending donations grid -->
-        <section class="container" aria-label="Trending Donations">
-          <h2 class="section-title">Trending Donations Near You</h2>
-          <div class="listings-grid">
-            <?php if (!$listings): ?>
-              <div class="empty-state" role="status" aria-live="polite">
-                <div class="icon" aria-hidden="true">🔍</div>
-                <h3 class="break-100">No open donations found</h3>
-                <p class="break-100">Adjust filters or check back soon for new open donations.</p>
-              </div>
-            <?php else: ?>
-              <?php foreach ($listings as $l): ?>
-                <?php
-                  $expires = $l['expires_at'] ? time_ago($l['expires_at']) : 'No expiry';
-                  $img = $l['image_url'] ?: ($heroUrl ?: null);
-                ?>
-                <article class="listing-card">
-                  <div class="media">
-                    <?php if ($img): ?>
-                      <img src="<?= h($img) ?>" alt="Donation image" loading="lazy" />
-                    <?php else: ?>
-                      <div class="media-fallback" aria-hidden="true"></div>
-                    <?php endif; ?>
-                    <span class="badge"><?= h($l['category'] ?: 'general') ?></span>
-                  </div>
-                  <div class="content">
-                    <h3 class="title"><?= h($l['item']) ?> <small class="qty">· <?= h($l['quantity']) ?></small></h3>
-                    <p class="meta">By <?= h($l['donor_name']) ?> in <?= h($l['city']) ?> <?= $l['pincode'] ? ('(' . h($l['pincode']) . ')') : '' ?></p>
-                    <p class="meta">Expires: <?= h($expires) ?></p>
-                  </div>
-                  <div class="actions">
-                    <?php
-                      $hasAddr = trim((string)$l['address']) !== '';
-                      $mapUrl = $hasAddr
-                        ? ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$l['address']))
-                        : ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$l['city']));
-                    ?>
-                    <a class="btn secondary" href="<?= h($mapUrl) ?>" target="_blank" rel="noopener">View Map</a>
-                    <details class="claim">
-                      <summary class="btn accent">Claim</summary>
-                      <form method="post">
-                        <input type="hidden" name="action" value="claim_listing" />
-                        <input type="hidden" name="listing_id" value="<?= h((string)$l['id']) ?>" />
-                        <div class="claim-grid">
-                          <input type="text" name="ngo_name" placeholder="NGO (optional)" />
-                          <input type="text" name="claimer_name" placeholder="Your name" required />
-                          <input type="text" name="claimer_contact" placeholder="Contact (optional)" />
-                          <input type="text" name="notes" placeholder="Notes (optional)" />
-                        </div>
-                        <button type="submit" class="btn accent pill">Confirm Claim</button>
-                      </form>
-                    </details>
-                  </div>
-                </article>
-              <?php endforeach; ?>
-            <?php endif; ?>
-          </div>
-        </section>
+        <!-- Trending donations grid removed per request -->
         <!-- Core content: mission and process -->
         <section id="content" class="content-grid" aria-label="Core content">
           <section id="overview" class="card-plain is-highlight card-horizontal" aria-label="Overview">
