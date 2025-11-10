@@ -7,6 +7,9 @@
   --primary: #ffffff;   /* Primary actions are white */
   --chip: #f7f7f7;      /* Light chips */
   --border: #e5e5e5;    /* Soft borders */
+  /* Accent inspired by reference UI */
+  --accent: #b8ff35;    /* Lime accent */
+  --accentText: #0c1a2b;/* Deep navy for contrast */
 }
 
 * { box-sizing: border-box; }
@@ -57,13 +60,16 @@ body {
   padding: 0.85rem 1.25rem;
 }
 .hero .wrap { width: 100%; max-width: none; margin: 0; padding: 24px 20px; text-align: center; }
-.hero-title { margin: 0 0 8px; font-size: 28px; }
-.hero-sub { margin: 0 0 12px; color: #f0f0f0; }
+.hero-title { margin: 0 0 10px; font-size: clamp(2.5rem, 3.2vw + 1rem, 4.25rem); line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; }
+.hero-sub { margin: 0 0 16px; color: #f0f0f0; font-size: clamp(1.1rem, 1.2vw + 0.6rem, 1.35rem); line-height: 1.6; max-width: 68ch; margin-left: auto; margin-right: auto; }
 .hero-actions { display: flex; gap: 10px; justify-content: center; }
 .hero-title, .hero-sub { text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
 .hero .btn { border-color: rgba(255,255,255,0.7); }
 .hero .btn.secondary { color: #ffffff; border-color: rgba(255,255,255,0.7); }
 .btn { display: inline-block; background: var(--primary); color: #000; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid var(--border); }
+.btn.pill { border-radius: 999px; padding: 12px 18px; }
+.btn.accent { background: var(--accent); color: var(--accentText); border-color: transparent; box-shadow: 0 8px 24px rgba(184,255,53,0.35); }
+.btn.accent:hover { filter: brightness(0.96); box-shadow: 0 12px 28px rgba(184,255,53,0.42); }
 .btn:hover { background: #eaeaea; }
 .btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
 .btn.secondary:hover { border-color: #3a3a3a; }

@@ -159,8 +159,8 @@ $listings = $listingsStmt->fetchAll();
             <h2 class="hero-title">Rescue surplus food. Feed communities.</h2>
             <p class="hero-sub">A simple platform connecting Indian donors with verified NGOs and volunteers for timely redistribution.</p>
             <div class="hero-actions">
-                <a href="#blog" class="btn">Read the Blog</a>
-                <a href="#home-panels" class="btn secondary">Explore Overview</a>
+                <a href="#blog" class="btn accent pill">Read the Blog</a>
+                <a href="#home-panels" class="btn secondary pill">Explore Overview</a>
             </div>
         </div>
     </section>
@@ -185,8 +185,8 @@ We reduce food waste and hunger in India by connecting surplus food from donors 
                 <h2>Get Involved</h2>
                 <p>Join us as an NGO partner or volunteer to help redistribute food safely and efficiently.</p>
                 <div class="hero-actions" style="margin-top:8px;">
-                    <a href="#blog" class="btn">Read the Blog</a>
-                    <a href="#contact" class="btn secondary">Contact Us</a>
+                    <a href="#blog" class="btn accent pill">Read the Blog</a>
+                    <a href="#contact" class="btn secondary pill">Contact Us</a>
                 </div>
             </div>
         </section>
