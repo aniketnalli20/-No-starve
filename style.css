@@ -517,6 +517,11 @@ ul { list-style: none; padding-left: 0; }
 .filter-bar .control-group { display: inline-flex; align-items: center; gap: 8px; }
 .filter-bar .control-label { color: var(--muted); font-weight: 600; }
 .filter-bar .actions { display: inline-flex; align-items: center; gap: 8px; }
+.filter-bar.compact { gap: 6px; }
+.filter-bar.compact .control-group { gap: 6px; }
+.filter-bar.compact .actions { gap: 6px; }
+.filter-bar.compact .select { min-width: 140px; padding: 8px 10px; }
+.filter-bar.compact .btn { height: 34px; padding: 6px 10px; }
 .select {
   appearance: none;
   background: var(--bg);
@@ -853,7 +858,7 @@ ul { list-style: none; padding-left: 0; }
 .tweet-info .info-row strong { color: var(--text-normal); font-weight: 600; }
 .tweet-media { margin-top: 8px; }
 .tweet-media img { width: 100%; border-radius: 12px; display: block; background: #eee; }
-.tweet-actions { display: flex; justify-content: space-between; margin-top: 8px; }
+.tweet-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-start; margin-top: 8px; }
 .tweet-actions form { display: inline; }
 .tweet-actions button { background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; padding: 6px 10px; border-radius: 10px; }
 .tweet-actions button:hover { background: rgba(0, 166, 147, 0.10); color: #00A693; border-color: rgba(0, 166, 147, 0.30); }
