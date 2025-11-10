@@ -24,11 +24,20 @@ body {
 .site-header h1 { margin: 0 0 6px; font-size: 24px; }
 .tagline { margin: 0; color: var(--muted); }
 
-.hero { background: var(--bg); border-bottom: 1px solid var(--border); }
+.hero {
+  background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('uploads/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid var(--border);
+  color: #ffffff;
+}
 .hero .wrap { width: 100%; max-width: none; margin: 0; padding: 24px 20px; text-align: center; }
 .hero-title { margin: 0 0 8px; font-size: 28px; }
-.hero-sub { margin: 0 0 12px; color: var(--muted); }
+.hero-sub { margin: 0 0 12px; color: #f0f0f0; }
 .hero-actions { display: flex; gap: 10px; justify-content: center; }
+.hero-title, .hero-sub { text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+.hero .btn { border-color: rgba(255,255,255,0.7); }
+.hero .btn.secondary { color: #ffffff; border-color: rgba(255,255,255,0.7); }
 .btn { display: inline-block; background: var(--primary); color: #000; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid var(--border); }
 .btn:hover { background: #eaeaea; }
 .btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
