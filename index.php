@@ -141,7 +141,7 @@ $listings = $listingsStmt->fetchAll();
 <body>
     <header class="site-header" role="banner">
         <div class="container header-inner">
-            <a href="#hero" class="brand" aria-label="Food Waste Management home">FoodWasteMgmt</a>
+            <a href="#hero" class="brand" aria-label="Food Waste Management home">No Starve</a>
             <button class="nav-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="nav-toggle-bar" aria-hidden="true"></span>
                 <span class="nav-toggle-bar" aria-hidden="true"></span>
