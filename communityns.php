@@ -151,48 +151,85 @@ if (is_logged_in() && !empty($campaigns)) {
             </form>
         </section>
 
-        <?php if (!empty($recentUsers)): ?>
         <div id="community-posts" class="cards-grid card-plain" style="margin-top: 8px;">
             <?php 
-            $demoMessages = [
-                'Shared an on-ground update: distributing meals near the market.',
-                'Reported surplus food pickup completed successfully.',
-                'Coordinated volunteers for evening distribution.',
-                'Verified location and prepared packaging materials.',
-                'Connected an NGO with a donor for bakery items.',
-                'Crowd is manageable; continued distribution planned.',
-                'Need extra hands tomorrow morning for sorting.',
-                'Fresh produce arriving; setting up temporary station.',
-                'Distribution paused due to rain; resuming shortly.',
-                'Collected feedback from recipients; improving flow.'
+            // Two sample user posts near Mumbai using create_campaign-like fields
+            $postsDemo = [
+                [
+                    'username' => 'aniket',
+                    'category' => 'feasts',
+                    'community' => 'Mumbai',
+                    'crowd_size' => 44,
+                    'location' => 'Saint Thomas Road, Mira, Mira-Bhayander, Thane Taluka, Thane, Maharashtra, 401107, India',
+                    'closing_iso' => '2026-01-01T15:57',
+                    'posted_at' => gmdate('Y-m-d H:i:s', time() - 4 * 3600),
+                    'endorse_campaign' => 5,
+                    'endorse_contributor' => 1,
+                ],
+                [
+                    'username' => 'aniket',
+                    'category' => 'fresh_produces',
+                    'community' => 'Mumbai',
+                    'crowd_size' => 222,
+                    'location' => 'Mira Bhayandar Road, Kashigaon, Kashimira, Mira-Bhayander, Thane Taluka, Thane, Maharashtra, 401107, India',
+                    'closing_iso' => '2025-11-10T20:41',
+                    'posted_at' => gmdate('Y-m-d H:i:s', time() - 5 * 3600),
+                    'endorse_campaign' => 6,
+                    'endorse_contributor' => 0,
+                ],
             ];
+            foreach ($postsDemo as $i => $p):
+                $uname = trim((string)$p['username']);
+                $initial = strtoupper(substr($uname, 0, 1));
+                $handleBase = strtolower(preg_replace('/[^a-z0-9]+/i', $uname));
+                $handle = $handleBase !== '' ? $handleBase : 'user';
+                $closingTs = strtotime((string)$p['closing_iso']);
+                $closingFormatted = $closingTs !== false ? date('M j, Y g:i A', $closingTs) : (string)$p['closing_iso'];
+                $mapUrl = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$p['location']);
             ?>
-            <?php foreach ($recentUsers as $idx => $u): ?>
-                <?php 
-                    $uname = trim((string)($u['username'] ?? 'User'));
-                    $initial = strtoupper(substr($uname, 0, 1));
-                    $handleBase = strtolower(preg_replace('/[^a-z0-9]+/i', '', $uname));
-                    $handle = $handleBase !== '' ? $handleBase : 'user';
-                    $msg = $demoMessages[$idx % count($demoMessages)];
-                ?>
-                <div class="tweet-card" id="post-<?= h((string)$u['id']) ?>">
-                    <div class="tweet-header">
-                        <div class="tweet-avatar" aria-hidden="true"><?= h($initial) ?></div>
-                        <div class="tweet-meta">
-                            <div>
-                                <span class="tweet-name"><?= h($uname) ?></span>
-                                <span class="tweet-handle">@<?= h($handle) ?></span>
-                            </div>
-                            <div class="muted">Posted <?= h(time_ago($u['created_at'])) ?></div>
+            <div class="tweet-card" id="post-demo-<?= h((string)($i+1)) ?>">
+                <div class="tweet-header">
+                    <div class="tweet-avatar" aria-hidden="true"><?= h($initial) ?></div>
+                    <div class="tweet-meta">
+                        <div>
+                            <span class="tweet-name"><?= h($uname) ?></span>
+                            <span class="tweet-handle">@<?= h($handle) ?></span>
                         </div>
-                    </div>
-                    <div class="tweet-body">
-                        <div><?= h($msg) ?></div>
+                        <div class="muted">Uploaded <?= h(time_ago($p['posted_at'])) ?></div>
                     </div>
                 </div>
+                <div class="tweet-body">
+                    <strong>Campaign by <?= h($uname) ?></strong>
+                    <div>
+                        Crowd size <?= h((string)$p['crowd_size']) ?> at <?= h((string)$p['location']) ?>. Closing: <?= h((string)$p['closing_iso']) ?>
+                    </div>
+                    <div class="tweet-info">
+                        <div class="info-row"><strong>Category:</strong> <?= h((string)$p['category']) ?></div>
+                        <div class="info-row"><strong>Community:</strong> <?= h((string)$p['community']) ?></div>
+                        <div class="info-row"><strong>Closing:</strong> <?= h($closingFormatted) ?></div>
+                    </div>
+                </div>
+                <div class="tweet-actions">
+                    <a href="<?= h($mapUrl) ?>" target="_blank" rel="noopener">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-6-5.33-6-10a6 6 0 1 1 12 0c0 4.67-6 10-6 10Z"/><circle cx="12" cy="11" r="2.5"/></svg>
+                        Location
+                    </a>
+                    <button type="button" aria-label="Endorse campaign">
+                        <img class="icon-img" src="<?= h($BASE_PATH) ?>uploads/icons/thumb_up_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png" alt="Endorse" />
+                        Endorse <span class="count">(<?= h((string)$p['endorse_campaign']) ?>)</span>
+                    </button>
+                    <button type="button" aria-label="Endorse contributor">
+                        <img class="icon-img" src="<?= h($BASE_PATH) ?>uploads/icons/thumbs_up_double_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png" alt="Endorse" />
+                        Endorse <span class="count">(<?= h((string)$p['endorse_contributor']) ?>)</span>
+                    </button>
+                    <button type="button" onclick="shareCampaign('post-demo-<?= h((string)($i+1)) ?>')" aria-label="Share">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 12v8h16v-8"/><path d="M12 16V4"/><path d="M7 8l5-4 5 4"/></svg>
+                        Share
+                    </button>
+                </div>
+            </div>
             <?php endforeach; ?>
         </div>
-        <?php endif; ?>
 
         <section class="cards-grid card-plain card-fullbleed" id="community-campaigns">
             <?php if (empty($campaigns)): ?>
