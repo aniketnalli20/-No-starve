@@ -1,0 +1,83 @@
+/* Basic styling for Food Waste Management simple app */
+:root {
+  --bg: #0b0f14;
+  --panel: #11161d;
+  --text: #e6edf3;
+  --muted: #9aa7b2;
+  --primary: #2f81f7;
+  --success: #2ea043;
+  --error: #f85149;
+  --chip: #1f2a35;
+  --border: #202835;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.site-header, .site-footer { border-bottom: 1px solid var(--border); }
+.site-footer { border-top: 1px solid var(--border); border-bottom: none; }
+.site-header .wrap, .site-footer .wrap { max-width: 920px; margin: 0 auto; padding: 20px; }
+.site-header h1 { margin: 0 0 6px; font-size: 24px; }
+.tagline { margin: 0; color: var(--muted); }
+
+.container { max-width: 920px; margin: 24px auto; padding: 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+.card h2 { margin: 0 0 12px; font-size: 18px; }
+
+.alert { padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; }
+.alert.success { background: rgba(46,160,67,0.15); border: 1px solid rgba(46,160,67,0.5); }
+.alert.error { background: rgba(248,81,73,0.15); border: 1px solid rgba(248,81,73,0.5); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-field { display: flex; flex-direction: column; }
+.form-field.full { grid-column: 1 / -1; }
+.form-field label { margin-bottom: 6px; color: var(--muted); font-size: 13px; }
+.form-field input, .form-field select {
+  appearance: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #0e1319;
+  color: var(--text);
+}
+.actions { display: flex; justify-content: flex-end; margin-top: 6px; }
+.actions button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.actions button:hover { filter: brightness(1.05); }
+
+.muted { color: var(--muted); }
+.chip {
+  display: inline-block;
+  background: var(--chip);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  margin: 0 8px;
+}
+
+.reports { list-style: none; padding: 0; margin: 0; }
+.report { border-top: 1px solid var(--border); padding: 10px 0; }
+.report:first-child { border-top: none; }
+.report-main { display: flex; align-items: center; gap: 8px; }
+.report-meta { color: var(--muted); margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; }
+.status { margin-left: auto; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.status.pending { background: #1e2a38; }
+.status.resolved { background: rgba(46,160,67,0.15); }
+
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
