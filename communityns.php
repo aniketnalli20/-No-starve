@@ -79,18 +79,23 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);">
         <section class="card-plain">
             <h2 class="section-title">Explore Community</h2>
-            <form method="get" class="form-grid">
-                <div class="form-field">
-                    <label for="community">Filter by Community</label>
-                    <select id="community" name="community">
+            <p class="section-subtitle muted">Showing <?= h((string)count($campaigns)) ?> campaigns<?= $filterCommunity !== '' ? (' in ' . h($filterCommunity)) : '' ?></p>
+            <form method="get" class="filter-bar" aria-label="Filter campaigns">
+                <label for="community" class="sr-only">Filter by Community</label>
+                <div class="control-group">
+                    <span class="control-label">Filter by Community</span>
+                    <select id="community" name="community" class="select">
                         <option value="">All</option>
                         <?php foreach ($communities as $c): ?>
                             <option value="<?= h($c) ?>" <?= $filterCommunity === $c ? 'selected' : '' ?>><?= h($c) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="form-field">
-                    <button class="btn" type="submit">Apply</button>
+                <div class="actions">
+                    <button class="btn secondary" type="submit">Apply</button>
+                    <?php if ($filterCommunity !== ''): ?>
+                        <a class="btn" href="/communityns.php">Reset</a>
+                    <?php endif; ?>
                 </div>
             </form>
         </section>
