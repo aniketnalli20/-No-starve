@@ -57,3 +57,16 @@ $pdo->exec('CREATE TABLE IF NOT EXISTS claims (
     created_at TEXT NOT NULL,
     FOREIGN KEY(listing_id) REFERENCES listings(id) ON DELETE CASCADE
 )');
+
+// Campaigns to coordinate targeted food distribution efforts
+$pdo->exec('CREATE TABLE IF NOT EXISTS campaigns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    area TEXT,                     -- e.g., Ghodbunder, Mira Bhayandar
+    target_meals INTEGER,          -- numeric goal
+    start_date TEXT,               -- ISO8601 date
+    end_date TEXT,                 -- ISO8601 date
+    status TEXT NOT NULL DEFAULT "draft", -- draft | active | completed | archived
+    created_at TEXT NOT NULL
+)');
