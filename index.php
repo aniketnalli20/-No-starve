@@ -154,8 +154,8 @@ $listings = $listingsStmt->fetchAll();
     </header>
 <section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
         <div class="wrap">
-            <h2 class="hero-title">Rescue surplus food. Feed communities.</h2>
-            <p class="hero-sub">A simple platform connecting Indian donors with verified NGOs and volunteers for timely redistribution.</p>
+            <h2 class="hero-title">Help us build hope and homes</h2>
+            <p class="hero-sub">together Against Food Waste.</p>
         </div>
     </section>
 
