@@ -735,6 +735,7 @@ ul { list-style: none; padding-left: 0; }
 .cards-grid .card-horizontal .card-header { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; }
 .break-8 .line { display: block; }
 .break-10 .line { display: block; }
+.break-fit .line { display: block; }
 
 /* Minimal card size overrides */
 .listings-grid { gap: 10px; }

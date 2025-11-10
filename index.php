@@ -160,8 +160,8 @@ $listings = $listingsStmt->fetchAll();
     </header>
     <section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
         <div class="wrap">
-            <h1 class="hero-title break-10">Rescue surplus food; feed people with community support nationwide today.</h1>
-            <p class="hero-sub break-10">Join donors, NGOs, volunteers tackling hunger and waste every day.</p>
+            <h1 class="hero-title break-fit">Rescue surplus food; feed people with community support nationwide today.</h1>
+            <p class="hero-sub break-fit">Join donors, NGOs, volunteers tackling hunger and waste every day.</p>
             <div class="hero-actions">
               <a class="btn accent pill" href="<?= h($BASE_PATH) ?>create_campaign.php">Donate Food</a>
               <a class="btn secondary pill" href="<?= h($BASE_PATH) ?>communityns.php">Explore Community</a>
@@ -208,8 +208,8 @@ $listings = $listingsStmt->fetchAll();
             <?php if (!$listings): ?>
               <div class="empty-state" role="status" aria-live="polite">
                 <div class="icon" aria-hidden="true">🔍</div>
-                <h3 class="break-10">No open donations found</h3>
-                <p class="break-10">Adjust filters or check back soon for new open donations.</p>
+                <h3 class="break-fit">No open donations found</h3>
+                <p class="break-fit">Adjust filters or check back soon for new open donations.</p>
               </div>
             <?php else: ?>
               <?php foreach ($listings as $l): ?>
@@ -261,67 +261,11 @@ $listings = $listingsStmt->fetchAll();
         </section>
         <!-- Core content: mission and process -->
         <section id="content" class="content-grid" aria-label="Core content">
-        <section id="mission" class="card-plain is-highlight card-horizontal" aria-label="Our Mission">
-          <h2 class="section-title">Our Mission</h2>
-          <p class="lead break-10">We connect donors with NGOs to fight hunger nationwide together.</p>
-        </section>
-
-        <section id="how" class="card-plain is-highlight card-horizontal" aria-label="How No Starve Works">
-          <h2 class="section-title">How No Starve Works</h2>
-          <div class="steps-grid">
-            <div class="step">
-              <h3><span class="title-icon" aria-hidden="true">🍱</span> Food Donation Made Easy</h3>
-              <p class="break-10">Donors quickly list surplus food using simple friendly tools online.</p>
-            </div>
-            <div class="step">
-              <h3><span class="title-icon" aria-hidden="true">📍</span> Smart Matching</h3>
-              <p class="break-10">We match donations with nearby NGOs and volunteers using location.</p>
-            </div>
-            <div class="step">
-              <h3><span class="title-icon" aria-hidden="true">🚚</span> Safe Pickup and Delivery</h3>
-              <p class="break-10">Trained volunteers transport food following hygiene and safety protocols always.</p>
-            </div>
-            <div class="step">
-              <h3><span class="title-icon" aria-hidden="true">🍽️</span> Feeding Communities</h3>
-              <p class="break-10">Redistributed meals reach shelters, families, and underserved communities nationwide quickly.</p>
-            </div>
-          </div>
-        </section>
-
-        <section id="why" class="card-plain is-highlight card-horizontal" aria-label="Why This Matters">
-          <h2 class="section-title">Why This Matters</h2>
-          <p class="lead break-10">Food waste harms environment while people suffer hunger daily everywhere.</p>
-        </section>
-
-        <section id="pillars" class="card-plain is-highlight card-horizontal" aria-label="Our Pillars of Impact">
-          <h2 class="section-title">Our Pillars of Impact</h2>
-          <div class="pillars-grid">
-            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">♻️</span> Food Waste Reduction</h3><p>Minimizing daily food waste through efficient collection and redistribution.</p></div>
-            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">🍛</span> Hunger Alleviation</h3><p>Supporting vulnerable populations with reliable food access.</p></div>
-            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">👥</span> Community Empowerment</h3><p>Creating a network of dedicated volunteers and NGOs working in unison.</p></div>
-            <div class="pillar"><h3><span class="title-icon" aria-hidden="true">📣</span> Awareness & Education</h3><p>Promoting responsible food habits and spreading knowledge about food safety and sustainability.</p></div>
-          </div>
-        </section>
-
-        <section id="help" class="card-plain is-highlight card-horizontal" aria-label="How You Can Help">
-          <h2 class="section-title">How You Can Help</h2>
-          <ul class="list-bullets checklist">
-            <li><strong>Become a Donor:</strong> <span class="break-10">List surplus food; small actions feed many people every day.</span></li>
-            <li><strong>Volunteer Your Time:</strong> <span class="break-10">Join pickup teams ensuring safe deliveries to those in need.</span></li>
-            <li><strong>Partner with Us:</strong> <span class="break-10">Collaborate with organizations to scale outreach and impact together nationwide.</span></li>
-            <li><strong>Spread the Word:</strong> <span class="break-10">Share our mission; inspire others to act against hunger today.</span></li>
-          </ul>
-        </section>
-
-        <section id="stories" class="card-plain is-highlight card-horizontal" aria-label="Success Stories">
-          <h2 class="section-title">Success Stories</h2>
-          <p class="lead break-10">Meals redistributed across cities and communities, changing lives nationwide daily.</p>
-        </section>
-
-        <section id="join" class="card-plain is-highlight card-horizontal" aria-label="Join No Starve Today">
-          <h2 class="section-title">Join No Starve Today</h2>
-          <p class="lead break-10">Join us; rescue food and nourish communities across India today.</p>
-        </section>
+          <section id="overview" class="card-plain is-highlight card-horizontal" aria-label="Overview">
+            <p class="lead">At No Starve, we connect donors with NGOs to fight hunger across the country. Donors can easily list surplus food using our simple online tools. Our smart system matches donations with nearby NGOs and volunteers, ensuring safe pickup and delivery by trained volunteers. Meals are quickly redistributed to shelters, families, and underserved communities.</p>
+            <p class="lead">Food waste harms the environment while millions suffer from hunger every day. We focus on reducing food waste, supporting vulnerable populations, empowering volunteers and NGOs, and raising awareness about safe food handling and sustainability.</p>
+            <p class="lead">You can help by donating food, volunteering for deliveries, partnering with us to expand our reach, or spreading the word to inspire others. We have already redistributed thousands of meals, changing lives nationwide. Join No Starve today to rescue food and nourish communities across India.</p>
+          </section>
         </section>
 
         <!-- Inspo cards layout -->
@@ -367,20 +311,30 @@ $listings = $listingsStmt->fetchAll();
   })();
   // Break text into lines of 8 words for elements with .break-8
   (function() {
-    // Break text into lines of 10 words for elements with .break-10
-    const WORDS_PER_LINE = 10;
-    const targets = document.querySelectorAll('.break-10');
+    // Break text into lines of ~60 characters (range 45–75) for elements with .break-fit
+    const TARGET = 60;
+    const MIN = 45;
+    const MAX = 75;
+    const targets = document.querySelectorAll('.break-fit');
     targets.forEach(el => {
-      // Skip elements with nested HTML formatting to avoid losing structure
       const hasChildren = Array.from(el.childNodes).some(n => n.nodeType === Node.ELEMENT_NODE);
       if (hasChildren) return;
       const text = (el.textContent || '').trim();
       if (!text) return;
       const words = text.split(/\s+/);
       const lines = [];
-      for (let i = 0; i < words.length; i += WORDS_PER_LINE) {
-        lines.push(words.slice(i, i + WORDS_PER_LINE).join(' '));
+      let current = '';
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const candidate = current ? current + ' ' + word : word;
+        if (candidate.length <= TARGET || current.length < MIN) {
+          current = candidate;
+        } else {
+          lines.push(current);
+          current = word;
+        }
       }
+      if (current) lines.push(current);
       el.innerHTML = lines.map(l => '<span class="line">' + l + '</span>').join('<br/>');
     });
   })();
