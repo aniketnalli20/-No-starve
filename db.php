@@ -124,3 +124,8 @@ $pdo->exec('CREATE TABLE IF NOT EXISTS endorsements (
     created_at DATETIME NOT NULL,
     CONSTRAINT fk_endorsements_campaign FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
+
+// Extend endorsements to link to users and prevent duplicate endorsements per user
+try { $pdo->exec('ALTER TABLE endorsements ADD COLUMN user_id INT NULL'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE endorsements ADD CONSTRAINT fk_endorsements_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL'); } catch (Throwable $e) {}
+try { $pdo->exec('CREATE UNIQUE INDEX idx_endorsements_unique ON endorsements (campaign_id, kind, user_id)'); } catch (Throwable $e) {}

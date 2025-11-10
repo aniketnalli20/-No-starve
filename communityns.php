@@ -11,27 +11,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $type = isset($_POST['type']) ? trim((string)$_POST['type']) : '';
     if ($id > 0 && in_array($type, ['campaign','contributor'], true)) {
         $col = $type === 'campaign' ? 'endorse_campaign' : 'endorse_contributor';
-        // Increment counters on campaign
-        $stmt = $pdo->prepare("UPDATE campaigns SET $col = COALESCE($col,0) + 1 WHERE id = ?");
-        $stmt->execute([$id]);
 
-        // Best-effort: record the endorsement event
-        try {
-            // Fetch contributor_name to store alongside the endorsement
-            $cnStmt = $pdo->prepare('SELECT contributor_name FROM campaigns WHERE id = ?');
-            $cnStmt->execute([$id]);
-            $row = $cnStmt->fetch(PDO::FETCH_ASSOC) ?: [];
-            $contributorName = isset($row['contributor_name']) ? (string)$row['contributor_name'] : null;
+        // Toggle endorsement per user: if exists, undo; else, add
+        $userId = $_SESSION['user_id'] ?? null;
+        if ($userId !== null) {
+            $check = $pdo->prepare('SELECT id FROM endorsements WHERE campaign_id = ? AND kind = ? AND user_id = ?');
+            $check->execute([$id, $type, $userId]);
+            $existing = $check->fetch(PDO::FETCH_ASSOC);
+            if ($existing) {
+                // Undo endorsement and decrement counter (not below zero)
+                try {
+                    $pdo->prepare('DELETE FROM endorsements WHERE id = ?')->execute([$existing['id']]);
+                } catch (Throwable $e) {}
+                try {
+                    $pdo->prepare("UPDATE campaigns SET $col = GREATEST(COALESCE($col,0) - 1, 0) WHERE id = ?")->execute([$id]);
+                } catch (Throwable $e) {}
+            } else {
+                // Create endorsement and increment counter
+                try {
+                    $cnStmt = $pdo->prepare('SELECT contributor_name FROM campaigns WHERE id = ?');
+                    $cnStmt->execute([$id]);
+                    $row = $cnStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+                    $contributorName = isset($row['contributor_name']) ? (string)$row['contributor_name'] : null;
 
-            $ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] !== ''
-                ? explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]
-                : (isset($_SERVER['REMOTE_ADDR']) ? (string)$_SERVER['REMOTE_ADDR'] : null);
-            $ua = isset($_SERVER['HTTP_USER_AGENT']) ? (string)$_SERVER['HTTP_USER_AGENT'] : null;
+                    $ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] !== ''
+                        ? explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]
+                        : (isset($_SERVER['REMOTE_ADDR']) ? (string)$_SERVER['REMOTE_ADDR'] : null);
+                    $ua = isset($_SERVER['HTTP_USER_AGENT']) ? (string)$_SERVER['HTTP_USER_AGENT'] : null;
 
-            $ins = $pdo->prepare('INSERT INTO endorsements (campaign_id, kind, contributor_name, ip, user_agent, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
-            $ins->execute([$id, $type, $contributorName, $ip, $ua]);
-        } catch (Throwable $e) {
-            // Swallow errors to avoid breaking UX if table is missing or write fails
+                    $ins = $pdo->prepare('INSERT INTO endorsements (campaign_id, kind, contributor_name, ip, user_agent, created_at, user_id) VALUES (?, ?, ?, ?, ?, NOW(), ?)');
+                    $ins->execute([$id, $type, $contributorName, $ip, $ua, $userId]);
+                } catch (Throwable $e) {
+                    // Swallow insert errors (e.g., unique constraint) to avoid breaking UX
+                }
+                try {
+                    $pdo->prepare("UPDATE campaigns SET $col = COALESCE($col,0) + 1 WHERE id = ?")->execute([$id]);
+                } catch (Throwable $e) {}
+            }
         }
     }
     header('Location: /communityns.php#campaign-' . $id);
@@ -59,6 +75,22 @@ $query .= ' ORDER BY id DESC LIMIT 200';
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+// Determine which campaigns current user has endorsed to adjust UI state
+$userEndorsed = ['campaign' => [], 'contributor' => []];
+if (is_logged_in() && !empty($campaigns)) {
+    $ids = array_map(function($row){ return (int)$row['id']; }, $campaigns);
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    try {
+        $q = $pdo->prepare("SELECT campaign_id, kind FROM endorsements WHERE user_id = ? AND campaign_id IN ($placeholders)");
+        $params2 = array_merge([$_SESSION['user_id']], $ids);
+        $q->execute($params2);
+        while ($r = $q->fetch(PDO::FETCH_ASSOC)) {
+            $k = $r['kind'] === 'contributor' ? 'contributor' : 'campaign';
+            $userEndorsed[$k][(int)$r['campaign_id']] = true;
+        }
+    } catch (Throwable $e) {}
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -173,20 +205,32 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                                 ? ('https://www.google.com/maps?q=' . rawurlencode($c['latitude'] . ',' . $c['longitude']))
                                 : ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$c['location']));
                             ?>
-                            <a href="<?= h($mapUrl) ?>" target="_blank" rel="noopener">Location</a>
+                            <a href="<?= h($mapUrl) ?>" target="_blank" rel="noopener">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-6-5.33-6-10a6 6 0 1 1 12 0c0 4.67-6 10-6 10Z"/><circle cx="12" cy="11" r="2.5"/></svg>
+                                Location
+                            </a>
                             <form method="post">
                                 <input type="hidden" name="action" value="endorse"/>
                                 <input type="hidden" name="type" value="campaign"/>
                                 <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
-                                <button type="submit">Campaign (<?= h((string)($c['endorse_campaign'] ?? 0)) ?>)</button>
+                                <button type="submit" aria-label="Endorse campaign"<?= isset($userEndorsed['campaign'][(int)$c['id']]) ? ' class="active" title="Undo endorsement"' : '' ?>>
+                                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7.19-5.19-9-9.5C1.88 8.7 3.92 6.5 6.5 6.5c1.7 0 3.3.86 4.25 2.22C11.7 7.36 13.3 6.5 15 6.5c2.58 0 4.62 2.2 3.5 5C19.19 15.81 12 21 12 21Z"/></svg>
+                                    <?= isset($userEndorsed['campaign'][(int)$c['id']]) ? 'Endorsed' : 'Campaign' ?> <span class="count">(<?= h((string)($c['endorse_campaign'] ?? 0)) ?>)</span>
+                                </button>
                             </form>
                             <form method="post">
                                 <input type="hidden" name="action" value="endorse"/>
                                 <input type="hidden" name="type" value="contributor"/>
                                 <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
-                                <button type="submit">Contributor (<?= h((string)($c['endorse_contributor'] ?? 0)) ?>)</button>
+                                <button type="submit" aria-label="Endorse contributor"<?= isset($userEndorsed['contributor'][(int)$c['id']]) ? ' class="active" title="Undo endorsement"' : '' ?>>
+                                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+                                    <?= isset($userEndorsed['contributor'][(int)$c['id']]) ? 'Endorsed' : 'Contributor' ?> <span class="count">(<?= h((string)($c['endorse_contributor'] ?? 0)) ?>)</span>
+                                </button>
                             </form>
-                            <button type="button" onclick="shareCampaign(<?= h((string)$c['id']) ?>)">Share</button>
+                            <button type="button" onclick="shareCampaign(<?= h((string)$c['id']) ?>)" aria-label="Share">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M4 12v8h16v-8"/><path d="M12 16V4"/><path d="M7 8l5-4 5 4"/></svg>
+                                Share
+                            </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
