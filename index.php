@@ -262,7 +262,7 @@ $listings = $listingsStmt->fetchAll();
                         <li class="report">
                             <div class="report-main">
                                 <?php if ($l['image_url']): ?>
-                                    <img src="<?= h($l['image_url']) ?>" alt="" class="thumb" />
+                                    <img src="<?= h($l['image_url']) ?>" alt="<?= h($l['item']) ?>" class="thumb" />
                                 <?php endif; ?>
                                 <strong><?= h($l['item']) ?></strong>
                                 <span class="chip"><?= h($l['category']) ?></span>

@@ -1,14 +1,12 @@
-/* Basic styling for Food Waste Management simple app */
+/* Monochrome (B&W) theme */
 :root {
-  --bg: #0b0f14;
-  --panel: #11161d;
-  --text: #e6edf3;
-  --muted: #9aa7b2;
-  --primary: #2f81f7;
-  --success: #2ea043;
-  --error: #f85149;
-  --chip: #1f2a35;
-  --border: #202835;
+  --bg: #0f0f0f;
+  --panel: #141414;
+  --text: #f2f2f2;
+  --muted: #b5b5b5;
+  --primary: #ffffff;
+  --chip: #1a1a1a;
+  --border: #2a2a2a;
 }
 
 * { box-sizing: border-box; }
@@ -26,21 +24,23 @@ body {
 .site-header h1 { margin: 0 0 6px; font-size: 24px; }
 .tagline { margin: 0; color: var(--muted); }
 
-.hero { background: linear-gradient(135deg, rgba(47,129,247,0.15), rgba(46,160,67,0.15)); border-bottom: 1px solid var(--border); }
+.hero { background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); border-bottom: 1px solid var(--border); }
 .hero .wrap { max-width: 920px; margin: 0 auto; padding: 24px 20px; }
 .hero-title { margin: 0 0 8px; font-size: 28px; }
 .hero-sub { margin: 0 0 12px; color: var(--muted); }
 .hero-actions { display: flex; gap: 10px; }
-.btn { display: inline-block; background: var(--primary); color: #fff; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid transparent; }
+.btn { display: inline-block; background: var(--primary); color: #000; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid #d9d9d9; }
+.btn:hover { background: #eaeaea; }
 .btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
+.btn.secondary:hover { border-color: #3a3a3a; }
 
 .container { max-width: 920px; margin: 24px auto; padding: 0 20px; }
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
 .card h2 { margin: 0 0 12px; font-size: 18px; }
 
 .alert { padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; }
-.alert.success { background: rgba(46,160,67,0.15); border: 1px solid rgba(46,160,67,0.5); }
-.alert.error { background: rgba(248,81,73,0.15); border: 1px solid rgba(248,81,73,0.5); }
+.alert.success { background: rgba(255,255,255,0.08); border: 1px solid #3a3a3a; }
+.alert.error { background: rgba(255,255,255,0.12); border: 1px solid #4a4a4a; }
 
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .form-field { display: flex; flex-direction: column; }
@@ -51,8 +51,13 @@ body {
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #0e1319;
+  background: #0d0d0d;
   color: var(--text);
+}
+.form-field input:focus, .form-field select:focus {
+  outline: none;
+  border-color: #e0e0e0;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
 }
 .actions { display: flex; justify-content: flex-end; margin-top: 6px; }
 .actions button {
@@ -76,8 +81,8 @@ body {
   font-size: 12px;
   margin: 0 8px;
 }
-.chip.warn { background: rgba(255,196,0,0.15); border-color: rgba(255,196,0,0.45); }
-.chip.danger { background: rgba(248,81,73,0.15); border-color: rgba(248,81,73,0.45); }
+.chip.warn { background: rgba(255,255,255,0.10); border-color: #3a3a3a; }
+.chip.danger { background: rgba(255,255,255,0.16); border-color: #5a5a5a; }
 
 .reports { list-style: none; padding: 0; margin: 0; }
 .report { border-top: 1px solid var(--border); padding: 10px 0; }
@@ -85,8 +90,8 @@ body {
 .report-main { display: flex; align-items: center; gap: 8px; }
 .report-meta { color: var(--muted); margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; }
 .status { margin-left: auto; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
-.status.pending { background: #1e2a38; }
-.status.resolved { background: rgba(46,160,67,0.15); }
+.status.pending { background: #1c1c1c; }
+.status.resolved { background: rgba(255,255,255,0.10); }
 .thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
 
 @media (max-width: 640px) {
