@@ -8,3 +8,10 @@ $GEO_API_KEY = getenv('GEO_API_KEY') ?: '';
 
 // You can hardcode the key here if environment variables are not set:
 // $GEO_API_KEY = 'YOUR_LOCATIONIQ_KEY';
+
+// Database configuration (MySQL)
+$DB_HOST = getenv('DB_HOST') ?: 'localhost';
+$DB_NAME = getenv('DB_NAME') ?: 'foodwastemgmt';
+$DB_USER = getenv('DB_USER') ?: 'root';
+$DB_PASS = getenv('DB_PASS') ?: '';
+$DB_CHARSET = getenv('DB_CHARSET') ?: 'utf8mb4';

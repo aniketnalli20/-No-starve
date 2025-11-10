@@ -93,7 +93,7 @@ function create_campaign(array $data, ?array $imageFile = null): int {
         $startDate,
         $endDate,
         $status,
-        gmdate('c'),
+        gmdate('Y-m-d H:i:s'),
         $contributorName,
         $community,
         $location,

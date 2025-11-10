@@ -1,13 +1,21 @@
 <?php
-// SQLite database connection and initialization
-$dbPath = __DIR__ . '/database.sqlite';
+require_once __DIR__ . '/config.php';
 
+// MySQL database connection and initialization
 try {
-    $pdo = new PDO('sqlite:' . $dbPath, null, null, [
+    // Ensure database exists
+    $bootstrap = new PDO("mysql:host=$DB_HOST;charset=$DB_CHARSET", $DB_USER, $DB_PASS, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
-    $pdo->exec('PRAGMA foreign_keys = ON');
+    $bootstrap->exec("CREATE DATABASE IF NOT EXISTS `$DB_NAME` CHARACTER SET $DB_CHARSET COLLATE utf8mb4_unicode_ci");
+    $bootstrap = null;
+
+    // Connect to the app database
+    $pdo = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME;charset=$DB_CHARSET", $DB_USER, $DB_PASS, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
 } catch (Throwable $e) {
     http_response_code(500);
     echo 'Database connection failed: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
@@ -16,67 +24,67 @@ try {
 
 // Initialize schema if not exists
 $pdo->exec('CREATE TABLE IF NOT EXISTS reports (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    reporter_name TEXT NOT NULL,
-    contact TEXT,
-    item TEXT NOT NULL,
-    quantity TEXT NOT NULL,
-    category TEXT NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reporter_name VARCHAR(255) NOT NULL,
+    contact VARCHAR(255),
+    item VARCHAR(255) NOT NULL,
+    quantity VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL,
     location TEXT,
-    status TEXT NOT NULL DEFAULT "pending",
-    created_at TEXT NOT NULL
-)');
+    status VARCHAR(50) NOT NULL DEFAULT "pending",
+    created_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
 
 // Listings posted by donors for NGOs/recipients to claim
 $pdo->exec('CREATE TABLE IF NOT EXISTS listings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    donor_type TEXT NOT NULL,            -- Restaurant, Caterer, Individual
-    donor_name TEXT NOT NULL,
-    contact TEXT,
-    item TEXT NOT NULL,
-    quantity TEXT NOT NULL,
-    category TEXT NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    donor_type VARCHAR(50) NOT NULL,
+    donor_name VARCHAR(255) NOT NULL,
+    contact VARCHAR(255),
+    item VARCHAR(255) NOT NULL,
+    quantity VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL,
     address TEXT,
-    city TEXT,
-    pincode TEXT,
-    expires_at TEXT,                     -- ISO8601 timestamp
-    image_url TEXT,                      -- URL/path to uploaded image
-    status TEXT NOT NULL DEFAULT "open", -- open | claimed | expired | closed
-    created_at TEXT NOT NULL,
-    claimed_at TEXT
-)');
+    city VARCHAR(100),
+    pincode VARCHAR(20),
+    expires_at DATETIME,
+    image_url TEXT,
+    status VARCHAR(50) NOT NULL DEFAULT "open",
+    created_at DATETIME NOT NULL,
+    claimed_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
 
 // Claims by NGOs/volunteers for a listing
 $pdo->exec('CREATE TABLE IF NOT EXISTS claims (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    listing_id INTEGER NOT NULL,
-    ngo_name TEXT,
-    claimer_name TEXT NOT NULL,
-    contact TEXT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    listing_id INT NOT NULL,
+    ngo_name VARCHAR(255),
+    claimer_name VARCHAR(255) NOT NULL,
+    contact VARCHAR(255),
     notes TEXT,
-    created_at TEXT NOT NULL,
-    FOREIGN KEY(listing_id) REFERENCES listings(id) ON DELETE CASCADE
-)');
+    created_at DATETIME NOT NULL,
+    CONSTRAINT fk_claims_listing FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
 
 // Campaigns to coordinate targeted food distribution efforts
 $pdo->exec('CREATE TABLE IF NOT EXISTS campaigns (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
     summary TEXT NOT NULL,
-    area TEXT,                     -- e.g., Ghodbunder, Mira Bhayandar
-    target_meals INTEGER,          -- numeric goal
-    start_date TEXT,               -- ISO8601 date
-    end_date TEXT,                 -- ISO8601 date
-    status TEXT NOT NULL DEFAULT "draft", -- draft | active | completed | archived
-    created_at TEXT NOT NULL
-)');
+    area VARCHAR(255),
+    target_meals INT,
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(50) NOT NULL DEFAULT "draft",
+    created_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
 
 // Extend campaigns with additional fields if they are missing
-try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN contributor_name TEXT'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN contributor_name VARCHAR(255)'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN location TEXT'); } catch (Throwable $e) {}
-try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN crowd_size INTEGER'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN crowd_size INT'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN image_url TEXT'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN closing_time TEXT'); } catch (Throwable $e) {}
-try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN latitude REAL'); } catch (Throwable $e) {}
-try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN longitude REAL'); } catch (Throwable $e) {}
-try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN community TEXT'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN latitude DOUBLE'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN longitude DOUBLE'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN community VARCHAR(255)'); } catch (Throwable $e) {}
