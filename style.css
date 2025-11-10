@@ -133,7 +133,7 @@ ul { list-style: none; padding-left: 0; }
 @media (min-width: 720px) { .card-plain { padding: 16px 18px; margin-left: 24px; } }
 
 /* Section titles and simple blocks */
-.section-title { margin: 0 0 10px; font-weight: 800; letter-spacing: -0.01em; font-size: clamp(1.2rem, 1.6vw + 0.8rem, 1.8rem); }
+.section-title { margin: 0 0 10px; font-weight: 800; letter-spacing: -0.01em; font-size: clamp(1.2rem, 1.6vw + 0.8rem, 1.8rem); padding-bottom: 6px; border-bottom: 2px solid var(--border); }
 
 .steps-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 840px) { .steps-grid { grid-template-columns: 1fr 1fr; } }
@@ -178,10 +178,18 @@ ul { list-style: none; padding-left: 0; }
 .pillar p { margin: 0; color: var(--muted); }
 /* removed hover lift for pillars */
 
+/* Traditional highlight variant for homepage sections */
+.card-plain.is-highlight { border-left: 4px solid var(--border); }
+.card-plain.is-highlight .section-title { border-bottom-color: #e9e9e9; }
+
 .list-clean { list-style: none; padding: 0; margin: 0; }
 .list-clean li { padding: 8px 0; border-top: 1px solid var(--border); cursor: pointer; }
 .list-clean li:hover { background: #fafafa; }
 .list-clean li:first-child { border-top: none; }
+
+/* Traditional bulleted list for How You Can Help */
+.list-bullets { list-style: disc; padding-left: 22px; margin: 0; }
+.list-bullets li { margin: 6px 0; }
 
 /* Full-screen distribution for content cards based on orientation */
 .content-grid {

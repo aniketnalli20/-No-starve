@@ -212,7 +212,7 @@ $listings = $listingsStmt->fetchAll();
 
         <section id="help" class="card-plain is-highlight card-horizontal" aria-label="How You Can Help">
           <h2 class="section-title">How You Can Help</h2>
-          <ul class="list-clean">
+          <ul class="list-bullets">
             <li><strong>Become a Donor:</strong> Help us by listing your extra food items; your small effort can feed many.</li>
             <li><strong>Volunteer Your Time:</strong> Join our team to collect and deliver food to those in need.</li>
             <li><strong>Partner with Us:</strong> Organizations and businesses can collaborate to scale our outreach and impact.</li>
