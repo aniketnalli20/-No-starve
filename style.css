@@ -20,12 +20,12 @@ body {
 
 .site-header, .site-footer { border-bottom: 1px solid var(--border); }
 .site-footer { border-top: 1px solid var(--border); border-bottom: none; }
-.site-header .wrap, .site-footer .wrap { max-width: 920px; margin: 0 auto; padding: 20px; }
+.site-header .wrap, .site-footer .wrap { width: 100%; max-width: none; margin: 0; padding: 12px 20px; }
 .site-header h1 { margin: 0 0 6px; font-size: 24px; }
 .tagline { margin: 0; color: var(--muted); }
 
 .hero { background: var(--bg); border-bottom: 1px solid var(--border); }
-.hero .wrap { max-width: 920px; margin: 0 auto; padding: 24px 20px; }
+.hero .wrap { width: 100%; max-width: none; margin: 0; padding: 24px 20px; }
 .hero-title { margin: 0 0 8px; font-size: 28px; }
 .hero-sub { margin: 0 0 12px; color: var(--muted); }
 .hero-actions { display: flex; gap: 10px; }
@@ -34,7 +34,7 @@ body {
 .btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
 .btn.secondary:hover { border-color: #3a3a3a; }
 
-.container { max-width: 920px; margin: 24px auto; padding: 0 20px; }
+.container { width: 100%; max-width: none; margin: 24px 0; padding: 0 20px; }
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
 .card h2 { margin: 0 0 12px; font-size: 18px; }
 
@@ -121,7 +121,7 @@ body {
 }
 /* New header navbar styles (mobile-first) */
 .site-header { position: sticky; top: 0; z-index: 1000; background: var(--bg); box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-.header-inner { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px; max-width: 920px; margin: 0 auto; flex-wrap: wrap; gap: 8px; }
+.header-inner { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px; width: 100%; max-width: none; margin: 0; flex-wrap: wrap; gap: 8px; }
 .header-inner > * { min-width: 0; }
 .brand { font-weight: 700; color: var(--text); text-decoration: none; }
 .nav-toggle { display: inline-flex; flex-direction: column; gap: 3px; padding: 8px; border: 1px solid var(--border); background: var(--bg); border-radius: 6px; }
