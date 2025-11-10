@@ -236,8 +236,8 @@ $listings = $listingsStmt->fetchAll();
     </main>
 
     <footer class="site-footer">
-        <div class="wrap">
-            
+        <div class="container footer-inner">
+            <small>&copy; 2025 No Starve</small>
         </div>
     </footer>
     <script>

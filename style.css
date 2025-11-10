@@ -29,6 +29,7 @@ body {
 .site-header, .site-footer { border-bottom: 1px solid var(--border); }
 .site-footer { border-top: 1px solid var(--border); border-bottom: none; }
 .site-header .wrap, .site-footer .wrap { width: 100%; max-width: var(--content-max); margin: 0 auto; padding: 12px var(--content-pad); }
+.site-footer .footer-inner { text-align: center; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .brand { font-weight: 800; letter-spacing: -0.01em; text-decoration: none; color: var(--text); }
 .nav-links { display: flex; align-items: center; gap: 10px; }
@@ -202,6 +203,15 @@ ul { list-style: none; padding-left: 0; }
 .list-bullets { list-style: disc; padding-left: 22px; margin: 0; }
 
 /* Login page styles (scoped to avoid global conflicts) */
+.page-login {
+  /* Teal-tinted background with subtle overlay, full screen below header */
+  background: linear-gradient(135deg, rgba(0, 166, 147, 0.18), rgba(0, 166, 147, 0.32)), url('uploads/login-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
 .login-page .container {
   max-width: 350px;
   background: #f8f9fd;

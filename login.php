@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login · No Starve</title>
     <link rel="stylesheet" href="<?= h($BASE_PATH) ?>style.css">
 </head>
-<body>
+<body class="page-login">
     <header class="site-header" role="banner">
         <div class="container header-inner">
             <a href="<?= h($BASE_PATH) ?>index.php#hero" class="brand" aria-label="No Starve home">No Starve</a>
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <footer class="site-footer">
         <div class="container footer-inner">
-            <small>&copy; <?= date('Y') ?> No Starve</small>
+            <small>&copy; 2025 No Starve</small>
         </div>
     </footer>
 </body>

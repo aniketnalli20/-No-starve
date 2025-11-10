@@ -257,7 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <footer class="site-footer">
         <div class="container footer-inner">
-            <small>&copy; <?= date('Y') ?> No Starve</small>
+            <small>&copy; 2025 No Starve</small>
         </div>
     </footer>
 </body>
