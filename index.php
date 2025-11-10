@@ -160,8 +160,8 @@ $listings = $listingsStmt->fetchAll();
     </header>
     <section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
         <div class="wrap">
-            <h1 class="hero-title">Rescue Surplus Food. Feed More People.</h1>
-            <p class="hero-sub">Join donors, NGOs, and volunteers combating hunger and waste every day.</p>
+            <h1 class="hero-title break-10">Rescue surplus food; feed people with community support nationwide today.</h1>
+            <p class="hero-sub break-10">Join donors, NGOs, volunteers tackling hunger and waste every day.</p>
             <div class="hero-actions">
               <a class="btn accent pill" href="<?= h($BASE_PATH) ?>create_campaign.php">Donate Food</a>
               <a class="btn secondary pill" href="<?= h($BASE_PATH) ?>communityns.php">Explore Community</a>
@@ -206,7 +206,11 @@ $listings = $listingsStmt->fetchAll();
           <h2 class="section-title">Trending Donations Near You</h2>
           <div class="listings-grid">
             <?php if (!$listings): ?>
-              <p class="muted">No open donations found. Try adjusting filters or check back soon.</p>
+              <div class="empty-state" role="status" aria-live="polite">
+                <div class="icon" aria-hidden="true">🔍</div>
+                <h3 class="break-10">No open donations found</h3>
+                <p class="break-10">Adjust filters or check back soon for new open donations.</p>
+              </div>
             <?php else: ?>
               <?php foreach ($listings as $l): ?>
                 <?php
@@ -259,7 +263,7 @@ $listings = $listingsStmt->fetchAll();
         <section id="content" class="content-grid" aria-label="Core content">
         <section id="mission" class="card-plain is-highlight card-horizontal" aria-label="Our Mission">
           <h2 class="section-title">Our Mission</h2>
-          <p>At No Starve, our mission is to eliminate hunger and minimize food waste across India by creating a seamless network that connects surplus food donors with verified NGOs and passionate volunteers. We facilitate the efficient, safe, and timely redistribution of food, ensuring that surplus meals reach those who need them most in Ghodbunder, Mira Bhayandar, Maharashtra 401107. Together, we aim to build stronger, healthier communities and foster a culture of responsible food sharing.</p>
+          <p class="lead break-10">We connect donors with NGOs to fight hunger nationwide together.</p>
         </section>
 
         <section id="how" class="card-plain is-highlight card-horizontal" aria-label="How No Starve Works">
@@ -267,26 +271,26 @@ $listings = $listingsStmt->fetchAll();
           <div class="steps-grid">
             <div class="step">
               <h3><span class="title-icon" aria-hidden="true">🍱</span> Food Donation Made Easy</h3>
-              <p>Donors—restaurants, caterers, event organizers, and individuals—can quickly register and list their surplus food using our user-friendly platform.</p>
+              <p class="break-10">Donors quickly list surplus food using simple friendly tools online.</p>
             </div>
             <div class="step">
               <h3><span class="title-icon" aria-hidden="true">📍</span> Smart Matching</h3>
-              <p>Our system instantly matches available food donations with verified NGOs and volunteers nearby, optimizing routes and timing through location-based technology in Ghodbunder, Mira Bhayandar, Maharashtra 401107.</p>
+              <p class="break-10">We match donations with nearby NGOs and volunteers using location.</p>
             </div>
             <div class="step">
               <h3><span class="title-icon" aria-hidden="true">🚚</span> Safe Pickup and Delivery</h3>
-              <p>Trained volunteers manage the transportation of food, following strict hygiene and safety protocols to maintain quality.</p>
+              <p class="break-10">Trained volunteers transport food following hygiene and safety protocols always.</p>
             </div>
             <div class="step">
               <h3><span class="title-icon" aria-hidden="true">🍽️</span> Feeding Communities</h3>
-              <p>The donated food is distributed immediately to local shelters, orphanages, and underprivileged families, ensuring that no food goes to waste and more people gain access to nutritious meals.</p>
+              <p class="break-10">Redistributed meals reach shelters, families, and underserved communities nationwide quickly.</p>
             </div>
           </div>
         </section>
 
         <section id="why" class="card-plain is-highlight card-horizontal" aria-label="Why This Matters">
           <h2 class="section-title">Why This Matters</h2>
-          <p>In India, an alarming amount of edible food is wasted every day while millions suffer from hunger and malnutrition. This disconnect not only wastes important resources but also harms the environment through excess food decay and greenhouse gas emissions. No Starve addresses this dual challenge by rescuing surplus food and redirecting it where it’s needed, combating both hunger and environmental harm in a sustainable, community-driven way.</p>
+          <p class="lead break-10">Food waste harms environment while people suffer hunger daily everywhere.</p>
         </section>
 
         <section id="pillars" class="card-plain is-highlight card-horizontal" aria-label="Our Pillars of Impact">
@@ -301,22 +305,22 @@ $listings = $listingsStmt->fetchAll();
 
         <section id="help" class="card-plain is-highlight card-horizontal" aria-label="How You Can Help">
           <h2 class="section-title">How You Can Help</h2>
-          <ul class="list-bullets">
-            <li><strong>Become a Donor:</strong> Help us by listing your extra food items; your small effort can feed many.</li>
-            <li><strong>Volunteer Your Time:</strong> Join our team to collect and deliver food to those in need.</li>
-            <li><strong>Partner with Us:</strong> Organizations and businesses can collaborate to scale our outreach and impact.</li>
-            <li><strong>Spread the Word:</strong> Share our mission and encourage others to participate.</li>
+          <ul class="list-bullets checklist">
+            <li><strong>Become a Donor:</strong> <span class="break-10">List surplus food; small actions feed many people every day.</span></li>
+            <li><strong>Volunteer Your Time:</strong> <span class="break-10">Join pickup teams ensuring safe deliveries to those in need.</span></li>
+            <li><strong>Partner with Us:</strong> <span class="break-10">Collaborate with organizations to scale outreach and impact together nationwide.</span></li>
+            <li><strong>Spread the Word:</strong> <span class="break-10">Share our mission; inspire others to act against hunger today.</span></li>
           </ul>
         </section>
 
         <section id="stories" class="card-plain is-highlight card-horizontal" aria-label="Success Stories">
           <h2 class="section-title">Success Stories</h2>
-          <p>Since our inception, No Starve has redistributed over 250,000 meals across 15 cities and towns, including urban and rural areas in Maharashtra and beyond. Each meal represents a step towards a waste-free and hunger-free India. Stories from our donors, volunteers, and recipients inspire us daily and strengthen our resolve to grow further.</p>
+          <p class="lead break-10">Meals redistributed across cities and communities, changing lives nationwide daily.</p>
         </section>
 
         <section id="join" class="card-plain is-highlight card-horizontal" aria-label="Join No Starve Today">
           <h2 class="section-title">Join No Starve Today</h2>
-          <p>Take part in transforming the future of food in India. Together, let’s ensure that no meal goes wasted and no one goes hungry.</p>
+          <p class="lead break-10">Join us; rescue food and nourish communities across India today.</p>
         </section>
         </section>
 
@@ -359,6 +363,24 @@ $listings = $listingsStmt->fetchAll();
       const expanded = this.getAttribute('aria-expanded') === 'true';
       this.setAttribute('aria-expanded', String(!expanded));
       nav.classList.toggle('open');
+    });
+  })();
+  // Break text into lines of 8 words for elements with .break-8
+  (function() {
+    const WORDS_PER_LINE = 10;
+    const targets = document.querySelectorAll('.break-10');
+    targets.forEach(el => {
+      // Skip elements with nested HTML formatting to avoid losing structure
+      const hasChildren = Array.from(el.childNodes).some(n => n.nodeType === Node.ELEMENT_NODE);
+      if (hasChildren) return;
+      const text = (el.textContent || '').trim();
+      if (!text) return;
+      const words = text.split(/\s+/);
+      const lines = [];
+      for (let i = 0; i < words.length; i += WORDS_PER_LINE) {
+        lines.push(words.slice(i, i + WORDS_PER_LINE).join(' '));
+      }
+      el.innerHTML = lines.map(l => '<span class="line">' + l + '</span>').join('<br/>');
     });
   })();
     </script>

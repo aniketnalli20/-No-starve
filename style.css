@@ -134,6 +134,15 @@ ul { list-style: none; padding-left: 0; }
 
 /* Section titles and simple blocks */
 .section-title { margin: 0 0 10px; font-weight: 800; letter-spacing: -0.01em; font-size: clamp(1.2rem, 1.6vw + 0.8rem, 1.8rem); padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+/* Accent underline for section titles */
+.section-title { position: relative; }
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 120px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), rgba(184,255,53,0));
+}
 
 .steps-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 840px) { .steps-grid { grid-template-columns: 1fr 1fr; } }
@@ -190,6 +199,18 @@ ul { list-style: none; padding-left: 0; }
 /* Traditional bulleted list for How You Can Help */
 .list-bullets { list-style: disc; padding-left: 22px; margin: 0; }
 .list-bullets li { margin: 6px 0; }
+/* Checklist variant for bullets */
+.list-bullets.checklist { list-style: none; padding-left: 0; }
+.list-bullets.checklist li { position: relative; padding-left: 28px; }
+.list-bullets.checklist li::before {
+  content: "✔";
+  position: absolute; left: 0; top: 0.1rem;
+  width: 20px; height: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 6px; background: var(--accent); color: var(--accentText);
+  box-shadow: 0 4px 12px rgba(184,255,53,0.35);
+  font-size: 0.8rem; font-weight: 800;
+}
 
 /* Full-screen distribution for content cards based on orientation */
 .content-grid {
@@ -330,6 +351,41 @@ ul { list-style: none; padding-left: 0; }
 
 /* Utility */
 .muted { color: var(--muted); }
+/* Lead paragraph for emphasis */
+.lead { font-size: clamp(1.05rem, 0.95vw + 0.85rem, 1.25rem); line-height: 1.75; color: var(--text); }
+
+/* Empty state component */
+.empty-state {
+  background: linear-gradient(180deg, #ffffff, #fafafa);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+.empty-state .icon { font-size: 1.4rem; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: #f4f4f4; border: 1px solid var(--border); margin-bottom: 8px; }
+.empty-state h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.empty-state p { margin: 0; color: var(--muted); }
+
+/* Compact overrides: tighten spacing and sizing for homepage containers */
+.container { margin: 16px auto; }
+.card-plain { max-width: 64ch; margin-top: 10px; margin-left: 0; border-radius: 12px; padding: 14px 16px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); }
+.card-plain p { line-height: 1.55; font-size: clamp(1rem, 0.85vw + 0.7rem, 1.2rem); }
+@media (min-width: 720px) { .card-plain { margin-left: 0; } }
+
+.content-grid { gap: 12px; width: 100%; max-width: var(--content-max); margin: 12px auto 20px; }
+@media (min-width: 720px) { .content-grid .card-horizontal > :not(.section-title) { max-width: 60ch; } }
+.content-grid .card-horizontal p { line-height: 1.6; font-size: clamp(0.98rem, 0.75vw + 0.7rem, 1.1rem); }
+
+.steps-grid .step { border-radius: 12px; padding: 10px 12px; }
+.steps-grid .step h3 { font-size: clamp(0.98rem, 0.75vw + 0.8rem, 1.2rem); }
+.pillars-grid .pillar { border-radius: 12px; padding: 10px 12px; }
+.pillars-grid .pillar h3 { font-size: clamp(0.98rem, 0.75vw + 0.8rem, 1.2rem); }
+
+.title-icon { width: 24px; height: 24px; font-size: 16px; }
+.section-title::after { width: 96px; }
+.lead { font-size: clamp(1.02rem, 0.9vw + 0.82rem, 1.2rem); line-height: 1.6; }
+.empty-state { padding: 14px; }
 
 /* Cards inside the community grid should align flush without extra margins */
 .cards-grid .card-plain {
@@ -677,3 +733,4 @@ ul { list-style: none; padding-left: 0; }
   margin-left: 0;
 }
 .cards-grid .card-horizontal .card-header { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; }
+.break-8 .line { display: block; }
