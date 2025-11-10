@@ -225,6 +225,12 @@ ul { list-style: none; padding-left: 0; }
 .form-field { display: flex; flex-direction: column; }
 .form-field.full { grid-column: 1 / -1; }
 .form-field label { margin-bottom: 6px; color: var(--muted); font-size: 13px; }
+/* Emphasize labels on Create Campaign page */
+.create-page .form-field label {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+}
 .form-field input, .form-field select {
   appearance: none;
   padding: 10px 12px;
@@ -436,4 +442,17 @@ ul { list-style: none; padding-left: 0; }
   .card-plain.card-fullbleed {
     padding: calc(var(--content-pad) * 0.85);
   }
+}
+.create-page .form-field .card-plain {
+  /* Align cards inside form fields flush with inputs */
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+}
+
+/* Map container inside Create page: no inner padding, tidy borders */
+.create-page #map.card-plain {
+  padding: 0;
+  overflow: hidden;
+  margin-left: 0;
 }
