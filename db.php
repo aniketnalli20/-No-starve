@@ -10,7 +10,7 @@ try {
     $pdo->exec('PRAGMA foreign_keys = ON');
 } catch (Throwable $e) {
     http_response_code(500);
-    echo 'Database connection failed: ' . h($e->getMessage());
+    echo 'Database connection failed: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     exit;
 }
 
