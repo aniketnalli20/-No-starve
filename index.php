@@ -160,8 +160,8 @@ $listings = $listingsStmt->fetchAll();
     </header>
     <section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
         <div class="wrap">
-            <h1 class="hero-title break-100">Rescue surplus food; feed people with community support nationwide today.</h1>
-            <p class="hero-sub break-100">Join donors, NGOs, volunteers tackling hunger and waste every day.</p>
+            <h1 class="hero-title break-100">We face challenges to create real change, cutting food waste and feeding those in need.</h1>
+            <p class="hero-sub break-100">Together Against Food Waste</p>
             <div class="hero-actions">
               <a class="btn accent pill" href="<?= h($BASE_PATH) ?>create_campaign.php">Donate Food</a>
               <a class="btn secondary pill" href="<?= h($BASE_PATH) ?>communityns.php">Explore Community</a>
@@ -202,14 +202,7 @@ $listings = $listingsStmt->fetchAll();
 
     <main>
         <!-- Trending donations grid removed per request -->
-        <!-- Core content: mission and process -->
-        <section id="content" class="content-grid" aria-label="Core content">
-          <section id="overview" class="card-plain is-highlight card-horizontal" aria-label="Overview">
-            <p class="lead break-100">At No Starve, we connect donors with NGOs to fight hunger across the country. Donors can easily list surplus food using our simple online tools. Our smart system matches donations with nearby NGOs and volunteers, ensuring safe pickup and delivery by trained volunteers. Meals are quickly redistributed to shelters, families, and underserved communities.</p>
-            <p class="lead break-100">Food waste harms the environment while millions suffer from hunger every day. We focus on reducing food waste, supporting vulnerable populations, empowering volunteers and NGOs, and raising awareness about safe food handling and sustainability.</p>
-            <p class="lead break-100">You can help by donating food, volunteering for deliveries, partnering with us to expand our reach, or spreading the word to inspire others. We have already redistributed thousands of meals, changing lives nationwide. Join No Starve today to rescue food and nourish communities across India.</p>
-          </section>
-        </section>
+        <!-- Core content removed per request -->
 
         <!-- Inspo cards layout -->
         <section id="cards" class="cards-frame" aria-label="Featured cards">
