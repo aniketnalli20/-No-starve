@@ -68,6 +68,8 @@ body {
   font-size: 12px;
   margin: 0 8px;
 }
+.chip.warn { background: rgba(255,196,0,0.15); border-color: rgba(255,196,0,0.45); }
+.chip.danger { background: rgba(248,81,73,0.15); border-color: rgba(248,81,73,0.45); }
 
 .reports { list-style: none; padding: 0; margin: 0; }
 .report { border-top: 1px solid var(--border); padding: 10px 0; }
@@ -77,6 +79,7 @@ body {
 .status { margin-left: auto; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
 .status.pending { background: #1e2a38; }
 .status.resolved { background: rgba(46,160,67,0.15); }
+.thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
 
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }
