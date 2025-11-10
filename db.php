@@ -26,3 +26,34 @@ $pdo->exec('CREATE TABLE IF NOT EXISTS reports (
     status TEXT NOT NULL DEFAULT "pending",
     created_at TEXT NOT NULL
 )');
+
+// Listings posted by donors for NGOs/recipients to claim
+$pdo->exec('CREATE TABLE IF NOT EXISTS listings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    donor_type TEXT NOT NULL,            -- Restaurant, Caterer, Individual
+    donor_name TEXT NOT NULL,
+    contact TEXT,
+    item TEXT NOT NULL,
+    quantity TEXT NOT NULL,
+    category TEXT NOT NULL,
+    address TEXT,
+    city TEXT,
+    pincode TEXT,
+    expires_at TEXT,                     -- ISO8601 timestamp
+    image_url TEXT,                      -- URL/path to uploaded image
+    status TEXT NOT NULL DEFAULT "open", -- open | claimed | expired | closed
+    created_at TEXT NOT NULL,
+    claimed_at TEXT
+)');
+
+// Claims by NGOs/volunteers for a listing
+$pdo->exec('CREATE TABLE IF NOT EXISTS claims (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_id INTEGER NOT NULL,
+    ngo_name TEXT,
+    claimer_name TEXT NOT NULL,
+    contact TEXT,
+    notes TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY(listing_id) REFERENCES listings(id) ON DELETE CASCADE
+)');
