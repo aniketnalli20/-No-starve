@@ -143,6 +143,10 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                                 if ($diff <= 0) { $closingCls = 'closed'; }
                                 else if ($diff <= 2 * 3600) { $closingCls = 'soon'; }
                               }
+                              // Display raw datetime in 12-hour clock (e.g., Jan 1, 2026 3:57 PM)
+                              if ($closingTs !== false) {
+                                $closingText = date('M j, Y g:i A', $closingTs);
+                              }
                             ?>
                             <p class="closing-indicator <?= h($closingCls) ?>"><strong>Closing:</strong> <?= h($closingText) ?></p>
                             <div class="actions" style="justify-content:flex-start; gap:8px;">
