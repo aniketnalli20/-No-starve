@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Create Campaign · No Starve</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
     <header class="site-header" role="banner">
@@ -65,6 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="hidden" id="latitude" name="latitude">
                     <input type="hidden" id="longitude" name="longitude">
                     <div id="location-suggestions" class="card-plain" role="listbox" style="position: absolute; z-index: 10; display: none; max-height: 220px; overflow: auto;"></div>
+                    <div class="actions" style="margin-top: 8px;">
+                        <button class="btn" id="use-my-location" type="button">Use My Location</button>
+                    </div>
+                    <div id="map" class="card-plain" style="height: 320px; margin-top: 12px;"></div>
                 </div>
 
                 <div class="form-field">
@@ -139,6 +144,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.addEventListener('click', function(e){
             if (e.target !== input && !box.contains(e.target)) hideSuggestions();
         });
+    })();
+    </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    (function(){
+        if (!window.L) return;
+        const latEl = document.getElementById('latitude');
+        const lonEl = document.getElementById('longitude');
+        const locInput = document.getElementById('location');
+        const useBtn = document.getElementById('use-my-location');
+        const map = L.map('map').setView([20.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        let marker = null;
+
+        function setPosition(lat, lon, label){
+            if (marker) { map.removeLayer(marker); }
+            marker = L.marker([lat, lon]).addTo(map);
+            map.setView([lat, lon], 15);
+            latEl.value = lat;
+            lonEl.value = lon;
+            if (label) {
+                locInput.value = label;
+            } else {
+                fetch('/geocode.php?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lon))
+                  .then(function(r){ return r.json(); })
+                  .then(function(j){ if (j && j.label) locInput.value = j.label; })
+                  .catch(function(){});
+            }
+        }
+
+        map.on('click', function(e){ setPosition(e.latlng.lat, e.latlng.lng); });
+
+        if (useBtn) {
+            useBtn.addEventListener('click', function(){
+                if (!navigator.geolocation) { alert('Geolocation not supported on this device/browser'); return; }
+                navigator.geolocation.getCurrentPosition(function(pos){
+                    setPosition(pos.coords.latitude, pos.coords.longitude);
+                }, function(err){
+                    alert('Unable to retrieve location');
+                }, { enableHighAccuracy: true, timeout: 8000 });
+            });
+        }
+
+        // If autocomplete has already set lat/lon, center the map there
+        var initLat = parseFloat(latEl.value);
+        var initLon = parseFloat(lonEl.value);
+        if (!isNaN(initLat) && !isNaN(initLon)) {
+            setPosition(initLat, initLon, locInput.value || null);
+        }
     })();
     </script>
 
