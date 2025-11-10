@@ -139,7 +139,6 @@ ul { list-style: none; padding-left: 0; }
 @media (min-width: 840px) { .steps-grid { grid-template-columns: 1fr 1fr; } }
 .step { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; cursor: pointer; }
 .step { /* no hover animation */ }
-.step::before { content: ""; position: absolute; left: 12px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: #d9d9d9; }
 .step h3 { margin: 0 0 6px; font-size: clamp(1rem, 0.8vw + 0.8rem, 1.25rem); }
 .step p { margin: 0; color: var(--muted); }
 /* removed hover lift for steps */
@@ -148,7 +147,6 @@ ul { list-style: none; padding-left: 0; }
 @media (min-width: 840px) { .pillars-grid { grid-template-columns: repeat(2, 1fr); } }
 .pillar { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; cursor: pointer; }
 .pillar { /* no hover animation */ }
-.pillar::before { content: ""; position: absolute; left: 12px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: #d9d9d9; }
 .pillar h3 { margin: 0 0 6px; font-size: clamp(1rem, 0.8vw + 0.8rem, 1.25rem); }
 .pillar p { margin: 0; color: var(--muted); }
 /* removed hover lift for pillars */
@@ -193,7 +191,7 @@ ul { list-style: none; padding-left: 0; }
 
 /* Overview cards with subtle accent and improved spacing */
 #home-panels .card { position: relative; overflow: hidden; }
-#home-panels .card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--text), var(--muted)); opacity: 0.12; }
+#home-panels .card::before { content: none; }
 #home-panels .card p { margin: 0; color: var(--muted); }
 
 /* Logos strip */
@@ -247,6 +245,16 @@ ul { list-style: none; padding-left: 0; }
   cursor: pointer;
 }
 .actions button:hover { background: #f5f5f5; }
+
+/* Attractive primary CTA button */
+.btn.cta {
+  background: linear-gradient(90deg, #0a62ff, #1a7aff);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 10px 24px rgba(26,122,255,0.35);
+}
+.btn.cta:hover { filter: brightness(1.05); box-shadow: 0 12px 28px rgba(26,122,255,0.4); }
+.btn.cta .icon { display: inline-block; margin-right: 8px; font-weight: 700; }
 
 .muted { color: var(--muted); }
 .chip {
