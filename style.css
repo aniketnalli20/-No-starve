@@ -188,8 +188,10 @@ ul { list-style: none; padding-left: 0; }
   display: grid;
   grid-template-columns: 1fr;
   gap: 18px;
-  margin: 16px auto 24px;
-  max-width: var(--content-max);
+  /* Full-bleed width with safe inner padding */
+  width: 100vw;
+  max-width: none;
+  margin: 16px calc(50% - 50vw) 24px;
   padding: 0 var(--content-pad);
 }
 /* Landscape orientation: spread into columns */
@@ -197,12 +199,25 @@ ul { list-style: none; padding-left: 0; }
   .content-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (orientation: landscape) and (min-width: 1200px) {
-  .content-grid { grid-template-columns: repeat(3, 1fr); }
+  /* Keep 2 columns on large screens per request */
+  .content-grid { grid-template-columns: repeat(2, 1fr); }
 }
 /* Cards inside the grid should occupy full column width */
 .content-grid .card-plain {
   max-width: none;
   margin: 0;
+}
+
+/* Horizontal cards for homepage content */
+.content-grid .card-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (min-width: 720px) {
+  .content-grid .card-horizontal { flex-direction: row; align-items: flex-start; gap: 16px; }
+  .content-grid .card-horizontal .section-title { flex: 0 0 260px; margin: 0; }
+  .content-grid .card-horizontal > :not(.section-title) { flex: 1; }
 }
 
 /* Featured cards container centering */
