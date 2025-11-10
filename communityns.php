@@ -118,29 +118,34 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                 <div class="card-plain"><p>No campaigns yet.</p></div>
             <?php else: ?>
                 <?php foreach ($campaigns as $c): ?>
-                    <div class="card-plain card-horizontal" id="campaign-<?= h((string)$c['id']) ?>">
-                        <?php if (!empty($c['image_url'])): ?>
-                            <div class="card-media">
-                                <img src="<?= h($c['image_url']) ?>" alt="Campaign image" />
+                    <?php $initial = strtoupper(substr(trim((string)($c['contributor_name'] ?? 'U')), 0, 1)); ?>
+                    <?php 
+                        $handleBase = strtolower(preg_replace('/[^a-z0-9]+/i', '', (string)($c['contributor_name'] ?: 'user')));
+                        $handle = $handleBase !== '' ? $handleBase : 'user';
+                    ?>
+                    <div class="tweet-card" id="campaign-<?= h((string)$c['id']) ?>">
+                        <div class="tweet-header">
+                            <div class="tweet-avatar" aria-hidden="true"><?= h($initial) ?></div>
+                            <div class="tweet-meta">
+                                <div>
+                                    <span class="tweet-name"><?= h($c['contributor_name'] ?: 'Unknown') ?></span>
+                                    <span class="tweet-handle">@<?= h($handle) ?></span>
+                                </div>
+                                <div class="muted">Uploaded <?= h(time_ago($c['created_at'])) ?></div>
                             </div>
-                        <?php endif; ?>
-                        <div class="card-content">
-                            <div class="card-header">
-                                <span class="avatar avatar-sm" aria-hidden="true"><?php $initial = strtoupper(substr(trim((string)($c['contributor_name'] ?? 'U')), 0, 1)); echo h($initial); ?></span>
-                                <div class="card-title"><?= h($c['title'] ?: ('Campaign #' . $c['id'])) ?></div>
-                            </div>
-                            <p class="muted">By <?= h($c['contributor_name'] ?: 'Unknown') ?> · Community: <span class="chip"><?= h($c['community'] ?: 'General') ?></span> · Uploaded <?= h(time_ago($c['created_at'])) ?></p>
+                        </div>
+                        <div class="tweet-body">
+                            <strong><?= h($c['title'] ?: ('Campaign #' . $c['id'])) ?></strong>
                             <?php $summaryText = trim((string)$c['summary']); ?>
                             <?php if ($summaryText !== ''): ?>
-                                <p><?= h($summaryText) ?></p>
+                                <div><?= h($summaryText) ?></div>
                             <?php endif; ?>
                             <?php 
-                              // Build meta without closing; closing gets its own indicator line
-                              $metaLine = 'Crowd Size: ' . (string)$c['crowd_size'] . ' · Location: ' . (string)$c['location'];
+                              $metaLine = 'Crowd Size: ' . (string)$c['crowd_size'] . ' · Location: ' . (string)$c['location'] . ' · Community: ' . ((string)($c['community'] ?: 'General'));
                               $hasDuplicateMeta = stripos($summaryText, 'crowd') !== false || stripos($summaryText, 'location') !== false;
                             ?>
                             <?php if (!$hasDuplicateMeta): ?>
-                                <p class="muted"><?= h($metaLine) ?></p>
+                                <div class="muted" style="margin-top:4px;"><?= h($metaLine) ?></div>
                             <?php endif; ?>
                             <?php 
                               $closingTs = strtotime((string)$c['closing_time']);
@@ -152,34 +157,36 @@ $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                                 if ($diff <= 0) { $closingCls = 'closed'; }
                                 else if ($diff <= 2 * 3600) { $closingCls = 'soon'; }
                               }
-                              // Display raw datetime in 12-hour clock (e.g., Jan 1, 2026 3:57 PM)
-                              if ($closingTs !== false) {
-                                $closingText = date('M j, Y g:i A', $closingTs);
-                              }
+                              if ($closingTs !== false) { $closingText = date('M j, Y g:i A', $closingTs); }
                             ?>
-                            <p class="closing-indicator <?= h($closingCls) ?>"><strong>Closing:</strong> <?= h($closingText) ?></p>
-                            <div class="actions" style="justify-content:flex-start; gap:8px;">
-                                <?php
-                                $hasCoords = isset($c['latitude']) && $c['latitude'] !== null && isset($c['longitude']) && $c['longitude'] !== null;
-                                $mapUrl = $hasCoords
-                                    ? ('https://www.google.com/maps?q=' . rawurlencode($c['latitude'] . ',' . $c['longitude']))
-                                    : ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$c['location']));
-                                ?>
-                                <a class="btn secondary" href="<?= h($mapUrl) ?>" target="_blank" rel="noopener">View Location</a>
-                                <form method="post" style="display:inline;">
-                                    <input type="hidden" name="action" value="endorse"/>
-                                    <input type="hidden" name="type" value="campaign"/>
-                                    <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
-                                    <button class="btn" type="submit">Endorse Campaign (<?= h((string)($c['endorse_campaign'] ?? 0)) ?>)</button>
-                                </form>
-                                <form method="post" style="display:inline;">
-                                    <input type="hidden" name="action" value="endorse"/>
-                                    <input type="hidden" name="type" value="contributor"/>
-                                    <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
-                                    <button class="btn" type="submit">Endorse Contributor (<?= h((string)($c['endorse_contributor'] ?? 0)) ?>)</button>
-                                </form>
-                                <button class="btn" type="button" onclick="shareCampaign(<?= h((string)$c['id']) ?>)">Share</button>
+                            <div class="closing-indicator <?= h($closingCls) ?>" style="margin-top:4px;"><strong>Closing:</strong> <?= h($closingText) ?></div>
+                        </div>
+                        <?php if (!empty($c['image_url'])): ?>
+                            <div class="tweet-media">
+                                <img src="<?= h($c['image_url']) ?>" alt="Campaign image" />
                             </div>
+                        <?php endif; ?>
+                        <div class="tweet-actions">
+                            <?php
+                            $hasCoords = isset($c['latitude']) && $c['latitude'] !== null && isset($c['longitude']) && $c['longitude'] !== null;
+                            $mapUrl = $hasCoords
+                                ? ('https://www.google.com/maps?q=' . rawurlencode($c['latitude'] . ',' . $c['longitude']))
+                                : ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode((string)$c['location']));
+                            ?>
+                            <a href="<?= h($mapUrl) ?>" target="_blank" rel="noopener">Location</a>
+                            <form method="post">
+                                <input type="hidden" name="action" value="endorse"/>
+                                <input type="hidden" name="type" value="campaign"/>
+                                <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
+                                <button type="submit">Campaign (<?= h((string)($c['endorse_campaign'] ?? 0)) ?>)</button>
+                            </form>
+                            <form method="post">
+                                <input type="hidden" name="action" value="endorse"/>
+                                <input type="hidden" name="type" value="contributor"/>
+                                <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
+                                <button type="submit">Contributor (<?= h((string)($c['endorse_contributor'] ?? 0)) ?>)</button>
+                            </form>
+                            <button type="button" onclick="shareCampaign(<?= h((string)$c['id']) ?>)">Share</button>
                         </div>
                     </div>
                 <?php endforeach; ?>

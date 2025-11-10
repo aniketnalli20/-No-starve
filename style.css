@@ -837,3 +837,24 @@ ul { list-style: none; padding-left: 0; }
 .step, .pillar { border-radius: 10px; padding: 8px 10px; }
 .steps-grid .step h3, .pillars-grid .pillar h3 { font-size: clamp(0.96rem, 0.7vw + 0.78rem, 1.12rem); margin-bottom: 4px; }
 .title-icon { width: 20px; height: 20px; font-size: 14px; border-radius: 6px; }
+
+/* Tweet-style cards for community inspo */
+.tweet-card { border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg); padding: 12px; box-shadow: var(--shadow-1); }
+.tweet-card.dark { background: #0e0e10; color: #f5f7f9; border-color: #1a1b1e; }
+.tweet-header { display: flex; align-items: center; gap: 10px; }
+.tweet-avatar { width: 40px; height: 40px; border-radius: 50%; background: #00A693; color: #fff; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 40px; }
+.tweet-meta { display: flex; flex-direction: column; min-width: 0; }
+.tweet-name { font-weight: 600; }
+.tweet-handle { color: var(--text-muted); font-size: 0.9em; }
+.tweet-body { margin-top: 6px; line-height: 1.5; }
+.tweet-media { margin-top: 8px; }
+.tweet-media img { width: 100%; border-radius: 12px; display: block; background: #eee; }
+.tweet-actions { display: flex; justify-content: space-between; margin-top: 8px; }
+.tweet-actions form { display: inline; }
+.tweet-actions button { background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; padding: 6px 10px; border-radius: 10px; }
+.tweet-actions button:hover { background: rgba(0, 166, 147, 0.10); color: #00A693; border-color: rgba(0, 166, 147, 0.30); }
+.tweet-actions a { color: var(--text-muted); text-decoration: none; padding: 6px 10px; border-radius: 10px; border: 1px solid transparent; }
+.tweet-actions a:hover { background: rgba(0, 166, 147, 0.10); color: #00A693; border-color: rgba(0, 166, 147, 0.30); }
+
+/* Constrain tweet cards in grid */
+.cards-grid .tweet-card { max-width: 640px; margin: 0 auto; }
