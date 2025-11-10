@@ -160,6 +160,71 @@ $listings = $listingsStmt->fetchAll();
     </section>
 
     <main>
+        <!-- Core content: mission and process -->
+        <section id="content" class="content-grid" aria-label="Core content">
+        <section id="mission" class="card-plain" aria-label="Our Mission">
+          <h2 class="section-title">Our Mission</h2>
+          <p>At No Starve, our mission is to eliminate hunger and minimize food waste across India by creating a seamless network that connects surplus food donors with verified NGOs and passionate volunteers. We facilitate the efficient, safe, and timely redistribution of food, ensuring that surplus meals reach those who need them most. Together, we aim to build stronger, healthier communities and foster a culture of responsible food sharing.</p>
+        </section>
+
+        <section id="how" class="card-plain" aria-label="How No Starve Works">
+          <h2 class="section-title">How No Starve Works</h2>
+          <div class="steps-grid">
+            <div class="step">
+              <h3>Food Donation Made Easy</h3>
+              <p>Donors—restaurants, caterers, event organizers, and individuals—can quickly register and list their surplus food using our user-friendly platform.</p>
+            </div>
+            <div class="step">
+              <h3>Smart Matching</h3>
+              <p>Our system instantly matches available food donations with verified NGOs and volunteers nearby, optimizing routes and timing through location-based technology.</p>
+            </div>
+            <div class="step">
+              <h3>Safe Pickup and Delivery</h3>
+              <p>Trained volunteers manage the transportation of food, following strict hygiene and safety protocols to maintain quality.</p>
+            </div>
+            <div class="step">
+              <h3>Feeding Communities</h3>
+              <p>The donated food is distributed immediately to local shelters, orphanages, and underprivileged families, ensuring that no food goes to waste and more people gain access to nutritious meals.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="why" class="card-plain" aria-label="Why This Matters">
+          <h2 class="section-title">Why This Matters</h2>
+          <p>In India, an alarming amount of edible food is wasted every day while millions suffer from hunger and malnutrition. This disconnect not only wastes important resources but also harms the environment through excess food decay and greenhouse gas emissions. No Starve addresses this dual challenge by rescuing surplus food and redirecting it where it’s needed, combating both hunger and environmental harm in a sustainable, community-driven way.</p>
+        </section>
+
+        <section id="pillars" class="card-plain" aria-label="Our Pillars of Impact">
+          <h2 class="section-title">Our Pillars of Impact</h2>
+          <div class="pillars-grid">
+            <div class="pillar"><h3>Food Waste Reduction</h3><p>Minimizing daily food waste through efficient collection and redistribution.</p></div>
+            <div class="pillar"><h3>Hunger Alleviation</h3><p>Supporting vulnerable populations with reliable food access.</p></div>
+            <div class="pillar"><h3>Community Empowerment</h3><p>Creating a network of dedicated volunteers and NGOs working in unison.</p></div>
+            <div class="pillar"><h3>Awareness & Education</h3><p>Promoting responsible food habits and spreading knowledge about food safety and sustainability.</p></div>
+          </div>
+        </section>
+
+        <section id="help" class="card-plain" aria-label="How You Can Help">
+          <h2 class="section-title">How You Can Help</h2>
+          <ul class="list-clean">
+            <li><strong>Become a Donor:</strong> Help us by listing your extra food items; your small effort can feed many.</li>
+            <li><strong>Volunteer Your Time:</strong> Join our team to collect and deliver food to those in need.</li>
+            <li><strong>Partner with Us:</strong> Organizations and businesses can collaborate to scale our outreach and impact.</li>
+            <li><strong>Spread the Word:</strong> Share our mission and encourage others to participate.</li>
+          </ul>
+        </section>
+
+        <section id="stories" class="card-plain" aria-label="Success Stories">
+          <h2 class="section-title">Success Stories</h2>
+          <p>Since our inception, No Starve has redistributed over [X number] meals across [Y cities/towns]. Each meal represents a step towards a waste-free and hunger-free India. Stories from our donors, volunteers, and recipients inspire us daily and strengthen our resolve to grow further.</p>
+        </section>
+
+        <section id="join" class="card-plain" aria-label="Join No Starve Today">
+          <h2 class="section-title">Join No Starve Today</h2>
+          <p>Take part in transforming the future of food in India. Together, let’s ensure that no meal goes wasted and no one goes hungry.</p>
+        </section>
+        </section>
+
         <!-- Inspo cards layout -->
         <section id="cards" class="cards-frame" aria-label="Featured cards">
           <div class="cards-grid">
