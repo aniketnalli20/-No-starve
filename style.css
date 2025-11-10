@@ -68,11 +68,11 @@ body {
 .hero-title, .hero-sub { text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
 .hero .btn { border-color: rgba(255,255,255,0.7); }
 .hero .btn.secondary { color: #ffffff; border-color: rgba(255,255,255,0.7); }
-.btn { display: inline-block; background: var(--primary); color: #000; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid var(--border); transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
+.btn { display: inline-block; background: var(--primary); color: #000; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid var(--border); }
 .btn.pill { border-radius: 999px; padding: 12px 18px; }
 .btn.accent { background: var(--accent); color: var(--accentText); border-color: transparent; box-shadow: 0 8px 24px rgba(184,255,53,0.35); }
-.btn.accent:hover { filter: brightness(0.96); box-shadow: 0 12px 28px rgba(184,255,53,0.42); }
-.btn:hover { background: #eaeaea; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+.btn.accent:hover { filter: none; box-shadow: 0 8px 24px rgba(184,255,53,0.35); }
+.btn:hover { background: #eaeaea; }
 .btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
 .btn.secondary:hover { border-color: #3a3a3a; }
 
@@ -113,9 +113,8 @@ body {
   border-radius: 16px;
   padding: 18px 20px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
-.card-plain:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.08); border-color: #dcdcdc; }
+.card-plain:hover { border-color: #dcdcdc; }
 .card-plain:focus-within { box-shadow: 0 0 0 3px rgba(184,255,53,0.2), 0 6px 18px rgba(0,0,0,0.06); }
 .card-plain .card-title { margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; font-size: clamp(1.1rem, 1.2vw + 0.7rem, 1.5rem); }
 .card-plain p { margin: 0 0 8px; line-height: 1.6; font-size: clamp(1.05rem, 0.9vw + 0.7rem, 1.25rem); }
@@ -129,24 +128,24 @@ body {
 .steps-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 840px) { .steps-grid { grid-template-columns: 1fr 1fr; } }
 .step { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; cursor: pointer; }
-.step { transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.step { /* no hover animation */ }
 .step::before { content: ""; position: absolute; left: 12px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: #d9d9d9; }
 .step h3 { margin: 0 0 6px; font-size: clamp(1rem, 0.8vw + 0.8rem, 1.25rem); }
 .step p { margin: 0; color: var(--muted); }
-.step:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+/* removed hover lift for steps */
 
 .pillars-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 840px) { .pillars-grid { grid-template-columns: repeat(2, 1fr); } }
 .pillar { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; cursor: pointer; }
-.pillar { transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.pillar { /* no hover animation */ }
 .pillar::before { content: ""; position: absolute; left: 12px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: #d9d9d9; }
 .pillar h3 { margin: 0 0 6px; font-size: clamp(1rem, 0.8vw + 0.8rem, 1.25rem); }
 .pillar p { margin: 0; color: var(--muted); }
-.pillar:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+/* removed hover lift for pillars */
 
 .list-clean { list-style: none; padding: 0; margin: 0; }
-.list-clean li { padding: 8px 0; border-top: 1px solid var(--border); cursor: pointer; transition: background-color 150ms ease, transform 150ms ease; }
-.list-clean li:hover { background: #fafafa; transform: translateX(2px); }
+.list-clean li { padding: 8px 0; border-top: 1px solid var(--border); cursor: pointer; }
+.list-clean li:hover { background: #fafafa; }
 .list-clean li:first-child { border-top: none; }
 
 /* Full-screen distribution for content cards based on orientation */
