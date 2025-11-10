@@ -376,3 +376,18 @@ ul { list-style: none; padding-left: 0; }
   .card,
   .blog-grid .post { transition: none; transform: none; }
 }
+/* Full-bleed card for Create page to prevent overlap */
+.card-plain.card-fullbleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: var(--content-pad);
+}
+
+@media (max-width: 768px) {
+  .card-plain.card-fullbleed {
+    padding: calc(var(--content-pad) * 0.85);
+  }
+}
