@@ -181,7 +181,7 @@ if (is_logged_in() && !empty($campaigns)) {
             foreach ($postsDemo as $i => $p):
                 $uname = trim((string)$p['username']);
                 $initial = strtoupper(substr($uname, 0, 1));
-                $handleBase = strtolower(preg_replace('/[^a-z0-9]+/i', $uname));
+                $handleBase = strtolower(preg_replace('/[^a-z0-9]+/i', '', $uname));
                 $handle = $handleBase !== '' ? $handleBase : 'user';
                 $closingTs = strtotime((string)$p['closing_iso']);
                 $closingFormatted = $closingTs !== false ? date('M j, Y g:i A', $closingTs) : (string)$p['closing_iso'];
