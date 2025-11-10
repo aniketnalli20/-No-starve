@@ -31,6 +31,31 @@ body {
   border-bottom: 1px solid var(--border);
   color: #ffffff;
 }
+
+/* Hero typographic scale: larger, responsive, and scoped */
+.hero .wrap h1,
+.hero .wrap .title {
+  font-size: clamp(2.25rem, 2.5vw + 1rem, 4rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.hero .wrap p,
+.hero .subtitle,
+.hero .lead {
+  font-size: clamp(1.125rem, 1.2vw + 0.75rem, 1.5rem);
+  line-height: 1.6;
+  max-width: 72ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero .hero-actions a,
+.hero .hero-actions .btn,
+.hero .hero-actions button {
+  font-size: clamp(0.95rem, 0.8vw + 0.6rem, 1.1rem);
+  padding: 0.85rem 1.25rem;
+}
 .hero .wrap { width: 100%; max-width: none; margin: 0; padding: 24px 20px; text-align: center; }
 .hero-title { margin: 0 0 8px; font-size: 28px; }
 .hero-sub { margin: 0 0 12px; color: #f0f0f0; }
