@@ -1,0 +1,132 @@
+<?php
+require_once __DIR__ . '/app.php';
+
+// Endorsement actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'endorse') {
+    $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+    $type = isset($_POST['type']) ? trim((string)$_POST['type']) : '';
+    if ($id > 0 && in_array($type, ['campaign','contributor'], true)) {
+        $col = $type === 'campaign' ? 'endorse_campaign' : 'endorse_contributor';
+        $stmt = $pdo->prepare("UPDATE campaigns SET $col = COALESCE($col,0) + 1 WHERE id = ?");
+        $stmt->execute([$id]);
+    }
+    header('Location: /communityns.php#campaign-' . $id);
+    exit;
+}
+
+// Filters
+$filterCommunity = isset($_GET['community']) ? trim((string)$_GET['community']) : '';
+
+// Distinct communities for explore
+$communities = [];
+try {
+    $res = $pdo->query('SELECT DISTINCT community FROM campaigns WHERE community IS NOT NULL AND community <> "" ORDER BY community');
+    $communities = $res->fetchAll(PDO::FETCH_COLUMN) ?: [];
+} catch (Throwable $e) {}
+
+// Fetch campaigns
+$query = 'SELECT id, title, summary, contributor_name, community, crowd_size, location, image_url, closing_time, endorse_campaign, endorse_contributor, created_at FROM campaigns';
+$params = [];
+if ($filterCommunity !== '') {
+    $query .= ' WHERE community = ?';
+    $params[] = $filterCommunity;
+}
+$query .= ' ORDER BY id DESC LIMIT 200';
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
+$campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Community · No Starve</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.php#hero" class="brand" aria-label="No Starve home">No Starve</a>
+            <nav id="primary-navigation" class="nav-links" role="navigation" aria-label="Primary">
+                <a href="/index.php#hero">Home</a>
+                <a href="/create_campaign.php">Create Campaign</a>
+                <a href="/communityns.php">Community</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);">
+        <section class="card-plain">
+            <h2 class="section-title">Explore Community</h2>
+            <form method="get" class="form-grid">
+                <div class="form-field">
+                    <label for="community">Filter by Community</label>
+                    <select id="community" name="community">
+                        <option value="">All</option>
+                        <?php foreach ($communities as $c): ?>
+                            <option value="<?= h($c) ?>" <?= $filterCommunity === $c ? 'selected' : '' ?>><?= h($c) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <button class="btn" type="submit">Apply</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="cards-grid" id="community-campaigns">
+            <?php if (empty($campaigns)): ?>
+                <div class="card-plain"><p>No campaigns yet.</p></div>
+            <?php else: ?>
+                <?php foreach ($campaigns as $c): ?>
+                    <div class="card-plain" id="campaign-<?= h((string)$c['id']) ?>">
+                        <div class="card-title"><?= h($c['title'] ?: ('Campaign #' . $c['id'])) ?></div>
+                        <p class="muted">By <?= h($c['contributor_name'] ?: 'Unknown') ?> · Community: <span class="chip"><?= h($c['community'] ?: 'General') ?></span></p>
+                        <?php if (!empty($c['image_url'])): ?>
+                            <img src="<?= h($c['image_url']) ?>" alt="Campaign image" style="width:100%; border-radius:12px; margin:8px 0; border:1px solid var(--border);"/>
+                        <?php endif; ?>
+                        <p><?= h($c['summary']) ?></p>
+                        <p class="muted">Crowd Size: <?= h((string)$c['crowd_size']) ?> · Location: <?= h($c['location']) ?> · Closing: <?= h($c['closing_time']) ?></p>
+                        <div class="actions" style="justify-content:flex-start; gap:8px;">
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="endorse"/>
+                                <input type="hidden" name="type" value="campaign"/>
+                                <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
+                                <button class="btn" type="submit">Endorse Campaign (<?= h((string)($c['endorse_campaign'] ?? 0)) ?>)</button>
+                            </form>
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="endorse"/>
+                                <input type="hidden" name="type" value="contributor"/>
+                                <input type="hidden" name="id" value="<?= h((string)$c['id']) ?>"/>
+                                <button class="btn" type="submit">Endorse Contributor (<?= h((string)($c['endorse_contributor'] ?? 0)) ?>)</button>
+                            </form>
+                            <button class="btn" type="button" onclick="shareCampaign(<?= h((string)$c['id']) ?>)">Share</button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </section>
+    </main>
+
+    <script>
+    function shareCampaign(id){
+        const url = window.location.origin + '/communityns.php#campaign-' + id;
+        const title = 'No Starve Campaign #' + id;
+        if (navigator.share) {
+            navigator.share({ title: title, text: 'Support this campaign', url: url }).catch(function(){});
+        } else {
+            navigator.clipboard && navigator.clipboard.writeText(url).then(function(){
+                alert('Share link copied to clipboard');
+            }).catch(function(){ window.prompt('Copy this link', url); });
+        }
+    }
+    </script>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <small>&copy; <?= date('Y') ?> No Starve</small>
+        </div>
+    </footer>
+</body>
+</html>
