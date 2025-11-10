@@ -26,6 +26,14 @@ body {
 .site-header h1 { margin: 0 0 6px; font-size: 24px; }
 .tagline { margin: 0; color: var(--muted); }
 
+.hero { background: linear-gradient(135deg, rgba(47,129,247,0.15), rgba(46,160,67,0.15)); border-bottom: 1px solid var(--border); }
+.hero .wrap { max-width: 920px; margin: 0 auto; padding: 24px 20px; }
+.hero-title { margin: 0 0 8px; font-size: 28px; }
+.hero-sub { margin: 0 0 12px; color: var(--muted); }
+.hero-actions { display: flex; gap: 10px; }
+.btn { display: inline-block; background: var(--primary); color: #fff; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid transparent; }
+.btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
+
 .container { max-width: 920px; margin: 24px auto; padding: 0 20px; }
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
 .card h2 { margin: 0 0 12px; font-size: 18px; }

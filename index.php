@@ -138,9 +138,19 @@ $listings = $listingsStmt->fetchAll();
             <p class="tagline">Connect surplus food with NGOs and recipients.</p>
         </div>
     </header>
+    <section class="hero">
+        <div class="wrap">
+            <h2 class="hero-title">Rescue surplus food. Feed communities.</h2>
+            <p class="hero-sub">A simple platform connecting Indian donors with verified NGOs and volunteers for timely redistribution.</p>
+            <div class="hero-actions">
+                <a href="#publish" class="btn">Publish a Listing</a>
+                <a href="#listings" class="btn secondary">Browse Listings</a>
+            </div>
+        </div>
+    </section>
 
     <main class="container">
-        <section class="card">
+        <section id="publish" class="card">
             <h2>Create Food Listing (Donors)</h2>
             <?php if ($message): ?>
                 <div class="alert success"><?= h($message) ?></div>
@@ -215,7 +225,7 @@ $listings = $listingsStmt->fetchAll();
             </form>
         </section>
 
-        <section class="card">
+        <section id="listings" class="card">
             <h2>Available Listings</h2>
             <form method="get" class="form-grid" style="margin-bottom: 10px;">
                 <div class="form-field">
