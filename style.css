@@ -736,6 +736,7 @@ ul { list-style: none; padding-left: 0; }
 .break-8 .line { display: block; }
 .break-10 .line { display: block; }
 .break-fit .line { display: block; }
+.break-100 .line { display: block; }
 
 /* Minimal card size overrides */
 .listings-grid { gap: 10px; }

@@ -160,8 +160,8 @@ $listings = $listingsStmt->fetchAll();
     </header>
     <section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
         <div class="wrap">
-            <h1 class="hero-title break-fit">Rescue surplus food; feed people with community support nationwide today.</h1>
-            <p class="hero-sub break-fit">Join donors, NGOs, volunteers tackling hunger and waste every day.</p>
+            <h1 class="hero-title break-100">Rescue surplus food; feed people with community support nationwide today.</h1>
+            <p class="hero-sub break-100">Join donors, NGOs, volunteers tackling hunger and waste every day.</p>
             <div class="hero-actions">
               <a class="btn accent pill" href="<?= h($BASE_PATH) ?>create_campaign.php">Donate Food</a>
               <a class="btn secondary pill" href="<?= h($BASE_PATH) ?>communityns.php">Explore Community</a>
@@ -208,8 +208,8 @@ $listings = $listingsStmt->fetchAll();
             <?php if (!$listings): ?>
               <div class="empty-state" role="status" aria-live="polite">
                 <div class="icon" aria-hidden="true">🔍</div>
-                <h3 class="break-fit">No open donations found</h3>
-                <p class="break-fit">Adjust filters or check back soon for new open donations.</p>
+                <h3 class="break-100">No open donations found</h3>
+                <p class="break-100">Adjust filters or check back soon for new open donations.</p>
               </div>
             <?php else: ?>
               <?php foreach ($listings as $l): ?>
@@ -262,9 +262,9 @@ $listings = $listingsStmt->fetchAll();
         <!-- Core content: mission and process -->
         <section id="content" class="content-grid" aria-label="Core content">
           <section id="overview" class="card-plain is-highlight card-horizontal" aria-label="Overview">
-            <p class="lead">At No Starve, we connect donors with NGOs to fight hunger across the country. Donors can easily list surplus food using our simple online tools. Our smart system matches donations with nearby NGOs and volunteers, ensuring safe pickup and delivery by trained volunteers. Meals are quickly redistributed to shelters, families, and underserved communities.</p>
-            <p class="lead">Food waste harms the environment while millions suffer from hunger every day. We focus on reducing food waste, supporting vulnerable populations, empowering volunteers and NGOs, and raising awareness about safe food handling and sustainability.</p>
-            <p class="lead">You can help by donating food, volunteering for deliveries, partnering with us to expand our reach, or spreading the word to inspire others. We have already redistributed thousands of meals, changing lives nationwide. Join No Starve today to rescue food and nourish communities across India.</p>
+            <p class="lead break-100">At No Starve, we connect donors with NGOs to fight hunger across the country. Donors can easily list surplus food using our simple online tools. Our smart system matches donations with nearby NGOs and volunteers, ensuring safe pickup and delivery by trained volunteers. Meals are quickly redistributed to shelters, families, and underserved communities.</p>
+            <p class="lead break-100">Food waste harms the environment while millions suffer from hunger every day. We focus on reducing food waste, supporting vulnerable populations, empowering volunteers and NGOs, and raising awareness about safe food handling and sustainability.</p>
+            <p class="lead break-100">You can help by donating food, volunteering for deliveries, partnering with us to expand our reach, or spreading the word to inspire others. We have already redistributed thousands of meals, changing lives nationwide. Join No Starve today to rescue food and nourish communities across India.</p>
           </section>
         </section>
 
@@ -332,6 +332,38 @@ $listings = $listingsStmt->fetchAll();
         } else {
           lines.push(current);
           current = word;
+        }
+      }
+      if (current) lines.push(current);
+      el.innerHTML = lines.map(l => '<span class="line">' + l + '</span>').join('<br/>');
+    });
+  })();
+  (function() {
+    // Break text into lines of exactly ~100 characters for elements with .break-100
+    const EXACT = 100;
+    const targets = document.querySelectorAll('.break-100');
+    targets.forEach(el => {
+      const hasChildren = Array.from(el.childNodes).some(n => n.nodeType === Node.ELEMENT_NODE);
+      if (hasChildren) return;
+      const text = (el.textContent || '').trim();
+      if (!text) return;
+      const words = text.split(/\s+/);
+      const lines = [];
+      let current = '';
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const candidate = current ? current + ' ' + word : word;
+        if (candidate.length <= EXACT) {
+          current = candidate;
+        } else {
+          if (current.length === 0) {
+            // Very long single word: hard wrap
+            lines.push(candidate.slice(0, EXACT));
+            current = candidate.slice(EXACT);
+          } else {
+            lines.push(current);
+            current = word;
+          }
         }
       }
       if (current) lines.push(current);
