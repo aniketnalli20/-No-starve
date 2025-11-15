@@ -27,17 +27,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = (int)$user['id'];
                 // Persist selected login role in session for downstream logic
                 $role = strtolower(trim((string)($_POST['role'] ?? 'user')));
-                if ($role !== 'contributor') { $role = 'user'; }
+                if (!in_array($role, ['user','contributor','admin'], true)) { $role = 'user'; }
                 $_SESSION['login_role'] = $role;
-                $dest = 'index.php#hero';
+                // Admin check
+                if ($role === 'admin') {
+                    $st = $pdo->prepare('SELECT is_admin FROM users WHERE id = ?');
+                    $st->execute([(int)$user['id']]);
+                    $row = $st->fetch(PDO::FETCH_ASSOC);
+                    if (!$row || (int)($row['is_admin'] ?? 0) !== 1) {
+                        unset($_SESSION['user_id']);
+                        unset($_SESSION['login_role']);
+                        $_SESSION['is_admin'] = 0;
+                        $error = 'Not authorized as admin';
+                    } else {
+                        $_SESSION['is_admin'] = 1;
+                    }
+                } else {
+                    $_SESSION['is_admin'] = 0;
+                }
+                $dest = ($role === 'admin') ? 'admin/index.php' : 'index.php#hero';
                 if ($next !== '') {
                     if (preg_match('/^[A-Za-z0-9_\-]+(\.php)?(\?.*)?$/', $next)) {
                         $dest = $next;
                     }
                 }
-                header('Location: ' . $BASE_PATH . $dest);
-                exit;
-            }
+                if (!$error) {
+                    header('Location: ' . $BASE_PATH . $dest);
+                    exit;
+                }
+                }
         } catch (Throwable $e) {
             $error = 'Login failed; please try again later';
         }
@@ -92,6 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="community-chip" aria-label="Contributor">
                             <input type="radio" name="role" value="contributor">
                             <span class="text">Contributor</span>
+                        </label>
+                        <label class="community-chip" aria-label="Admin">
+                            <input type="radio" name="role" value="admin">
+                            <span class="text">Admin</span>
                         </label>
                     </div>
                 </div>

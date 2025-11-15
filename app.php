@@ -226,3 +226,17 @@ function award_karma_coins(int $userId, int $amount, ?string $reason = null, ?st
     }
     return get_karma_balance($userId);
 }
+
+// Admin helpers
+function is_admin(): bool {
+    return isset($_SESSION['is_admin']) && (int)$_SESSION['is_admin'] === 1;
+}
+
+function require_admin(): void {
+    if (!is_logged_in() || !is_admin()) {
+        global $BASE_PATH;
+        $location = $BASE_PATH . 'login.php?next=' . urlencode('admin/index.php');
+        header('Location: ' . $location);
+        exit;
+    }
+}

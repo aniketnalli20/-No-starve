@@ -207,6 +207,9 @@ try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN endorse_contributor INT DEFAU
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN user_id INT'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD CONSTRAINT fk_campaigns_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL'); } catch (Throwable $e) {}
 
+// Admin role support on users
+try { $pdo->exec('ALTER TABLE users ADD COLUMN is_admin TINYINT(1) NOT NULL DEFAULT 0'); } catch (Throwable $e) {}
+
 // One-time migration: ensure legacy campaigns are visible
 // Convert NULL/empty/draft statuses to 'open' so they show in the recent campaigns feed
 try { $pdo->exec("UPDATE campaigns SET status = 'open' WHERE status IS NULL OR status = '' OR status = 'draft'"); } catch (Throwable $e) {}

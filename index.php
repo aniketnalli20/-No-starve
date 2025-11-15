@@ -196,6 +196,9 @@ $campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, s
                 <a href="#hero"<?= $currentPath === 'index.php' ? ' class="active"' : '' ?>>Home</a>
                 <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
                 <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>"<?= $currentPath === 'profile.php' ? ' class="active"' : '' ?>>Profile</a>
+                <?php if (is_logged_in() && is_admin()): ?>
+                  <a href="<?= h($BASE_PATH) ?>admin/index.php"<?= $currentPath === 'index.php' ? '' : '' ?>>Admin</a>
+                <?php endif; ?>
                 <?php if (is_logged_in()): ?>
                   <a href="<?= h($BASE_PATH) ?>logout.php">Logout</a>
                 <?php else: ?>
