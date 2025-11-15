@@ -67,6 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($successId): ?>
                 <div class="card-plain" role="status">
                     Campaign created successfully. ID: <?= h((string)$successId) ?>
+                    <div class="actions" style="margin-top:8px;">
+                        <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php?created=<?= (int)$successId ?>#campaign-<?= (int)$successId ?>">View on Homepage</a>
+                        <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php?created=<?= (int)$successId ?>&endorse=campaign#campaign-<?= (int)$successId ?>">Endorse Now</a>
+                        <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php?created=<?= (int)$successId ?>&share=1#campaign-<?= (int)$successId ?>">Share Link</a>
+                    </div>
                 </div>
             <?php endif; ?>
 
@@ -77,36 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" id="contributor_name" name="contributor_name" required value="<?= h($user['username'] ?? '') ?>">
                 </div>
 
-                <div class="form-field">
-                    <label>Community Suitable For</label>
-                    <div class="community-options" role="radiogroup" aria-label="Community Suitable For">
-                        <label class="community-chip" aria-label="Hindu">
-                            <input type="radio" name="community" value="Hindu" required>
-                            <span class="material-symbols-outlined icon" aria-hidden="true">temple_hindu</span>
-                            <span class="text">Hindu</span>
-                        </label>
-                        <label class="community-chip" aria-label="Muslim">
-                            <input type="radio" name="community" value="Muslim" required>
-                            <span class="material-symbols-outlined icon" aria-hidden="true">mosque</span>
-                            <span class="text">Muslim</span>
-                        </label>
-                        <label class="community-chip" aria-label="Christian">
-                            <input type="radio" name="community" value="Christian" required>
-                            <span class="material-symbols-outlined icon" aria-hidden="true">church</span>
-                            <span class="text">Christian</span>
-                        </label>
-                        <label class="community-chip" aria-label="Jain">
-                            <input type="radio" name="community" value="Jain" required>
-                            <span class="material-symbols-outlined icon" aria-hidden="true">account_balance</span>
-                            <span class="text">Jain</span>
-                        </label>
-                        <label class="community-chip" aria-label="Others">
-                            <input type="radio" name="community" value="Others" required>
-                            <span class="material-symbols-outlined icon" aria-hidden="true">public</span>
-                            <span class="text">Others</span>
-                        </label>
-                    </div>
-                </div>
+                
 
                 <div class="form-field">
                     <label for="crowd_size">Crowd Size</label>
@@ -322,6 +298,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <footer class="site-footer">
         <div class="container footer-inner">
+            <div class="card-plain faq" aria-label="FAQ" style="margin-top:10px;">
+                <h3 class="section-title">FAQ</h3>
+                <details>
+                    <summary><strong>What is No Starve?</strong></summary>
+                    <div>It helps people discover nearby available meals and connect safely for access, reducing waste.</div>
+                </details>
+                <details>
+                    <summary><strong>How do I create a campaign?</strong></summary>
+                    <div>Fill the form on this page and submit. Your campaign appears on the homepage right away.</div>
+                </details>
+                <details>
+                    <summary><strong>How do endorsements and sharing work?</strong></summary>
+                    <div>After creating, use the provided buttons to endorse your campaign or share its link.</div>
+                </details>
+                <details>
+                    <summary><strong>Is it free to use?</strong></summary>
+                    <div>Yes. The platform is free for donors, NGOs, volunteers, and users.</div>
+                </details>
+                <details>
+                    <summary><strong>Where can I manage my info?</strong></summary>
+                    <div>Go to your <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a> to update phone and address.</div>
+                </details>
+            </div>
             <small>&copy; 2025 No Starve</small>
         </div>
     </footer>

@@ -135,6 +135,13 @@ ul { list-style: none; padding-left: 0; }
 .card-plain p:last-child { margin-bottom: 0; }
 @media (min-width: 720px) { .card-plain { padding: 16px 18px; margin-left: 24px; } }
 
+.faq { text-align: left; }
+.faq .section-title { margin-bottom: 8px; }
+.faq details { padding: 8px 0; border-top: 1px solid var(--border); }
+.faq details:first-of-type { border-top: none; }
+.faq summary { cursor: pointer; font-weight: 700; }
+.faq summary:focus { outline: none; }
+
 /* Section titles and simple blocks */
 .section-title { margin: 0 0 10px; font-weight: 800; letter-spacing: -0.01em; font-size: clamp(1.2rem, 1.6vw + 0.8rem, 1.8rem); padding-bottom: 6px; border-bottom: 2px solid var(--border); }
 /* Accent underline for section titles */
@@ -598,6 +605,72 @@ ul { list-style: none; padding-left: 0; }
   .form-grid { grid-template-columns: 1fr; }
 }
 .form-field { display: flex; flex-direction: column; }
+
+/* Recent Campaigns: polished container and cards */
+#recent-campaigns { 
+  background: linear-gradient(180deg, #ffffff, #fafafa);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+#recent-campaigns .heading { 
+  font-weight: 800; 
+  letter-spacing: -0.01em; 
+  font-size: clamp(1.1rem, 1.2vw + 0.7rem, 1.5rem);
+}
+#recent-campaigns .cards-grid { 
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+#recent-campaigns .card-plain { 
+  margin: 0; 
+  border-radius: 14px; 
+  padding: 14px 16px; 
+}
+#recent-campaigns .card-plain .card-title { 
+  font-size: clamp(1.05rem, 1vw + 0.65rem, 1.35rem);
+}
+#recent-campaigns .chip { 
+  background: #f6fef0; 
+  border-color: #d8f6b1; 
+}
+#recent-campaigns .chip.status { 
+  background: var(--accent); 
+  color: var(--accentText); 
+  border-color: transparent; 
+  box-shadow: 0 6px 18px rgba(184,255,53,0.25);
+}
+#recent-campaigns .card-plain:hover { 
+  border-color: #dadada; 
+}
+
+/* Twitter-like feed styles */
+#recent-campaigns .tweet-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
+#recent-campaigns .tweet-card {
+  display: grid; grid-template-columns: 48px 1fr; gap: 10px;
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+#recent-campaigns .tweet-card:hover { border-color: #dcdcdc; }
+#recent-campaigns .tweet-avatar { width: 48px; height: 48px; border-radius: 50%; background: #f4f4f4; border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text); }
+#recent-campaigns .tweet-content { display: flex; flex-direction: column; gap: 6px; }
+#recent-campaigns .tweet-header { display: flex; align-items: center; gap: 6px; }
+#recent-campaigns .tweet-name { font-weight: 700; }
+#recent-campaigns .tweet-dot { color: var(--muted); }
+#recent-campaigns .tweet-time { color: var(--muted); font-size: 0.92rem; }
+#recent-campaigns .tweet-text { line-height: 1.6; }
+#recent-campaigns .tweet-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+#recent-campaigns .tweet-actions { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+#recent-campaigns .tweet-details { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 8px; }
+#recent-campaigns .detail { display: flex; align-items: baseline; gap: 8px; }
+#recent-campaigns .detail .d-label { min-width: 120px; color: #666; font-weight: 600; }
+#recent-campaigns .detail .d-value { color: #222; }
+#recent-campaigns .chip.high { background: #ffe8e8; color: #8b0000; border: 1px solid #ffc2c2; }
+#recent-campaigns .chip.medium { background: #fff7e6; color: #7a5b00; border: 1px solid #ffe1a3; }
+#recent-campaigns .chip.low { background: #eaf9ea; color: #167a2a; border: 1px solid #bfe6c3; }
+#recent-campaigns .tweet-btn { background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 6px 10px; cursor: pointer; }
+#recent-campaigns .tweet-btn:hover { background: #f7f7f7; }
 .form-field.full { grid-column: 1 / -1; }
 .form-field label { margin-bottom: 6px; color: var(--muted); font-size: 13px; }
 /* Emphasize labels on Create Campaign page */

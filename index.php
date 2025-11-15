@@ -3,6 +3,7 @@ require_once __DIR__ . '/app.php';
 
 $message = '';
 $errors = [];
+$footer_note = '';
 
 // Ensure uploads folder exists (separate file storage)
 $uploadsDir = __DIR__ . DIRECTORY_SEPARATOR . 'uploads';
@@ -113,6 +114,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'claim
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_feedback') {
+    $name = trim((string)($_POST['fb_name'] ?? ''));
+    $email = trim((string)($_POST['fb_email'] ?? ''));
+    $msg = trim((string)($_POST['fb_message'] ?? ''));
+    if ($name !== '' && $msg !== '') {
+        $line = gmdate('c') . ' | name=' . str_replace(["\r","\n"], '', $name) . ' | email=' . str_replace(["\r","\n"], '', $email) . ' | ip=' . ($_SERVER['REMOTE_ADDR'] ?? '') . ' | msg=' . str_replace(["\r","\n"], ' ', $msg);
+        @file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'feedback.txt', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $footer_note = 'Thanks for your feedback.';
+    } else {
+        $footer_note = 'Please provide your name and message.';
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_contact') {
+    $email = trim((string)($_POST['ct_email'] ?? ''));
+    $subject = trim((string)($_POST['ct_subject'] ?? ''));
+    $msg = trim((string)($_POST['ct_message'] ?? ''));
+    if ($subject !== '' && $msg !== '') {
+        $line = gmdate('c') . ' | subject=' . str_replace(["\r","\n"], '', $subject) . ' | email=' . str_replace(["\r","\n"], '', $email) . ' | ip=' . ($_SERVER['REMOTE_ADDR'] ?? '') . ' | msg=' . str_replace(["\r","\n"], ' ', $msg);
+        @file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'contact_messages.txt', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $footer_note = 'Message sent.';
+    } else {
+        $footer_note = 'Please provide a subject and message.';
+    }
+}
+
 // Filters
 $cityFilter = trim($_GET['city'] ?? '');
 $pincodeFilter = trim($_GET['pincode'] ?? '');
@@ -129,6 +156,18 @@ $orderExpr = ($DB_DRIVER === 'pgsql') ? "COALESCE(expires_at, TIMESTAMP '9999-12
 $listingsStmt = $pdo->prepare("SELECT id, donor_type, donor_name, contact, item, quantity, address, city, pincode, expires_at, image_url, status, created_at, claimed_at FROM listings $whereSql ORDER BY $orderExpr ASC, id DESC LIMIT 20");
 $listingsStmt->execute($params);
 $listings = $listingsStmt->fetchAll();
+
+// Fetch recent campaigns
+$campaigns = [];
+try {
+    // Include contributor_name and endorse counts; show only actively open campaigns
+    // Community filter removed to allow campaigns without community selection to appear
+$campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, status, created_at, contributor_name, endorse_campaign, location, crowd_size, closing_time\n  FROM campaigns\n  WHERE status = 'open'\n    AND ((location IS NOT NULL AND location <> '') OR (area IS NOT NULL AND area <> ''))\n    AND crowd_size IS NOT NULL\n    AND closing_time IS NOT NULL AND closing_time <> ''\n  ORDER BY created_at DESC\n  LIMIT 6");
+    $campaignsStmt->execute();
+    $campaigns = $campaignsStmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+} catch (Throwable $e) {
+    // Silent: if table not available yet, skip section
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -199,6 +238,57 @@ $listings = $listingsStmt->fetchAll();
         </div>
     </section>
 
+    <!-- Recent Campaigns section placed directly under hero -->
+    <section id="recent-campaigns" class="container" aria-label="Recent Campaigns" style="max-width: var(--content-max); padding: var(--content-pad);">
+        <div class="heading" style="margin-bottom: 12px; display:flex; align-items:center; justify-content:space-between;">
+            <span>Recent Campaigns</span>
+            <a class="btn pill" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a>
+        </div>
+        <?php if (!empty($campaigns)): ?>
+            <div class="tweet-list">
+                <?php foreach ($campaigns as $c): ?>
+                    <?php $name = trim((string)($c['contributor_name'] ?? $c['title'] ?? 'Campaign')); $initial = strtoupper(substr($name, 0, 1)); ?>
+                    <article class="tweet-card" aria-label="Campaign" id="campaign-<?= (int)$c['id'] ?>">
+                        <div class="tweet-avatar" aria-hidden="true"><span><?= h($initial) ?></span></div>
+                        <div class="tweet-content">
+                            <div class="tweet-header">
+                                <span class="tweet-name"><?= h($name) ?></span>
+                            </div>
+                            <?php
+                              $csVal = isset($c['crowd_size']) && $c['crowd_size'] !== '' ? (int)$c['crowd_size'] : null;
+                              $csLabel = null; $csClass = '';
+                              if ($csVal !== null) {
+                                if ($csVal >= 200) { $csLabel = 'High'; $csClass = 'high'; }
+                                else if ($csVal >= 50) { $csLabel = 'Medium'; $csClass = 'medium'; }
+                                else { $csLabel = 'Low'; $csClass = 'low'; }
+                              }
+                            ?>
+                            <div class="tweet-details">
+                                <div class="detail"><span class="d-label">Location</span><span class="d-value"><?= h(($c['location'] ?? '') !== '' ? $c['location'] : ($c['area'] ?? '—')) ?></span></div>
+                                <div class="detail"><span class="d-label">Crowd Size</span><span class="d-value">
+                                  <?= ($csVal !== null ? h((string)$csVal) : '—') ?>
+                                  <?php if ($csLabel): ?><span class="chip <?= h($csClass) ?>" style="margin-left:6px;"><?= h($csLabel) ?></span><?php endif; ?>
+                                </span></div>
+                                <div class="detail"><span class="d-label">Closing Time</span><span class="d-value"><?= h($c['closing_time'] ?? '—') ?></span></div>
+                                <div class="detail"><span class="d-label">Target Meals</span><span class="d-value"><?= h(isset($c['target_meals']) && $c['target_meals'] !== '' ? (string)$c['target_meals'] : '—') ?></span></div>
+                            </div>
+                            <div class="tweet-meta">
+                                <?php if (!empty($c['area'])): ?><span class="chip">Area: <?= h($c['area']) ?></span><?php endif; ?>
+                                <?php if (!empty($c['target_meals'])): ?><span class="chip">Target: <?= h((string)$c['target_meals']) ?></span><?php endif; ?>
+                            </div>
+                            <div class="tweet-actions">
+                                <button class="tweet-btn endorse-btn" type="button" data-campaign-id="<?= (int)$c['id'] ?>">Endorse <span class="endorse-count" data-campaign-id="<?= (int)$c['id'] ?>"><?= h((string)($c['endorse_campaign'] ?? 0)) ?></span></button>
+                                <button class="tweet-btn share-btn" type="button" data-campaign-id="<?= (int)$c['id'] ?>">Share</button>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="card-plain" role="note" style="padding:12px; border:1px solid var(--border); border-radius:8px;">No campaigns yet. Be the first to <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">create one</a>.</div>
+        <?php endif; ?>
+    </section>
+
     <main>
         <!-- Trending donations grid removed per request -->
         <!-- Core content removed per request -->
@@ -230,9 +320,113 @@ $listings = $listingsStmt->fetchAll();
 
     <footer class="site-footer">
         <div class="container footer-inner">
+            <div class="card-plain faq" aria-label="FAQ" style="margin-top:10px;">
+                <h3 class="section-title">FAQ</h3>
+                <details>
+                    <summary><strong>What is No Starve?</strong></summary>
+                    <div>It helps people discover nearby available meals and connect safely for access, reducing waste.</div>
+                </details>
+                <details>
+                    <summary><strong>How do I create a campaign?</strong></summary>
+                    <div>Log in and go to <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a> to publish details such as location, crowd size, and closing time.</div>
+                </details>
+                <details>
+                    <summary><strong>How do endorsements and sharing work?</strong></summary>
+                    <div>On the homepage, use the Endorse and Share buttons on each campaign to support and spread the word.</div>
+                </details>
+                <details>
+                    <summary><strong>Is it free to use?</strong></summary>
+                    <div>Yes. The platform is free for donors, NGOs, volunteers, and users.</div>
+                </details>
+                <details>
+                    <summary><strong>How do I update my details?</strong></summary>
+                    <div>Visit your <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a> to edit phone and address.</div>
+                </details>
+            </div>
+            <div class="card-plain" aria-label="Quick Links" style="margin-top:10px;">
+                <h3 class="section-title">Quick Links</h3>
+                <ul class="list-clean">
+                    <li><a href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
+                    <li><a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a></li>
+                    <li><a href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a></li>
+                    <?php if (is_logged_in()): ?>
+                        <li><a href="<?= h($BASE_PATH) ?>logout.php">Logout</a></li>
+                    <?php else: ?>
+                        <li><a href="<?= h($BASE_PATH) ?>login.php">Login</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+            <div class="card-plain" aria-label="Feedback" style="margin-top:10px;">
+                <h3 class="section-title">Feedback</h3>
+                <?php if ($footer_note !== ''): ?>
+                    <div role="status" style="margin-bottom:8px;"><?= h($footer_note) ?></div>
+                <?php endif; ?>
+                <form method="post" action="<?= h($BASE_PATH) ?>index.php">
+                    <input type="hidden" name="action" value="send_feedback">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <input type="text" name="fb_name" placeholder="Your name" style="flex:1; min-width:180px; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                        <input type="email" name="fb_email" placeholder="Email (optional)" style="flex:1; min-width:180px; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    <textarea name="fb_message" rows="3" placeholder="Your feedback" style="width:100%; margin-top:8px; padding:10px; border:1px solid var(--border); border-radius:8px;"></textarea>
+                    <div class="actions" style="margin-top:8px; justify-content:center;">
+                        <button class="btn pill" type="submit">Send Feedback</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-plain" aria-label="Contact" style="margin-top:10px;">
+                <h3 class="section-title">Contact Us</h3>
+                <form method="post" action="<?= h($BASE_PATH) ?>index.php">
+                    <input type="hidden" name="action" value="send_contact">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <input type="email" name="ct_email" placeholder="Your email" style="flex:1; min-width:180px; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                        <input type="text" name="ct_subject" placeholder="Subject" style="flex:1; min-width:180px; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    <textarea name="ct_message" rows="3" placeholder="Your message" style="width:100%; margin-top:8px; padding:10px; border:1px solid var(--border); border-radius:8px;"></textarea>
+                    <div class="actions" style="margin-top:8px; justify-content:center;">
+                        <button class="btn pill" type="submit">Send Message</button>
+                    </div>
+                </form>
+            </div>
             <small>&copy; 2025 No Starve</small>
         </div>
     </footer>
+    <script>
+    // Expose BASE_PATH to JS for building internal requests correctly under subfolder or vhost
+    window.BASE_PATH = '<?= h($BASE_PATH) ?>';
+    </script>
+    <script>
+    (function(){
+      try {
+        var params = new URLSearchParams(window.location.search || '');
+        var created = parseInt(params.get('created') || '', 10);
+        if (created && created > 0) {
+          var el = document.getElementById('campaign-' + created);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            var oldBox = el.style.boxShadow;
+            var oldBg = el.style.backgroundColor;
+            el.style.boxShadow = '0 0 0 3px #1a7aff66';
+            el.style.backgroundColor = 'rgba(26,122,255,0.06)';
+            setTimeout(function(){ el.style.boxShadow = oldBox; el.style.backgroundColor = oldBg; }, 2500);
+            var endorseParam = (params.get('endorse') || '').toLowerCase();
+            var shareParam = params.get('share');
+            if (endorseParam) {
+              var btn = document.querySelector('.endorse-btn[data-campaign-id="' + created + '"]');
+              if (btn) {
+                setTimeout(function(){ btn.click(); }, 300);
+              }
+            }
+            if (shareParam) {
+              var sbtn = document.querySelector('.share-btn[data-campaign-id="' + created + '"]');
+              if (sbtn) {
+                setTimeout(function(){ sbtn.click(); }, 600);
+              }
+            }
+          }
+        }
+      } catch (e) {}
+    })();
+    </script>
     <script>
     // Live counters: fetch from server and update periodically
     (function(){
@@ -252,6 +446,50 @@ $listings = $listingsStmt->fetchAll();
       }
       updateCounters();
       setInterval(updateCounters, 10000);
+    })();
+    // Endorse and Share handlers
+    (function(){
+      function qsAll(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+      // Endorse
+      qsAll('.endorse-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var id = parseInt(btn.getAttribute('data-campaign-id'), 10);
+          if (!id || btn.disabled) return;
+          btn.disabled = true;
+          var body = 'campaign_id=' + encodeURIComponent(id) + '&kind=campaign';
+          fetch((window.BASE_PATH || '<?= h($BASE_PATH) ?>') + 'endorse.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body
+          }).then(function(r){ return r.json(); })
+            .then(function(j){
+              var countEl = document.querySelector('.endorse-count[data-campaign-id="' + id + '"]');
+              if (countEl && j && typeof j.count === 'number') { countEl.textContent = j.count.toString(); }
+              btn.disabled = false;
+            }).catch(function(){ btn.disabled = false; });
+        });
+      });
+
+      // Share
+      function shareCampaign(id){
+        var url = (window.location.origin || '') + (window.BASE_PATH || '<?= h($BASE_PATH) ?>') + 'index.php#campaign-' + id;
+        var title = 'No Starve Campaign';
+        if (navigator.share) {
+          navigator.share({ title: title, url: url }).catch(function(){});
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function(){ alert('Link copied to clipboard'); }).catch(function(){ alert(url); });
+        } else {
+          alert(url);
+        }
+      }
+      qsAll('.share-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var id = parseInt(btn.getAttribute('data-campaign-id'), 10);
+          if (!id) return;
+          shareCampaign(id);
+        });
+      });
     })();
     </script>
 </body>

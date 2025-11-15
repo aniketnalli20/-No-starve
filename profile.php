@@ -222,6 +222,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
 
     <footer class="site-footer">
         <div class="container footer-inner">
+            <div class="card-plain faq" aria-label="FAQ" style="margin-top:10px;">
+                <h3 class="section-title">FAQ</h3>
+                <details>
+                    <summary><strong>What is No Starve?</strong></summary>
+                    <div>It helps people discover nearby available meals and connect safely for access, reducing waste.</div>
+                </details>
+                <details>
+                    <summary><strong>How do I create a campaign?</strong></summary>
+                    <div>Use <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a> to publish your event with location, crowd size, and closing time.</div>
+                </details>
+                <details>
+                    <summary><strong>How do endorsements and sharing work?</strong></summary>
+                    <div>From the homepage, endorse campaigns you support and share them to reach more people.</div>
+                </details>
+                <details>
+                    <summary><strong>Is it free to use?</strong></summary>
+                    <div>Yes. The platform is free for donors, NGOs, volunteers, and users.</div>
+                </details>
+                <details>
+                    <summary><strong>How do I update my details?</strong></summary>
+                    <div>Use this page to edit your phone and address; changes save instantly after submission.</div>
+                </details>
+            </div>
             <small>&copy; 2025 No Starve</small>
         </div>
     </footer>

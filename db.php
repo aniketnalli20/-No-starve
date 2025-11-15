@@ -202,13 +202,22 @@ try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN image_url TEXT'); } catch (Th
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN closing_time TEXT'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN latitude DOUBLE PRECISION'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN longitude DOUBLE PRECISION'); } catch (Throwable $e) {}
-try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN community VARCHAR(255)'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN endorse_campaign INT DEFAULT 0'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN endorse_contributor INT DEFAULT 0'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD COLUMN user_id INT'); } catch (Throwable $e) {}
+try { $pdo->exec('ALTER TABLE campaigns ADD CONSTRAINT fk_campaigns_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL'); } catch (Throwable $e) {}
+
+// One-time migration: ensure legacy campaigns are visible
+// Convert NULL/empty/draft statuses to 'open' so they show in the recent campaigns feed
+try { $pdo->exec("UPDATE campaigns SET status = 'open' WHERE status IS NULL OR status = '' OR status = 'draft'"); } catch (Throwable $e) {}
+// Remove legacy default summary text from campaigns
+try { $pdo->exec("UPDATE campaigns SET summary = '' WHERE summary = 'Surplus food available; volunteers needed.'"); } catch (Throwable $e) {}
 // Remove category column from legacy installs
 try { $pdo->exec('ALTER TABLE listings DROP COLUMN category'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE reports DROP COLUMN category'); } catch (Throwable $e) {}
 try { $pdo->exec('ALTER TABLE campaigns DROP COLUMN category'); } catch (Throwable $e) {}
+// Remove deprecated community field from campaigns
+try { $pdo->exec('ALTER TABLE campaigns DROP COLUMN community'); } catch (Throwable $e) {}
 
 // Track individual endorsement events for auditing/analytics
 if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {

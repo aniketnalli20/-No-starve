@@ -130,7 +130,6 @@ function create_campaign(array $data, ?array $imageFile = null): int {
     global $pdo;
 
     $contributorName = trim((string)($data['contributor_name'] ?? ''));
-    $community = isset($data['community']) ? trim((string)$data['community']) : '';
     $location = trim((string)($data['location'] ?? ''));
     $crowdSize = isset($data['crowd_size']) && $data['crowd_size'] !== '' ? (int)$data['crowd_size'] : null;
     $closingTime = isset($data['closing_time']) ? trim((string)$data['closing_time']) : null;
@@ -139,15 +138,17 @@ function create_campaign(array $data, ?array $imageFile = null): int {
         throw new InvalidArgumentException('contributor_name, location, crowd_size, and closing_time are required');
     }
 
-    $title = trim((string)($data['title'] ?? 'Campaign by ' . $contributorName));
-    // Keep default summary generic to avoid duplicating meta details on the community page
-    $summary = trim((string)($data['summary'] ?? 'Surplus food available; volunteers needed.'));
+    // Default title should reflect the username directly, not "Campaign by ..."
+    $title = trim((string)($data['title'] ?? $contributorName));
+    // Do not inject a default summary; leave empty unless provided
+    $summary = trim((string)($data['summary'] ?? ''));
 
     $area = isset($data['area']) ? trim((string)$data['area']) : $location;
     $targetMeals = isset($data['target_meals']) && $data['target_meals'] !== '' ? (int)$data['target_meals'] : null;
     $startDate = isset($data['start_date']) ? trim((string)$data['start_date']) : null;
     $endDate = isset($data['end_date']) ? trim((string)$data['end_date']) : null;
-    $status = isset($data['status']) && $data['status'] !== '' ? trim((string)$data['status']) : 'draft';
+    // Default to 'open' so new campaigns show up immediately in the feed
+    $status = isset($data['status']) && $data['status'] !== '' ? trim((string)$data['status']) : 'open';
 
     $imageUrl = isset($data['image_url']) ? trim((string)$data['image_url']) : null;
     if (!$imageUrl && $imageFile && isset($imageFile['tmp_name']) && is_uploaded_file($imageFile['tmp_name'])) {
@@ -167,7 +168,8 @@ function create_campaign(array $data, ?array $imageFile = null): int {
     $latitude = isset($data['latitude']) && $data['latitude'] !== '' ? (float)$data['latitude'] : null;
     $longitude = isset($data['longitude']) && $data['longitude'] !== '' ? (float)$data['longitude'] : null;
 
-    $stmt = $pdo->prepare('INSERT INTO campaigns (title, summary, area, target_meals, start_date, end_date, status, created_at, contributor_name, community, location, crowd_size, image_url, closing_time, latitude, longitude)
+    $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+    $stmt = $pdo->prepare('INSERT INTO campaigns (title, summary, area, target_meals, start_date, end_date, status, created_at, contributor_name, location, crowd_size, image_url, closing_time, latitude, longitude, user_id)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->execute([
         $title,
@@ -179,13 +181,13 @@ function create_campaign(array $data, ?array $imageFile = null): int {
         $status,
         gmdate('Y-m-d H:i:s'),
         $contributorName,
-        $community,
         $location,
         $crowdSize,
         $imageUrl,
         $closingTime,
         $latitude,
         $longitude,
+        $userId,
     ]);
 
     return (int)$pdo->lastInsertId();
