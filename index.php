@@ -236,10 +236,17 @@ $campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, s
               <div class="stat"><span id="partners-count" class="stat-num">0</span><span class="stat-label">Partners</span></div>
             </div>
         </div>
+        <div id="campaigns-refresh" class="card-plain" style="display:none; margin-top:12px; text-align:center;">
+            <div class="section-title" style="border-bottom:none;">End of campaigns</div>
+            <p>Refresh to see the latest campaigns.</p>
+            <div class="actions" style="justify-content:center; margin-top:6px;">
+                <button type="button" class="btn pill" onclick="location.reload()">Refresh</button>
+            </div>
+        </div>
     </section>
 
     <!-- Recent Campaigns section placed directly under hero -->
-    <section id="recent-campaigns" class="container" aria-label="Recent Campaigns" style="max-width: var(--content-max); padding: var(--content-pad);">
+    <section id="recent-campaigns" class="container fullbleed" aria-label="Recent Campaigns" style="padding: var(--content-pad);">
         <div class="heading" style="margin-bottom: 12px; display:flex; align-items:center; justify-content:space-between;">
             <span>Recent Campaigns</span>
             <a class="btn pill" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a>
@@ -395,6 +402,23 @@ $campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, s
     <script>
     // Expose BASE_PATH to JS for building internal requests correctly under subfolder or vhost
     window.BASE_PATH = '<?= h($BASE_PATH) ?>';
+    </script>
+    <script>
+    (function(){
+      var sec = document.getElementById('recent-campaigns');
+      var msg = document.getElementById('campaigns-refresh');
+      function check(){
+        if (!sec || !msg) return;
+        var atBottom = (window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 10);
+        var rect = sec.getBoundingClientRect();
+        var endVisible = rect.bottom <= (window.innerHeight + 20);
+        msg.style.display = (atBottom && endVisible) ? 'block' : 'none';
+      }
+      window.addEventListener('scroll', check, { passive: true });
+      window.addEventListener('resize', check);
+      document.addEventListener('DOMContentLoaded', check);
+      check();
+    })();
     </script>
     <script>
     (function(){

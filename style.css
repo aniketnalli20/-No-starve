@@ -1058,3 +1058,11 @@ ul { list-style: none; padding-left: 0; }
 #community-posts .tweet-actions { margin-top: auto; }
 .footer-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
 @media (min-width: 840px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+.fullbleed {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: var(--content-pad);
+  padding-right: var(--content-pad);
+}
