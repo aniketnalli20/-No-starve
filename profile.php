@@ -278,25 +278,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
         <div class="container footer-inner">
             <div class="footer-inspo">
                 <div>
-                    <div class="footer-brand">No Starve</div>
-                    <div class="footer-cols">
-                        <div class="footer-col">
-                            <h4>Resources</h4>
-                            <ul class="footer-links list-clean">
-                                <li><a href="<?= h($BASE_PATH) ?>index.php#hero">Blog</a></li>
-                                <li><a href="<?= h($BASE_PATH) ?>index.php#recent-campaigns">Guides</a></li>
-                                <li><a href="<?= h($BASE_PATH) ?>index.php#hero">Help Center</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-col">
-                            <h4>Company</h4>
-                            <ul class="footer-links list-clean">
-                                <li><a href="<?= h($BASE_PATH) ?>profile.php">About</a></li>
-                                <li><a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Careers</a></li>
-                                <li><a href="<?= h($BASE_PATH) ?>faqs.php">FAQs</a></li>
-                            </ul>
-                        </div>
-                    </div>
                     <div class="faq" style="margin-top:10px;" id="faqs">
                         <h4>FAQs</h4>
                         <details>
@@ -315,6 +296,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                             <summary><strong>When are coins updated?</strong></summary>
                             <div>They update automatically when you open your Profile.</div>
                         </details>
+                    </div>
+                    <div class="footer-brand">No Starve</div>
+                    <div class="footer-cols">
+                        <div class="footer-col">
+                            <h4>Resources</h4>
+                            <ul class="footer-links list-clean">
+                                <li><a href="<?= h($BASE_PATH) ?>index.php#hero">Blog</a></li>
+                                <li><a href="<?= h($BASE_PATH) ?>index.php#recent-campaigns">Guides</a></li>
+                                <li><a href="<?= h($BASE_PATH) ?>index.php#hero">Help Center</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Company</h4>
+                            <ul class="footer-links list-clean">
+                                <li><a href="<?= h($BASE_PATH) ?>profile.php">About</a></li>
+                                <li><a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Careers</a></li>
+                                <li><a href="#faqs">FAQs</a></li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="footer-social">
                         <a href="#" aria-label="Twitter">t</a>

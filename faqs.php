@@ -32,7 +32,7 @@ require_once __DIR__ . '/app.php';
     <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);" aria-label="FAQs">
         <section class="card-plain">
             <h2 class="section-title">FAQs</h2>
-            <div class="faq">
+            <div class="faq" id="faqs">
                 <details open>
                     <summary><strong>What is No Starve?</strong></summary>
                     <div>No Starve helps users discover nearby available meals and connect safely for convenient access, reducing waste.</div>
@@ -80,7 +80,7 @@ require_once __DIR__ . '/app.php';
                             <ul class="footer-links list-clean">
                                 <li><a href="<?= h($BASE_PATH) ?>profile.php">About</a></li>
                                 <li><a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Careers</a></li>
-                                <li><a href="<?= h($BASE_PATH) ?>faqs.php">FAQs</a></li>
+                                <li><a href="#faqs">FAQs</a></li>
                             </ul>
                         </div>
                     </div>
