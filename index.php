@@ -163,7 +163,7 @@ $listings = $listingsStmt->fetchAll();
     </header>
     <section id="hero" class="hero"<?= $heroUrl ? ' style="--hero-img: url(' . h($heroUrl) . ');"' : '' ?> >
         <div class="wrap">
-            <h1 class="hero-title break-100">We strive to make a real difference by helping people find available meals nearby, reducing food waste, and supporting those in need.</h1>
+            <h1 class="hero-title break-100">We strive to make a real difference by helping people find available meals nearby</h1>
             <p class="hero-sub break-100">Together Against Food Waste</p>
             <div class="hero-actions">
               <a class="btn accent pill" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Get Started</a>
