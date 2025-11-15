@@ -113,22 +113,22 @@ try {
     </div>
   </header>
 
-  <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);">
+  <main class="container">
     <h1>Admin Dashboard</h1>
     <?php if (!empty($errors)): ?>
-      <div class="alert error" role="alert" style="margin:12px 0;">
+      <div class="card-plain is-highlight" role="alert">
         <ul class="list-clean">
           <?php foreach ($errors as $err): ?><li><?= h($err) ?></li><?php endforeach; ?>
         </ul>
       </div>
     <?php endif; ?>
     <?php if ($message): ?>
-      <div class="alert success" role="status" style="margin:12px 0;"><?= h($message) ?></div>
+      <div class="card-plain" role="status"><?= h($message) ?></div>
     <?php endif; ?>
 
     <section class="card-plain" aria-label="Users">
       <h2 class="section-title">Users</h2>
-      <form method="post" style="margin-bottom:12px;" class="form">
+      <form method="post" class="form">
         <input type="hidden" name="action" value="add_user">
         <input name="username" type="text" class="input" placeholder="Username" required>
         <input name="email" type="email" class="input" placeholder="Email" required>
@@ -136,19 +136,19 @@ try {
         <label style="display:inline-flex; align-items:center; gap:6px; margin-top:6px;"><input type="checkbox" name="is_admin" value="1"> Make Admin</label>
         <div class="actions"><button type="submit" class="btn pill">Add User</button></div>
       </form>
-      <form method="post" style="margin-bottom:12px;" class="form">
+      <form method="post" class="form">
         <input type="hidden" name="action" value="autogen_users">
         <input name="count" type="number" class="input" placeholder="Count (max 500)" min="1" max="500" required>
         <div class="actions"><button type="submit" class="btn pill">Auto-generate</button></div>
       </form>
-      <div class="listings-grid" style="grid-template-columns: 1fr;">
+      <div class="listings-grid">
         <div class="card-plain">
           <strong>Users (latest)</strong>
           <ul class="list-clean">
             <?php foreach ($users as $u): ?>
               <li>
                 #<?= (int)$u['id'] ?> · <?= h($u['username']) ?> · <?= h($u['email']) ?> <?= ((int)($u['is_admin'] ?? 0) === 1 ? '(admin)' : '') ?>
-                <form method="post" style="display:inline; margin-left:8px;">
+                <form method="post" style="display:inline;">
                   <input type="hidden" name="action" value="delete_user">
                   <input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
                   <button type="submit" class="btn pill">Delete</button>
@@ -162,7 +162,7 @@ try {
 
     <section class="card-plain" aria-label="Campaigns" style="margin-top:12px;">
       <h2 class="section-title">Campaigns</h2>
-      <form method="post" class="form" style="margin-bottom:12px;">
+      <form method="post" class="form">
         <input type="hidden" name="action" value="create_campaign">
         <input name="title" type="text" class="input" placeholder="Title" required>
         <textarea name="summary" class="input" placeholder="Summary" required></textarea>
@@ -174,14 +174,14 @@ try {
         </select>
         <div class="actions"><button type="submit" class="btn pill">Create Campaign</button></div>
       </form>
-      <div class="listings-grid" style="grid-template-columns: 1fr;">
+      <div class="listings-grid">
         <div class="card-plain">
           <strong>Campaigns (latest)</strong>
           <ul class="list-clean">
             <?php foreach ($campaigns as $c): ?>
               <li>
                 #<?= (int)$c['id'] ?> · <?= h($c['title']) ?> · status: <?= h($c['status']) ?> · <?= h($c['area'] ?? '') ?>
-                <form method="post" style="display:inline; margin-left:8px;">
+                <form method="post" style="display:inline;">
                   <input type="hidden" name="action" value="update_campaign_status">
                   <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
                   <select name="status" class="input" style="display:inline-block; width:auto;">
@@ -191,7 +191,7 @@ try {
                   </select>
                   <button type="submit" class="btn pill">Update</button>
                 </form>
-                <form method="post" style="display:inline; margin-left:8px;">
+                <form method="post" style="display:inline;">
                   <input type="hidden" name="action" value="delete_campaign">
                   <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
                   <button type="submit" class="btn pill">Delete</button>
@@ -205,13 +205,13 @@ try {
 
     <section class="card-plain" aria-label="Rewards" style="margin-top:12px;">
       <h2 class="section-title">Rewards</h2>
-      <form method="post" class="form" style="margin-bottom:12px;">
+      <form method="post" class="form">
         <input type="hidden" name="action" value="award_coins">
         <input name="user_id" type="number" class="input" placeholder="User ID" required>
         <input name="amount" type="number" class="input" placeholder="Amount" required min="1">
         <div class="actions"><button type="submit" class="btn pill">Award Coins</button></div>
       </form>
-      <div class="listings-grid" style="grid-template-columns: 1fr;">
+      <div class="listings-grid">
         <div class="card-plain">
           <strong>Wallets (latest)</strong>
           <ul class="list-clean">
@@ -225,7 +225,7 @@ try {
 
     <section class="card-plain" aria-label="Database Tools" style="margin-top:12px;">
       <h2 class="section-title">Database Tools</h2>
-      <div class="listings-grid" style="grid-template-columns: 1fr;">
+      <div class="listings-grid">
         <div class="card-plain">
           <strong>Tables</strong>
           <ul class="list-clean">
