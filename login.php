@@ -25,36 +25,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Incorrect password';
             } else {
                 $_SESSION['user_id'] = (int)$user['id'];
-                // Persist selected login role in session for downstream logic
+                // Persist selected login role (user or contributor)
                 $role = strtolower(trim((string)($_POST['role'] ?? 'user')));
-                if (!in_array($role, ['user','contributor','admin'], true)) { $role = 'user'; }
+                if ($role !== 'contributor') { $role = 'user'; }
                 $_SESSION['login_role'] = $role;
-                // Admin check
-                if ($role === 'admin') {
-                    $st = $pdo->prepare('SELECT is_admin FROM users WHERE id = ?');
-                    $st->execute([(int)$user['id']]);
-                    $row = $st->fetch(PDO::FETCH_ASSOC);
-                    if (!$row || (int)($row['is_admin'] ?? 0) !== 1) {
-                        unset($_SESSION['user_id']);
-                        unset($_SESSION['login_role']);
-                        $_SESSION['is_admin'] = 0;
-                        $error = 'Not authorized as admin';
-                    } else {
-                        $_SESSION['is_admin'] = 1;
-                    }
-                } else {
-                    $_SESSION['is_admin'] = 0;
-                }
-                $dest = ($role === 'admin') ? 'admin/index.php' : 'index.php#hero';
+                // Auto‑recognize admin
+                $st = $pdo->prepare('SELECT is_admin FROM users WHERE id = ?');
+                $st->execute([(int)$user['id']]);
+                $row = $st->fetch(PDO::FETCH_ASSOC);
+                $_SESSION['is_admin'] = ($row && (int)($row['is_admin'] ?? 0) === 1) ? 1 : 0;
+                $dest = ($_SESSION['is_admin'] === 1) ? 'admin/index.php' : 'index.php#hero';
                 if ($next !== '') {
                     if (preg_match('/^[A-Za-z0-9_\-]+(\.php)?(\?.*)?$/', $next)) {
                         $dest = $next;
                     }
                 }
-                if (!$error) {
-                    header('Location: ' . $BASE_PATH . $dest);
-                    exit;
-                }
+                header('Location: ' . $BASE_PATH . $dest);
+                exit;
                 }
         } catch (Throwable $e) {
             $error = 'Login failed; please try again later';
@@ -110,10 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="community-chip" aria-label="Contributor">
                             <input type="radio" name="role" value="contributor">
                             <span class="text">Contributor</span>
-                        </label>
-                        <label class="community-chip" aria-label="Admin">
-                            <input type="radio" name="role" value="admin">
-                            <span class="text">Admin</span>
                         </label>
                     </div>
                 </div>
