@@ -77,12 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $idxPhone = $map['phone'] ?? ($map['mobile'] ?? ($map['contact'] ?? null));
         $idxAddress = $map['address'] ?? ($map['street'] ?? ($map['location'] ?? null));
         $idxUsername = $map['username'] ?? null;
+        $idxAdmin = $map['admin'] ?? ($map['is_admin'] ?? ($map['admin_flag'] ?? ($map['target'] ?? null)));
 
         $inserted = 0;
         $skipped = 0;
         $seenEmails = [];
         $now = gmdate('Y-m-d H:i:s');
-        $stmt = $pdo->prepare('INSERT INTO users (username, email, phone, address, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE phone = VALUES(phone), address = VALUES(address)');
+        $stmt = $pdo->prepare('INSERT INTO users (username, email, phone, address, password_hash, created_at, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE phone = VALUES(phone), address = VALUES(address), is_admin = VALUES(is_admin)');
 
         $rowNum = 1; // account for header
         while (($row = fgetcsv($fp)) !== false) {
@@ -111,10 +112,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $phone = gen_phone($rowNum);
             }
             $address = ($idxAddress !== null && isset($row[$idxAddress])) ? trim((string)$row[$idxAddress]) : '';
+            $isAdmin = 0;
+            if ($idxAdmin !== null && isset($row[$idxAdmin])) {
+                $raw = strtolower(trim((string)$row[$idxAdmin]));
+                if ($raw === '1' || $raw === 'true' || $raw === 'yes' || $raw === 'y') { $isAdmin = 1; }
+            }
             $passwordHash = password_hash('demo1234', PASSWORD_DEFAULT);
 
             try {
-                $stmt->execute([$username, $email, $phone, $address, $passwordHash, $now]);
+                $stmt->execute([$username, $email, $phone, $address, $passwordHash, $now, $isAdmin]);
                 // Log each imported user entry to a text file
                 log_user_entry($username, $email, $phone, $address, 'import');
                 $affected = $stmt->rowCount();

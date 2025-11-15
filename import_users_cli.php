@@ -70,7 +70,7 @@ $skipped = 0;
 $details = [];
 $seenEmails = [];
 $now = gmdate('Y-m-d H:i:s');
-$stmt = $pdo->prepare('INSERT INTO users (username, email, phone, address, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE phone = VALUES(phone), address = VALUES(address)');
+$stmt = $pdo->prepare('INSERT INTO users (username, email, phone, address, password_hash, created_at, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE phone = VALUES(phone), address = VALUES(address), is_admin = VALUES(is_admin)');
 
 $rowNum = 1; // header line accounted for
 while (($row = fgetcsv($fp)) !== false) {
@@ -97,7 +97,14 @@ while (($row = fgetcsv($fp)) !== false) {
     $passwordHash = password_hash('demo1234', PASSWORD_DEFAULT);
 
     try {
-        $stmt->execute([$username, $email, $phone, $address, $passwordHash, $now]);
+    $isAdmin = 0;
+    // If CSV second column seems like an admin flag or there is an 'admin' column, set it
+    $idxAdmin = $map['admin'] ?? ($map['is_admin'] ?? ($map['admin_flag'] ?? ($map['target'] ?? null)));
+    if ($idxAdmin !== null && isset($row[$idxAdmin])) {
+        $raw = strtolower(trim((string)$row[$idxAdmin]));
+        if ($raw === '1' || $raw === 'true' || $raw === 'yes' || $raw === 'y') { $isAdmin = 1; }
+    }
+    $stmt->execute([$username, $email, $phone, $address, $passwordHash, $now, $isAdmin]);
         $affected = $stmt->rowCount();
         if ($affected === 1) { $inserted++; } else { $skipped++; }
     } catch (Throwable $e) {
