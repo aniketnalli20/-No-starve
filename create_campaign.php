@@ -8,6 +8,7 @@ $user = current_user();
 
 $errors = [];
 $successId = null;
+$footer_note = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -15,6 +16,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $successId = $id;
     } catch (Throwable $e) {
         $errors[] = $e->getMessage();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_feedback') {
+    $name = trim((string)($_POST['fb_name'] ?? ''));
+    $email = trim((string)($_POST['fb_email'] ?? ''));
+    $msg = trim((string)($_POST['fb_message'] ?? ''));
+    if ($name !== '' && $msg !== '') {
+        $line = gmdate('c') . ' | name=' . str_replace(["\r","\n"], '', $name) . ' | email=' . str_replace(["\r","\n"], '', $email) . ' | ip=' . ($_SERVER['REMOTE_ADDR'] ?? '') . ' | msg=' . str_replace(["\r","\n"], ' ', $msg);
+        @file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'feedback.txt', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $footer_note = 'Thanks for your feedback.';
+    } else {
+        $footer_note = 'Please provide your name and message.';
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_contact') {
+    $email = trim((string)($_POST['ct_email'] ?? ''));
+    $subject = trim((string)($_POST['ct_subject'] ?? ''));
+    $msg = trim((string)($_POST['ct_message'] ?? ''));
+    if ($subject !== '' && $msg !== '') {
+        $line = gmdate('c') . ' | subject=' . str_replace(["\r","\n"], '', $subject) . ' | email=' . str_replace(["\r","\n"], '', $email) . ' | ip=' . ($_SERVER['REMOTE_ADDR'] ?? '') . ' | msg=' . str_replace(["\r","\n"], ' ', $msg);
+        @file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'contact_messages.txt', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $footer_note = 'Message sent.';
+    } else {
+        $footer_note = 'Please provide a subject and message.';
     }
 }
 ?>
@@ -298,28 +325,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <footer class="site-footer">
         <div class="container footer-inner">
-            <div class="card-plain faq" aria-label="FAQ" style="margin-top:10px;">
-                <h3 class="section-title">FAQ</h3>
-                <details>
-                    <summary><strong>What is No Starve?</strong></summary>
-                    <div>It helps people discover nearby available meals and connect safely for access, reducing waste.</div>
-                </details>
-                <details>
-                    <summary><strong>How do I create a campaign?</strong></summary>
-                    <div>Fill the form on this page and submit. Your campaign appears on the homepage right away.</div>
-                </details>
-                <details>
-                    <summary><strong>How do endorsements and sharing work?</strong></summary>
-                    <div>After creating, use the provided buttons to endorse your campaign or share its link.</div>
-                </details>
-                <details>
-                    <summary><strong>Is it free to use?</strong></summary>
-                    <div>Yes. The platform is free for donors, NGOs, volunteers, and users.</div>
-                </details>
-                <details>
-                    <summary><strong>Where can I manage my info?</strong></summary>
-                    <div>Go to your <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a> to update phone and address.</div>
-                </details>
+            <div class="footer-grid">
+                <div class="card-plain faq" aria-label="FAQ" style="margin-top:8px;">
+                    <h3 class="section-title">FAQ</h3>
+                    <details>
+                        <summary><strong>What is No Starve?</strong></summary>
+                        <div>It helps people discover nearby available meals and connect safely for access, reducing waste.</div>
+                    </details>
+                    <details>
+                        <summary><strong>How do I create a campaign?</strong></summary>
+                        <div>Fill the form on this page and submit. Your campaign appears on the homepage right away.</div>
+                    </details>
+                    <details>
+                        <summary><strong>How do endorsements and sharing work?</strong></summary>
+                        <div>After creating, use the provided buttons to endorse your campaign or share its link.</div>
+                    </details>
+                    <details>
+                        <summary><strong>Is it free to use?</strong></summary>
+                        <div>Yes. The platform is free for donors, NGOs, volunteers, and users.</div>
+                    </details>
+                    <details>
+                        <summary><strong>Where can I manage my info?</strong></summary>
+                        <div>Go to your <a href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a> to update phone and address.</div>
+                    </details>
+                </div>
+                <div class="card-plain" aria-label="Quick Links" style="margin-top:8px;">
+                    <h3 class="section-title">Quick Links</h3>
+                    <ul class="list-clean">
+                        <li><a href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
+                        <li><a href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a></li>
+                        <li><a href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a></li>
+                        <?php if (is_logged_in()): ?>
+                            <li><a href="<?= h($BASE_PATH) ?>logout.php">Logout</a></li>
+                        <?php else: ?>
+                            <li><a href="<?= h($BASE_PATH) ?>login.php">Login</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+                <div class="card-plain" aria-label="Feedback" style="margin-top:8px;">
+                    <h3 class="section-title">Feedback</h3>
+                    <?php if ($footer_note !== ''): ?>
+                        <div role="status" style="margin-bottom:8px;"><?= h($footer_note) ?></div>
+                    <?php endif; ?>
+                    <form method="post" action="<?= h($BASE_PATH) ?>create_campaign.php">
+                        <input type="hidden" name="action" value="send_feedback">
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <input type="text" name="fb_name" placeholder="Your name" style="flex:1; min-width:180px; padding:8px; border:1px solid var(--border); border-radius:8px;">
+                            <input type="email" name="fb_email" placeholder="Email (optional)" style="flex:1; min-width:180px; padding:8px; border:1px solid var(--border); border-radius:8px;">
+                        </div>
+                        <textarea name="fb_message" rows="3" placeholder="Your feedback" style="width:100%; margin-top:6px; padding:8px; border:1px solid var(--border); border-radius:8px;"></textarea>
+                        <div class="actions" style="margin-top:6px; justify-content:center;">
+                            <button class="btn pill" type="submit">Send Feedback</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-plain" aria-label="Contact" style="margin-top:8px;">
+                    <h3 class="section-title">Contact Us</h3>
+                    <form method="post" action="<?= h($BASE_PATH) ?>create_campaign.php">
+                        <input type="hidden" name="action" value="send_contact">
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <input type="email" name="ct_email" placeholder="Your email" style="flex:1; min-width:180px; padding:8px; border:1px solid var(--border); border-radius:8px;">
+                            <input type="text" name="ct_subject" placeholder="Subject" style="flex:1; min-width:180px; padding:8px; border:1px solid var(--border); border-radius:8px;">
+                        </div>
+                        <textarea name="ct_message" rows="3" placeholder="Your message" style="width:100%; margin-top:6px; padding:8px; border:1px solid var(--border); border-radius:8px;"></textarea>
+                        <div class="actions" style="margin-top:6px; justify-content:center;">
+                            <button class="btn pill" type="submit">Send Message</button>
+                        </div>
+                    </form>
+                </div>
             </div>
             <small>&copy; 2025 No Starve</small>
         </div>

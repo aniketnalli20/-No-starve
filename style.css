@@ -30,6 +30,22 @@ body {
 .site-footer { border-top: 1px solid var(--border); border-bottom: none; }
 .site-header .wrap, .site-footer .wrap { width: 100%; max-width: var(--content-max); margin: 0 auto; padding: 12px var(--content-pad); }
 .site-footer .footer-inner { text-align: center; }
+/* Full-bleed footer: stretch content to full screen width */
+.site-footer .footer-inner {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: var(--content-pad);
+  padding-right: var(--content-pad);
+}
+/* Make footer cards span full width */
+.site-footer .card-plain { max-width: none; margin-left: 0; margin-right: 0; width: 100%; padding: 12px 14px; border-radius: 12px; }
+.site-footer .section-title { font-size: clamp(1rem, 1.2vw + 0.6rem, 1.3rem); margin-bottom: 6px; }
+.site-footer .list-clean li { padding: 6px 0; }
+.site-footer .actions { margin-top: 6px; }
+.site-footer .faq details { padding: 6px 0; }
+.site-footer input, .site-footer textarea { padding: 8px; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .brand { font-weight: 800; letter-spacing: -0.01em; text-decoration: none; color: var(--text); }
 .nav-links { display: flex; align-items: center; gap: 10px; }
@@ -1040,3 +1056,5 @@ ul { list-style: none; padding-left: 0; }
 }
 #community-posts .tweet-body { flex: 1 1 auto; }
 #community-posts .tweet-actions { margin-top: auto; }
+.footer-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 840px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
