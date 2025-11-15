@@ -208,6 +208,12 @@ ul { list-style: none; padding-left: 0; }
 .page-profile .profile-grid .label { color: var(--muted); }
 .page-profile .profile-actions { margin-top: 16px; display: flex; gap: 10px; }
 .page-profile .input-hint { display: block; margin-top: 6px; color: var(--muted); font-size: 0.9em; }
+.page-profile .form .input { width: 100%; background: white; border: 1px solid var(--border); padding: 12px 14px; border-radius: 12px; margin-top: 8px; box-shadow: #cff0ff 0px 8px 8px -6px; }
+.page-profile .form .input:focus { outline: none; border-color: #00A693; }
+.page-profile .card-plain { border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: rgba(133, 189, 215, 0.3) 0px 20px 20px -20px; }
+.preset-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.preset-group .chip { padding: 6px 10px; border: 1px solid var(--border); border-radius: 14px; background: #fff; cursor: pointer; font-size: 0.9em; }
+.preset-group .chip:hover { background: #f8f8f8; }
 
 @media (max-width: 800px) {
   .page-profile .profile-grid { grid-template-columns: 1fr; }
@@ -674,6 +680,49 @@ ul { list-style: none; padding-left: 0; }
   transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
 }
 .create-page .btn-bhargav:hover::before { transform: translate3d(100%, 0, 0); }
+
+/* Reuse Create Campaign button style on Profile page */
+.page-profile .btn-bhargav {
+  outline: none;
+  cursor: pointer;
+  border: none;
+  padding: 0.9rem 2rem;
+  margin: 0;
+  font-family: inherit;
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 0.05rem;
+  font-weight: 700;
+  border-radius: 500px;
+  overflow: hidden;
+  background: #66ff66;
+  color: ghostwhite;
+}
+.page-profile .btn-bhargav span {
+  position: relative;
+  z-index: 10;
+  transition: color 0.4s;
+}
+.page-profile .btn-bhargav:hover span { color: black; }
+.page-profile .btn-bhargav::before,
+.page-profile .btn-bhargav::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.page-profile .btn-bhargav::before {
+  content: "";
+  background: #000;
+  width: 120%;
+  left: -10%;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+.page-profile .btn-bhargav:hover::before { transform: translate3d(100%, 0, 0); }
 
 /* From Uiverse.io by Allyhere: Donate-style CTA used for Create Campaign */
 .btn-donate {

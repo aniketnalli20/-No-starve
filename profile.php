@@ -93,10 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                 <div><?= h($user['email'] ?? '') ?></div>
 
                 <div class="label"><strong>Phone</strong></div>
-                <div><?= h($user['phone'] ?? '') ?></div>
+                <div><?= h(($user['phone'] ?? '') !== '' ? $user['phone'] : 'Not provided') ?></div>
 
                 <div class="label"><strong>Address</strong></div>
-                <div><?= h($user['address'] ?? '') ?></div>
+                <div><?= h(($user['address'] ?? '') !== '' ? $user['address'] : 'Not provided') ?></div>
 
                 <div class="label"><strong>Member Since</strong></div>
                 <div><?= h($user['created_at'] ?? '') ?></div>
@@ -104,23 +104,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
             <form method="post" action="<?= h($BASE_PATH) ?>profile.php" class="form" style="margin-top:16px;">
                 <input type="hidden" name="action" value="update_profile">
                 <label for="phone"><strong>Phone</strong></label>
-                <input id="phone" name="phone" type="text" class="input" placeholder="e.g., +91 98765 43210" value="<?= h($user['phone'] ?? '') ?>" pattern="[0-9+\-\s]{7,30}" autocomplete="tel" aria-describedby="phone-hint" />
+                <input id="phone" name="phone" type="text" class="input" placeholder="e.g., +91 98765 43210" value="<?= h($user['phone'] ?? '') ?>" pattern="[0-9+\-\s]{7,30}" autocomplete="tel" aria-describedby="phone-hint" list="phone-presets" />
                 <small id="phone-hint" class="input-hint">Use digits, +, -, spaces; 7–30 characters.</small>
+                <datalist id="phone-presets">
+                  <option value="+91 98765 43210"></option>
+                  <option value="+91 91234 56789"></option>
+                  <option value="+1 555-123-4567"></option>
+                </datalist>
+                <div class="preset-group" aria-label="Phone presets">
+                  <button type="button" class="chip" data-fill-phone="+91 98765 43210">Use sample</button>
+                  <button type="button" class="chip" data-clear="phone">Clear</button>
+                </div>
 
                 <label for="address" style="margin-top:10px;"><strong>Address</strong></label>
                 <textarea id="address" name="address" class="input" placeholder="Street, City, State, PIN" rows="3" style="resize: vertical;" autocomplete="street-address"><?= h($user['address'] ?? '') ?></textarea>
+                <div class="preset-group" aria-label="Address presets" style="margin-top:6px;">
+                  <button type="button" class="chip" data-fill-address="123 Main St, Bengaluru, KA 560001">Bengaluru sample</button>
+                  <button type="button" class="chip" data-fill-address="Sector 21, Noida, UP 201301">Noida sample</button>
+                  <button type="button" class="chip" data-clear="address">Clear</button>
+                </div>
 
                 <div class="profile-actions">
-                    <button type="submit" class="btn accent pill">Save Changes</button>
+                    <button type="submit" class="btn btn-bhargav"><span>Save Changes</span></button>
                     <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php#hero">Cancel</a>
                 </div>
             </form>
             <div class="profile-actions">
                 <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php#hero">Back to Home</a>
-                <a class="btn accent pill" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a>
+                <a class="btn btn-bhargav" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"><span>Create Campaign</span></a>
             </div>
         </div>
     </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.preset-group .chip').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var phoneInput = document.getElementById('phone');
+          var addressInput = document.getElementById('address');
+          if (this.dataset.fillPhone && phoneInput) { phoneInput.value = this.dataset.fillPhone; }
+          if (this.dataset.clear === 'phone' && phoneInput) { phoneInput.value = ''; }
+          if (this.dataset.fillAddress && addressInput) { addressInput.value = this.dataset.fillAddress; }
+          if (this.dataset.clear === 'address' && addressInput) { addressInput.value = ''; }
+        });
+      });
+    });
+    </script>
 
     <footer class="site-footer">
         <div class="container footer-inner">
