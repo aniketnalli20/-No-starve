@@ -115,6 +115,7 @@ try {
 
   <main class="container">
     <h1>Admin Dashboard</h1>
+    <div class="content-grid">
     <?php if (!empty($errors)): ?>
       <div class="card-plain is-highlight" role="alert">
         <ul class="list-clean">
@@ -126,7 +127,7 @@ try {
       <div class="card-plain" role="status"><?= h($message) ?></div>
     <?php endif; ?>
 
-    <section class="card-plain" aria-label="Users">
+    <section class="card-plain card-horizontal" aria-label="Users">
       <h2 class="section-title">Users</h2>
       <form method="post" class="form">
         <input type="hidden" name="action" value="add_user">
@@ -160,7 +161,7 @@ try {
       </div>
     </section>
 
-    <section class="card-plain" aria-label="Campaigns" style="margin-top:12px;">
+    <section class="card-plain card-horizontal" aria-label="Campaigns">
       <h2 class="section-title">Campaigns</h2>
       <form method="post" class="form">
         <input type="hidden" name="action" value="create_campaign">
@@ -203,7 +204,7 @@ try {
       </div>
     </section>
 
-    <section class="card-plain" aria-label="Rewards" style="margin-top:12px;">
+    <section class="card-plain card-horizontal" aria-label="Rewards">
       <h2 class="section-title">Rewards</h2>
       <form method="post" class="form">
         <input type="hidden" name="action" value="award_coins">
@@ -223,7 +224,7 @@ try {
       </div>
     </section>
 
-    <section class="card-plain" aria-label="Database Tools" style="margin-top:12px;">
+    <section class="card-plain card-horizontal" aria-label="Database Tools">
       <h2 class="section-title">Database Tools</h2>
       <div class="listings-grid">
         <div class="card-plain">
@@ -240,6 +241,7 @@ try {
         </div>
       </div>
     </section>
+    </div>
   </main>
 
   <footer class="site-footer">
