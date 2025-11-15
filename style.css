@@ -8,8 +8,8 @@
   --chip: #f7f7f7;      /* Light chips */
   --border: #e5e5e5;    /* Soft borders */
   /* Accent inspired by reference UI */
-  --accent: #6e53a3;
-  --accentText: #ffffff;
+  --accent: #b8ff35;    /* Lime accent (original) */
+  --accentText: #0c1a2b;/* Deep navy for contrast */
   --navy: #0c1a2b;      /* Dark section background */
   --navy-ghost: #0f2238;/* Slightly lighter navy */
   /* Layout containers */
@@ -926,13 +926,13 @@ ul { list-style: none; padding-left: 0; }
   padding: 8px 14px; 
   border-radius: 999px; 
   font-size: clamp(0.95rem, 0.6vw + 0.7rem, 1.1rem); 
-  border: 1px solid #e6def7; 
+  border: 1px solid #d8f6b1; 
   background: transparent; 
 }
-.nav-links a:hover, .nav-links a:focus-visible { background: transparent; border-color: #d8ccf3; }
-.nav-links a.active { background: transparent; border-color: #d8ccf3; }
+.nav-links a:hover, .nav-links a:focus-visible { background: transparent; border-color: #bfe68c; }
+.nav-links a.active { background: transparent; border-color: #bfe68c; }
 /* Rightmost nav button styled as primary CTA (Book a demo inspo) */
-.nav-links a:last-child { background: var(--accent); color: var(--accentText); border-color: transparent; box-shadow: 0 8px 20px rgba(110,83,163,0.25); }
+.nav-links a:last-child { background: var(--accent); color: var(--accentText); border-color: transparent; box-shadow: 0 8px 20px rgba(184,255,53,0.25); }
 .nav-links.open { display: flex; }
 @media (min-width: 768px) {
   .nav-toggle { display: none; }
