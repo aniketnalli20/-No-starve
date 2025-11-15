@@ -306,8 +306,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                         </details>
                     </section>
                     <div class="card-plain compact-card">
-                        <div class="footer-brand" style="text-align:center;">No Starve</div>
-                        <div class="footer-cols" style="display:block; margin:0 auto; text-align:center;">
+                        <div class="footer-brand">No Starve</div>
+                        <div class="footer-cols" style="display:block; margin:0 auto;">
                         <div class="footer-col">
                             <h4>Resources</h4>
                             <ul class="footer-links list-clean">
