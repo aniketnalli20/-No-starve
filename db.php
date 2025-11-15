@@ -3,7 +3,15 @@ require_once __DIR__ . '/config.php';
 
 // Database connection and initialization (supports MySQL and PostgreSQL)
 try {
-    if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
+    // Determine driver, and gracefully fall back if requested driver is unavailable
+    $DRIVER = $DB_DRIVER ?? 'mysql';
+    $availableDrivers = PDO::getAvailableDrivers();
+    if ($DRIVER === 'pgsql' && !in_array('pgsql', $availableDrivers, true)) {
+        // Fall back to MySQL when PostgreSQL PDO driver is missing
+        $DRIVER = 'mysql';
+    }
+
+    if ($DRIVER === 'pgsql') {
         // Connect to PostgreSQL (assumes database exists)
         $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME";
         $pdo = new PDO($dsn, $DB_USER, $DB_PASS, [
@@ -27,12 +35,15 @@ try {
     }
 } catch (Throwable $e) {
     http_response_code(500);
-    echo 'Database connection failed: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
+    // Include available drivers in error to aid troubleshooting
+    $drivers = implode(', ', PDO::getAvailableDrivers());
+    $msg = 'Database connection failed: ' . $e->getMessage() . ' (available PDO drivers: ' . ($drivers ?: 'none') . ')';
+    echo htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
     exit;
 }
 
 // Initialize schema if not exists
-if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
+if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec('CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(100) NOT NULL,
@@ -70,7 +81,7 @@ try {
 } catch (Throwable $e) {
     // Silently ignore seeding errors to avoid breaking page loads
 }
-if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
+if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec("CREATE TABLE IF NOT EXISTS reports (
         id SERIAL PRIMARY KEY,
         reporter_name VARCHAR(255) NOT NULL,
@@ -95,7 +106,7 @@ if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
 }
 
 // Listings posted by donors for NGOs/recipients to claim
-if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
+if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec("CREATE TABLE IF NOT EXISTS listings (
         id SERIAL PRIMARY KEY,
         donor_type VARCHAR(50) NOT NULL,
@@ -132,7 +143,7 @@ if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
 }
 
 // Claims by NGOs/volunteers for a listing
-if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
+if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec('CREATE TABLE IF NOT EXISTS claims (
         id SERIAL PRIMARY KEY,
         listing_id INT NOT NULL,
@@ -157,7 +168,7 @@ if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
 }
 
 // Campaigns to coordinate targeted food distribution efforts
-if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
+if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec("CREATE TABLE IF NOT EXISTS campaigns (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -200,7 +211,7 @@ try { $pdo->exec('ALTER TABLE reports DROP COLUMN category'); } catch (Throwable
 try { $pdo->exec('ALTER TABLE campaigns DROP COLUMN category'); } catch (Throwable $e) {}
 
 // Track individual endorsement events for auditing/analytics
-if (($DB_DRIVER ?? 'mysql') === 'pgsql') {
+if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec('CREATE TABLE IF NOT EXISTS endorsements (
         id SERIAL PRIMARY KEY,
         campaign_id INT NOT NULL,

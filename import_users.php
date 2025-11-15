@@ -115,6 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             try {
                 $stmt->execute([$username, $email, $phone, $address, $passwordHash, $now]);
+                // Log each imported user entry to a text file
+                log_user_entry($username, $email, $phone, $address, 'import');
                 $affected = $stmt->rowCount();
                 // On duplicate key MySQL reports 2; count as skipped when no insert happened
                 if ($affected === 1) { $inserted++; } else { $skipped++; }

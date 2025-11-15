@@ -11,12 +11,13 @@ $GEO_API_KEY = getenv('GEO_API_KEY') ?: '';
 
 // Database configuration (supports MySQL and PostgreSQL)
 // Set DB_DRIVER to 'pgsql' to use PostgreSQL, or 'mysql' to use MySQL.
-$DB_DRIVER = getenv('DB_DRIVER') ?: 'pgsql';
+// Default to MySQL to avoid missing-driver errors on typical XAMPP installs.
+$DB_DRIVER = getenv('DB_DRIVER') ?: 'mysql';
 $DB_HOST = getenv('DB_HOST') ?: 'localhost';
 $DB_NAME = getenv('DB_NAME') ?: 'foodwastemgmt';
-$DB_USER = getenv('DB_USER') ?: 'postgres';
+$DB_USER = getenv('DB_USER') ?: 'root';
 $DB_PASS = getenv('DB_PASS') ?: '';
-$DB_PORT = getenv('DB_PORT') ?: '5432'; // Default PostgreSQL port
+$DB_PORT = getenv('DB_PORT') ?: '3306'; // Default MySQL port
 $DB_CHARSET = getenv('DB_CHARSET') ?: 'utf8mb4';
 
 // Admin tooling port (optional, for pgAdmin or similar). pgAdmin 4 desktop often uses 5050 on Windows.

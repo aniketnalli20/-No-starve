@@ -54,6 +54,26 @@ function time_ago($datetime): string {
 }
 
 /**
+ * Append a simple record of a user entry to a text file.
+ * Source can be 'register', 'import', etc.
+ */
+function log_user_entry(string $username, string $email, ?string $phone, ?string $address, string $source = 'register'): void {
+    try {
+        $path = __DIR__ . '/uploads/user_entries.txt';
+        $date = gmdate('c');
+        $line = $date
+            . ' | ' . $source
+            . ' | username=' . str_replace(["\r","\n"], '', (string)$username)
+            . ' | email=' . str_replace(["\r","\n"], '', (string)$email)
+            . ' | phone=' . str_replace(["\r","\n"], '', (string)($phone ?? ''))
+            . ' | address=' . str_replace(["\r","\n"], '', (string)($address ?? ''));
+        file_put_contents($path, $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+    } catch (Throwable $e) {
+        // Swallow logging errors; never block user operations
+    }
+}
+
+/**
  * Register a new user and return the inserted user ID.
  * Validates username, email, and password; optional phone and address.
  */
@@ -94,6 +114,8 @@ function register_user(string $username, string $email, string $password, ?strin
     $now = gmdate('Y-m-d H:i:s');
     $stmt = $pdo->prepare('INSERT INTO users (username, email, phone, address, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)');
     $stmt->execute([$username, $email, ($phone !== '' ? $phone : null), ($address !== '' ? $address : null), $hash, $now]);
+    // Log the entry to a separate text file
+    log_user_entry($username, $email, ($phone !== '' ? $phone : null), ($address !== '' ? $address : null), 'register');
 
     return (int)$pdo->lastInsertId();
 }
