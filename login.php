@@ -25,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Incorrect password';
             } else {
                 $_SESSION['user_id'] = (int)$user['id'];
+                // Persist selected login role in session for downstream logic
+                $role = strtolower(trim((string)($_POST['role'] ?? 'user')));
+                if ($role !== 'contributor') { $role = 'user'; }
+                $_SESSION['login_role'] = $role;
                 $dest = 'index.php#hero';
                 if ($next !== '') {
                     if (preg_match('/^[A-Za-z0-9_\-]+(\.php)?(\?.*)?$/', $next)) {
@@ -78,6 +82,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if ($next !== ''): ?>
                     <input type="hidden" name="next" value="<?= h($next) ?>">
                 <?php endif; ?>
+                <div class="form-field" aria-label="Login Type">
+                    <label style="display:block; margin-bottom:8px;">Login As</label>
+                    <div class="role-select" style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <label class="community-chip" aria-label="No Starve User">
+                            <input type="radio" name="role" value="user" checked>
+                            <span class="text">No Starve User</span>
+                        </label>
+                        <label class="community-chip" aria-label="Contributor">
+                            <input type="radio" name="role" value="contributor">
+                            <span class="text">Contributor</span>
+                        </label>
+                    </div>
+                </div>
                 <input placeholder="E-mail" id="email" name="email" type="email" class="input" required />
                 <input placeholder="Password" id="password" name="password" type="password" class="input" required />
                 <span class="forgot-password"><a href="#">Forgot Password ?</a></span>
@@ -92,5 +109,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <small>&copy; 2025 No Starve</small>
         </div>
     </footer>
+    <script>
+// Enhance role toggle chips to reflect selection visually
+document.addEventListener('DOMContentLoaded', function(){
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.role-select .community-chip'));
+  chips.forEach(function(chip){
+    var input = chip.querySelector('input[type="radio"]');
+    if (!input) return;
+    function update(){
+      chips.forEach(function(c){ c.classList.remove('selected'); });
+      if (input.checked) { chip.classList.add('selected'); }
+    }
+    chip.addEventListener('click', function(){ input.checked = true; update(); });
+    input.addEventListener('change', update);
+    if (input.checked) { chip.classList.add('selected'); }
+  });
+});
+    </script>
 </body>
+</html>
 </html>

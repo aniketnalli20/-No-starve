@@ -4,6 +4,8 @@ require_once __DIR__ . '/app.php';
 // Contributions require login
 require_login();
 
+$user = current_user();
+
 $errors = [];
 $successId = null;
 
@@ -24,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Create Campaign · No Starve</title>
     <link rel="stylesheet" href="<?= h($BASE_PATH) ?>style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="<?= h($BASE_PATH) ?>uploads/favicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="<?= h($BASE_PATH) ?>uploads/favicon.png">
@@ -71,12 +74,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Category field removed -->
                 <div class="form-field">
                     <label for="contributor_name">Contributor Name</label>
-                    <input type="text" id="contributor_name" name="contributor_name" required>
+                    <input type="text" id="contributor_name" name="contributor_name" required value="<?= h($user['username'] ?? '') ?>">
                 </div>
 
                 <div class="form-field">
-                    <label for="community">Community Suitable For</label>
-                    <input type="text" id="community" name="community" required>
+                    <label>Community Suitable For</label>
+                    <div class="community-options" role="radiogroup" aria-label="Community Suitable For">
+                        <label class="community-chip" aria-label="Hindu">
+                            <input type="radio" name="community" value="Hindu" required>
+                            <span class="material-symbols-outlined icon" aria-hidden="true">temple_hindu</span>
+                            <span class="text">Hindu</span>
+                        </label>
+                        <label class="community-chip" aria-label="Muslim">
+                            <input type="radio" name="community" value="Muslim" required>
+                            <span class="material-symbols-outlined icon" aria-hidden="true">mosque</span>
+                            <span class="text">Muslim</span>
+                        </label>
+                        <label class="community-chip" aria-label="Christian">
+                            <input type="radio" name="community" value="Christian" required>
+                            <span class="material-symbols-outlined icon" aria-hidden="true">church</span>
+                            <span class="text">Christian</span>
+                        </label>
+                        <label class="community-chip" aria-label="Jain">
+                            <input type="radio" name="community" value="Jain" required>
+                            <span class="material-symbols-outlined icon" aria-hidden="true">account_balance</span>
+                            <span class="text">Jain</span>
+                        </label>
+                        <label class="community-chip" aria-label="Others">
+                            <input type="radio" name="community" value="Others" required>
+                            <span class="material-symbols-outlined icon" aria-hidden="true">public</span>
+                            <span class="text">Others</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="form-field">
@@ -96,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-field">
                     <label for="location">Location</label>
-                    <input type="text" id="location" name="location" required autocomplete="off" aria-autocomplete="list" aria-controls="location-suggestions">
+                    <input type="text" id="location" name="location" required autocomplete="off" aria-autocomplete="list" aria-controls="location-suggestions" value="<?= h($user['address'] ?? '') ?>">
                     <input type="hidden" id="latitude" name="latitude">
                     <input type="hidden" id="longitude" name="longitude">
                     <div id="location-suggestions" class="card-plain" role="listbox" style="position: absolute; z-index: 10; display: none; max-height: 220px; overflow: auto;"></div>
@@ -172,6 +201,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
     (function(){
+        // Community chips selection visual state
+        var chips = Array.prototype.slice.call(document.querySelectorAll('.community-chip'));
+        function refreshSelection(){
+            chips.forEach(function(ch){
+                var input = ch.querySelector('input[type="radio"]');
+                if (input && input.checked) ch.classList.add('selected'); else ch.classList.remove('selected');
+            });
+        }
+        chips.forEach(function(ch){
+            var input = ch.querySelector('input[type="radio"]');
+            if (input){ input.addEventListener('change', refreshSelection); }
+        });
+        refreshSelection();
+
         if (!window.L) return;
         const latEl = document.getElementById('latitude');
         const lonEl = document.getElementById('longitude');

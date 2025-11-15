@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Profile · No Starve</title>
     <link rel="stylesheet" href="<?= h($BASE_PATH) ?>style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="<?= h($BASE_PATH) ?>uploads/favicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="<?= h($BASE_PATH) ?>uploads/favicon.png">
@@ -67,10 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         </div>
     </header>
 
-    <main class="container profile-card" aria-label="My Profile">
+    <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);" aria-label="My Profile">
+      <section class="card-plain card-fullbleed page-profile" aria-label="Profile">
         <h2 class="section-title">My Profile</h2>
         <?php if (!empty($errors)): ?>
-            <div class="card-plain" role="alert" style="margin:12px 0; padding:12px; border:1px solid var(--border); border-radius:8px;">
+            <div class="alert error" role="alert">
                 <strong>Error:</strong>
                 <ul class="list-clean">
                     <?php foreach ($errors as $err): ?>
@@ -80,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
             </div>
         <?php endif; ?>
         <?php if ($message): ?>
-            <div class="card-plain" role="status" style="margin:12px 0; padding:12px; border:1px solid var(--border); border-radius:8px;">
+            <div class="alert success" role="status">
                 <?= h($message) ?>
             </div>
         <?php endif; ?>
@@ -119,9 +121,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                 <label for="address" style="margin-top:10px;"><strong>Address</strong></label>
                 <textarea id="address" name="address" class="input" placeholder="Street, City, State, PIN" rows="3" style="resize: vertical;" autocomplete="street-address"><?= h($user['address'] ?? '') ?></textarea>
                 <div class="preset-group" aria-label="Address presets" style="margin-top:6px;">
-                  <button type="button" class="chip" data-fill-address="123 Main St, Bengaluru, KA 560001">Bengaluru sample</button>
-                  <button type="button" class="chip" data-fill-address="Sector 21, Noida, UP 201301">Noida sample</button>
+                  <button type="button" class="chip" id="open-map">Pick on Map</button>
                   <button type="button" class="chip" data-clear="address">Clear</button>
+                </div>
+
+                <div id="map-container" class="card-plain" style="display:none; margin-top:8px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                    <strong>Select location on map</strong>
+                    <button type="button" class="chip" id="close-map">Done</button>
+                  </div>
+                  <div id="profile-map" style="height:300px; border-radius:8px; overflow:hidden;"></div>
+                  <small class="input-hint" id="map-hint">Click the map to auto-fill address.</small>
                 </div>
 
                 <div class="profile-actions">
@@ -134,6 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                 <a class="btn btn-bhargav" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"><span>Create Campaign</span></a>
             </div>
         </div>
+      </section>
     </main>
 
     <script>
@@ -148,8 +159,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
           if (this.dataset.clear === 'address' && addressInput) { addressInput.value = ''; }
         });
       });
+
+      var openMapBtn = document.getElementById('open-map');
+      var closeMapBtn = document.getElementById('close-map');
+      var mapContainer = document.getElementById('map-container');
+      var mapEl = document.getElementById('profile-map');
+      var mapInstance = null;
+      var marker = null;
+      function initMap() {
+        if (mapInstance) return mapInstance;
+        // Default center: India; zoom 5
+        mapInstance = L.map('profile-map').setView([20.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(mapInstance);
+        // Try to center on user location
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function (pos) {
+            var lat = pos.coords.latitude, lon = pos.coords.longitude;
+            mapInstance.setView([lat, lon], 14);
+          }, function () { /* ignore */ });
+        }
+        // Click to set address
+        mapInstance.on('click', function (e) {
+          var lat = e.latlng.lat; var lon = e.latlng.lng;
+          if (marker) { mapInstance.removeLayer(marker); }
+          marker = L.marker([lat, lon]).addTo(mapInstance);
+          var addressInput = document.getElementById('address');
+          var hint = document.getElementById('map-hint');
+          hint.textContent = 'Resolving address…';
+          fetch((window.BASE_PATH || '<?= h($BASE_PATH) ?>') + 'geocode.php?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lon))
+            .then(function (r) { return r.json(); })
+            .then(function (j) {
+              if (j && j.label && addressInput) {
+                addressInput.value = j.label;
+                hint.textContent = 'Address filled from map click.';
+              } else {
+                hint.textContent = 'Unable to resolve address.';
+              }
+            })
+            .catch(function () { hint.textContent = 'Unable to resolve address.'; });
+        });
+        return mapInstance;
+      }
+      if (openMapBtn) {
+        openMapBtn.addEventListener('click', function () {
+          if (mapContainer) { mapContainer.style.display = 'block'; }
+          initMap();
+          // Ensure map renders after container becomes visible
+          setTimeout(function(){ if (mapInstance) { mapInstance.invalidateSize(); } }, 50);
+        });
+      }
+      if (closeMapBtn) {
+        closeMapBtn.addEventListener('click', function () {
+          if (mapContainer) { mapContainer.style.display = 'none'; }
+        });
+      }
     });
     </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <footer class="site-footer">
         <div class="container footer-inner">

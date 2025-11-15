@@ -189,8 +189,8 @@ $listings = $listingsStmt->fetchAll();
               <?php endif; ?>
             </form>
             <div class="stats">
-              <div class="stat"><span id="meals-count" class="stat-num">0</span><span class="stat-label">Meals Saved</span></div>
-              <div class="stat"><span id="donors-count" class="stat-num">0</span><span class="stat-label">Donors</span></div>
+              <div class="stat"><span id="meals-count" class="stat-num">0</span><span class="stat-label">Meals Made</span></div>
+              <div class="stat"><span id="donors-count" class="stat-num">0</span><span class="stat-label">Contributors</span></div>
               <div class="stat"><span id="partners-count" class="stat-num">0</span><span class="stat-label">Partners</span></div>
             </div>
         </div>

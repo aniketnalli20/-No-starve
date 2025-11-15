@@ -54,6 +54,51 @@ function time_ago($datetime): string {
 }
 
 /**
+ * Register a new user and return the inserted user ID.
+ * Validates username, email, and password; optional phone and address.
+ */
+function register_user(string $username, string $email, string $password, ?string $phone = null, ?string $address = null): int {
+    global $pdo;
+
+    $username = trim($username);
+    $email = strtolower(trim($email));
+    $password = (string)$password;
+    $phone = $phone !== null ? trim($phone) : null;
+    $address = $address !== null ? trim($address) : null;
+
+    if ($username === '') {
+        throw new InvalidArgumentException('Username is required');
+    }
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        throw new InvalidArgumentException('Valid email is required');
+    }
+    if (strlen($password) < 6) {
+        throw new InvalidArgumentException('Password must be at least 6 characters long');
+    }
+    if ($phone !== null && $phone !== '' && !preg_match('/^[0-9+\-\s]{7,30}$/', $phone)) {
+        throw new InvalidArgumentException('Phone must be 7–30 characters using digits, +, -, spaces');
+    }
+    if ($address !== null && strlen($address) > 5000) {
+        throw new InvalidArgumentException('Address is too long');
+    }
+
+    // Ensure email is not already registered
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
+    $stmt->execute([$email]);
+    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($existing) {
+        throw new InvalidArgumentException('Email is already registered');
+    }
+
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $now = gmdate('Y-m-d H:i:s');
+    $stmt = $pdo->prepare('INSERT INTO users (username, email, phone, address, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$username, $email, ($phone !== '' ? $phone : null), ($address !== '' ? $address : null), $hash, $now]);
+
+    return (int)$pdo->lastInsertId();
+}
+
+/**
  * Create a campaign record.
  * Required: title, summary.
  * Optional: area, target_meals (int), start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), status.
