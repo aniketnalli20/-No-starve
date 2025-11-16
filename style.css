@@ -65,6 +65,28 @@ body {
 .brand { font-weight: 800; letter-spacing: -0.01em; text-decoration: none; color: var(--text); }
 .nav-links { display: flex; align-items: center; gap: 10px; }
 .nav-links a { display: inline-block; padding: 8px 12px; border-radius: 8px; color: var(--text); text-decoration: none; }
+/* Navbar (Bootstrap-like), remove capsules */
+.navbar { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.navbar-light { color: var(--text); }
+.bg-light { background: transparent; }
+.navbar-brand { font-weight: 800; color: var(--text); text-decoration: none; font-size: clamp(1.25rem, 1.6vw + 0.75rem, 1.75rem); letter-spacing: -0.01em; }
+.navbar-toggler { display: inline-flex; align-items: center; justify-content: center; padding: 8px; border: 1px solid var(--border); background: var(--bg); border-radius: 6px; cursor: pointer; }
+.navbar-toggler-icon { position: relative; width: 22px; height: 2px; background: var(--text); }
+.navbar-toggler-icon::before, .navbar-toggler-icon::after { content: ""; position: absolute; left: 0; width: 22px; height: 2px; background: var(--text); }
+.navbar-toggler-icon::before { top: -6px; }
+.navbar-toggler-icon::after { top: 6px; }
+.navbar-collapse { display: none; width: 100%; }
+.navbar-collapse.show { display: block; }
+.navbar-nav { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 4px; }
+.navbar-nav .nav-item { display: block; }
+.navbar-nav .nav-link { display: inline-block; color: var(--text); text-decoration: none; padding: 8px 10px; border: 0; border-radius: 0; font-size: clamp(0.95rem, 0.6vw + 0.7rem, 1.05rem); background: transparent; }
+.navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus-visible { text-decoration: underline; }
+.navbar-nav .nav-link.active { font-weight: 600; border-bottom: 2px solid var(--text); }
+@media (min-width: 768px) {
+  .navbar-toggler { display: none; }
+  .navbar-collapse { display: block !important; }
+  .navbar-nav { flex-direction: row; align-items: center; gap: 10px; margin: 0; }
+}
 .site-header h1 { margin: 0 0 6px; font-size: 24px; }
 .tagline { margin: 0; color: var(--muted); }
 

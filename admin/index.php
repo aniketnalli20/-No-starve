@@ -194,14 +194,21 @@ try {
 <body class="admin-scroll">
   <header class="site-header" role="banner">
     <div class="container header-inner">
-      <a href="<?= h($BASE_PATH) ?>index.php#hero" class="brand" aria-label="No Starve home">No Starve</a>
       <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
-      <nav id="primary-navigation" class="nav-links" role="navigation" aria-label="Primary">
-        <a href="<?= h($BASE_PATH) ?>index.php#hero"<?= $currentPath === 'index.php' ? ' class="active"' : '' ?>>Home</a>
-        <a href="<?= h($BASE_PATH) ?>create_campaign.php"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
-        <a href="<?= h($BASE_PATH) ?>profile.php"<?= $currentPath === 'profile.php' ? ' class="active"' : '' ?>>Profile</a>
-        <a href="<?= h($BASE_PATH) ?>admin/index.php" class="active">Admin</a>
-        <a href="<?= h($BASE_PATH) ?>logout.php">Logout</a>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light" role="navigation" aria-label="Primary">
+        <a class="navbar-brand" href="<?= h($BASE_PATH) ?>index.php#hero">No Starve</a>
+        <button class="navbar-toggler" type="button" aria-controls="primary-navbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" aria-hidden="true"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="primary-navbar">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
+            <li class="nav-item"><a class="nav-link<?= $currentPath === 'create_campaign.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>create_campaign.php">Create Campaign</a></li>
+            <li class="nav-item"><a class="nav-link<?= $currentPath === 'profile.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>profile.php">Profile</a></li>
+            <li class="nav-item"><a class="nav-link active" href="<?= h($BASE_PATH) ?>admin/index.php">Admin</a></li>
+            <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>logout.php">Logout</a></li>
+          </ul>
+        </div>
       </nav>
     </div>
   </header>
@@ -532,6 +539,19 @@ try {
       }
       onScroll();
       window.addEventListener('scroll', onScroll, { passive: true });
+    })();
+  </script>
+  <script>
+    (function(){
+      var btn = document.querySelector('.navbar-toggler');
+      var coll = document.getElementById('primary-navbar');
+      if (btn && coll) {
+        btn.addEventListener('click', function(){
+          var expanded = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', (!expanded).toString());
+          coll.classList.toggle('show');
+        });
+      }
     })();
   </script>
 </body>
