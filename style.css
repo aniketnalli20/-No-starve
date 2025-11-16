@@ -1122,6 +1122,8 @@ ul { list-style: none; padding-left: 0; }
 .admin-grid .table .actions { gap: 4px; }
 .admin-grid .table .btn.btn-sm { padding: 4px 6px; font-size: 0.82rem; border-radius: 8px; }
 
+.award-row td { background: #f7f7f7; }
+
 /* Remove hover animations on cards */
 .card-plain:hover { border-color: var(--border) !important; box-shadow: none !important; filter: none !important; transform: none !important; }
 #recent-campaigns .card-plain:hover { border-color: var(--border) !important; box-shadow: none !important; filter: none !important; transform: none !important; }

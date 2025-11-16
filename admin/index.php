@@ -32,6 +32,10 @@ try {
         $pdo->prepare('DELETE FROM users WHERE id = ?')->execute([$uid]);
         $message = 'Deleted user #' . $uid;
       }
+    } else if ($action === 'bulk_delete_fake_users') {
+      $st = $pdo->prepare('DELETE FROM users WHERE is_admin = 0 AND username LIKE ? AND email LIKE ?');
+      $st->execute(['user%', '%@example.com']);
+      $message = 'Removed ' . (int)$st->rowCount() . ' fake users.';
     } else if ($action === 'award_coins') {
       $uid = (int)($_POST['user_id'] ?? 0);
       $amount = (int)($_POST['amount'] ?? 0);
@@ -69,11 +73,28 @@ try {
         $pdo->prepare('UPDATE campaigns SET status = ? WHERE id = ?')->execute([$status, $cid]);
         $message = 'Updated campaign #' . $cid . ' to ' . htmlspecialchars($status);
       }
-    } else if ($action === 'delete_campaign') {
+  } else if ($action === 'delete_campaign') {
       $cid = (int)($_POST['campaign_id'] ?? 0);
       if ($cid > 0) {
         $pdo->prepare('DELETE FROM campaigns WHERE id = ?')->execute([$cid]);
         $message = 'Deleted campaign #' . $cid;
+      }
+    } else if ($action === 'award_campaign_bonus') {
+      $cid = (int)($_POST['campaign_id'] ?? 0);
+      $amountReq = (int)($_POST['amount'] ?? 0);
+      if ($cid > 0) {
+        $st = $pdo->prepare('SELECT user_id, crowd_size FROM campaigns WHERE id = ?');
+        $st->execute([$cid]);
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        $uid = (int)($row['user_id'] ?? 0);
+        $crowd = (int)($row['crowd_size'] ?? 0);
+        if ($uid > 0) {
+          $amount = $amountReq > 0 ? $amountReq : max(1, intdiv($crowd > 0 ? $crowd : 100, 100));
+          award_karma_coins($uid, $amount, 'campaign_bonus', 'campaign', $cid);
+          $message = 'Awarded ' . $amount . ' bonus coin(s) for campaign #' . $cid . ' to user #' . $uid;
+        } else {
+          $errors[] = 'Campaign has no associated user; cannot award bonus.';
+        }
       }
     } else if ($action === 'autogen_users') {
       $n = (int)($_POST['count'] ?? 0);
@@ -90,6 +111,32 @@ try {
       } else {
         $errors[] = 'Count must be between 1 and 500';
       }
+    } else if ($action === 'autogen_campaigns') {
+      $n = (int)($_POST['count'] ?? 20);
+      if ($n > 0 && $n <= 1000) {
+        $areas = [
+          'Mumbai','Delhi','Bengaluru','Hyderabad','Ahmedabad','Chennai','Kolkata','Pune','Jaipur','Surat',
+          'Lucknow','Kanpur','Nagpur','Indore','Thane','Bhopal','Visakhapatnam','Patna','Vadodara','Ghaziabad',
+          'Coimbatore','Kochi','Mysuru','Noida','Gurugram','Chandigarh','Madurai','Nashik','Rajkot','Vijayawada'
+        ];
+        $now = gmdate('Y-m-d H:i:s');
+        $users = $pdo->query('SELECT id, username FROM users ORDER BY id DESC LIMIT ' . (int)max(1, $n))->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $ins = $pdo->prepare('INSERT INTO campaigns (title, summary, area, status, created_at, user_id, crowd_size, contributor_name, closing_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        for ($i = 0; $i < $n; $i++) {
+          $area = $areas[$i % count($areas)];
+          $crowd = 50 + ($i * 13) % 700; // 50–749
+          $title = 'Meal Support in ' . $area;
+          $summary = 'Coordinating safe access to surplus meals for local communities.';
+          $uid = null; $cName = null;
+          if (!empty($users)) { $u = $users[$i % count($users)]; $uid = (int)($u['id'] ?? null); $cName = (string)($u['username'] ?? ''); }
+          $hour = 18 + ($i % 5); // 18:00–22:00
+          $closing = (string)($hour < 10 ? ('0' . $hour) : (string)$hour) . ':00';
+          $ins->execute([$title, $summary, $area, 'open', $now, $uid, $crowd, $cName, $closing]);
+        }
+        $message = 'Generated ' . $n . ' campaigns.';
+      } else {
+        $errors[] = 'Count must be between 1 and 1000';
+      }
     }
   }
 } catch (Throwable $e) {
@@ -101,13 +148,13 @@ $users = [];
 $campaigns = [];
 $wallets = [];
 $limitRows = 15;
-$usersFull = true;
+$usersFull = isset($_GET['users_full']);
 $campaignsFull = isset($_GET['campaigns_full']);
 $walletsFull = isset($_GET['wallets_full']);
 $tablesFull = isset($_GET['tables_full']);
 try {
-  $users = $pdo->query('SELECT id, username, email, created_at, is_admin FROM users ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC) ?: [];
-  $campaigns = $pdo->query('SELECT id, title, status, area, created_at FROM campaigns ORDER BY id DESC' . ($campaignsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  $users = $pdo->query('SELECT id, username, email, created_at, is_admin FROM users ORDER BY id DESC' . ($usersFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  $campaigns = $pdo->query('SELECT id, title, status, area, created_at, user_id, crowd_size, endorse_campaign, contributor_name FROM campaigns ORDER BY id DESC' . ($campaignsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
   $wallets = $pdo->query('SELECT w.user_id, u.username, w.balance, w.updated_at FROM karma_wallets w JOIN users u ON u.id = w.user_id ORDER BY w.updated_at DESC' . ($walletsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {}
 ?>
@@ -161,7 +208,17 @@ try {
     
     <section id="users" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="Users">
       <h2 class="section-title">Users</h2>
-      <div class="actions"></div>
+      <div class="actions">
+        <?php if ($usersFull): ?>
+          <a class="btn btn-sm secondary" href="<?= h($BASE_PATH) ?>admin/index.php#users">Show 15</a>
+        <?php else: ?>
+          <a class="btn btn-sm secondary" href="<?= h($BASE_PATH) ?>admin/index.php?users_full=1#users">View more</a>
+        <?php endif; ?>
+        <form method="post" onsubmit="return confirm('Remove non-admin users named like userXXXXX with example.com emails?');" style="display:inline-block; margin-left:8px;">
+          <input type="hidden" name="action" value="bulk_delete_fake_users">
+          <button type="submit" class="btn btn-sm pill">Remove fake users</button>
+        </form>
+      </div>
 
       <div class="card-plain">
         <strong>Users (latest)</strong>
@@ -206,6 +263,11 @@ try {
         <?php else: ?>
           <a class="btn btn-sm secondary" href="<?= h($BASE_PATH) ?>admin/index.php?campaigns_full=1">View full table</a>
         <?php endif; ?>
+        <form method="post" style="display:inline-block; margin-left:8px;">
+          <input type="hidden" name="action" value="autogen_campaigns">
+          <input type="hidden" name="count" value="20">
+          <button type="submit" class="btn btn-sm pill">Generate 20</button>
+        </form>
       </div>
       <form method="post" class="form">
         <input type="hidden" name="action" value="create_campaign">
@@ -228,6 +290,7 @@ try {
               <th>Title</th>
               <th>Status</th>
               <th>Area</th>
+              <th>Contributor</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -238,6 +301,7 @@ try {
               <td><?= h($c['title']) ?></td>
               <td><?= h($c['status']) ?></td>
               <td><?= h($c['area'] ?? '') ?></td>
+              <td><?= h(($c['contributor_name'] ?? '') !== '' ? (string)$c['contributor_name'] : '—') ?></td>
               <td>
                 <div class="actions">
                   <form method="post">
@@ -254,6 +318,21 @@ try {
                     <input type="hidden" name="action" value="delete_campaign">
                     <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
                     <button type="submit" class="btn btn-sm pill">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <tr class="award-row">
+              <td colspan="6">
+                <?php $crowd = (int)($c['crowd_size'] ?? 0); $suggest = max(1, intdiv($crowd > 0 ? $crowd : 100, 100)); ?>
+                <div class="actions">
+                  <strong>Bonus allotment</strong>
+                  <span>Suggested: <?= (int)$suggest ?> coin(s)<?= $crowd > 0 ? ' · Crowd ' . (int)$crowd : '' ?></span>
+                  <form method="post" style="display:inline-block;">
+                    <input type="hidden" name="action" value="award_campaign_bonus">
+                    <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
+                    <input name="amount" type="number" class="input" min="1" value="<?= (int)$suggest ?>" style="display:inline-block; width:120px;">
+                    <button type="submit" class="btn btn-sm pill">Award Bonus</button>
                   </form>
                 </div>
               </td>

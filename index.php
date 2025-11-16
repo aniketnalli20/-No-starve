@@ -162,7 +162,7 @@ $campaigns = [];
 try {
     // Include contributor_name and endorse counts; show only actively open campaigns
     // Community filter removed to allow campaigns without community selection to appear
-$campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, status, created_at, contributor_name, endorse_campaign, location, crowd_size, closing_time\n  FROM campaigns\n  WHERE status = 'open'\n    AND ((location IS NOT NULL AND location <> '') OR (area IS NOT NULL AND area <> ''))\n    AND crowd_size IS NOT NULL\n    AND closing_time IS NOT NULL AND closing_time <> ''\n  ORDER BY created_at DESC\n  LIMIT 6");
+$campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, status, created_at, contributor_name, endorse_campaign, location, crowd_size, closing_time\n  FROM campaigns\n  WHERE status = 'open'\n    AND ((location IS NOT NULL AND location <> '') OR (area IS NOT NULL AND area <> ''))\n    AND crowd_size IS NOT NULL\n    AND closing_time IS NOT NULL AND closing_time <> ''\n  ORDER BY created_at DESC\n  LIMIT 20");
     $campaignsStmt->execute();
     $campaigns = $campaignsStmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {
