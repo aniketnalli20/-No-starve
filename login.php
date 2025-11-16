@@ -67,19 +67,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span class="navbar-toggler-icon" aria-hidden="true"></span>
               </button>
               <div class="collapse navbar-collapse" id="primary-navbar">
-                <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav">
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'index.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'profile.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a></li>
-                  <?php if (is_logged_in() && is_admin()): ?>
-                    <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>admin/index.php">Admin</a></li>
-                  <?php endif; ?>
-                </ul>
-                <ul class="navbar-nav">
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'create_campaign.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a></li>
                   <?php if (is_logged_in()): ?>
                     <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>logout.php">Logout</a></li>
                   <?php else: ?>
-                    <li class="nav-item"><a class="nav-link<?= $currentPath === 'login.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>login.php">Login</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="<?= h($BASE_PATH) ?>login.php">Login</a></li>
                   <?php endif; ?>
                 </ul>
               </div>
@@ -162,21 +157,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     })();
     </script>
-// Enhance role toggle chips to reflect selection visually
-document.addEventListener('DOMContentLoaded', function(){
-  var chips = Array.prototype.slice.call(document.querySelectorAll('.role-select .community-chip'));
-  chips.forEach(function(chip){
-    var input = chip.querySelector('input[type="radio"]');
-    if (!input) return;
-    function update(){
-      chips.forEach(function(c){ c.classList.remove('selected'); });
-      if (input.checked) { chip.classList.add('selected'); }
-    }
-    chip.addEventListener('click', function(){ input.checked = true; update(); });
-    input.addEventListener('change', update);
-    if (input.checked) { chip.classList.add('selected'); }
-  });
-});
+    <script>
+    // Enhance role toggle chips to reflect selection visually
+    document.addEventListener('DOMContentLoaded', function(){
+      var chips = Array.prototype.slice.call(document.querySelectorAll('.role-select .community-chip'));
+      chips.forEach(function(chip){
+        var input = chip.querySelector('input[type="radio"]');
+        if (!input) return;
+        function update(){
+          chips.forEach(function(c){ c.classList.remove('selected'); });
+          if (input.checked) { chip.classList.add('selected'); }
+        }
+        chip.addEventListener('click', function(){ input.checked = true; update(); });
+        input.addEventListener('change', update);
+        if (input.checked) { chip.classList.add('selected'); }
+      });
+    });
+    </script>
     </script>
 </body>
 </html>
