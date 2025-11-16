@@ -494,10 +494,21 @@ $campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, s
     <script>
     (function(){
       var header = document.querySelector('.site-header');
+      var lastY = window.scrollY || document.documentElement.scrollTop || 0;
       function onScroll(){
         if (!header) return;
         var y = window.scrollY || document.documentElement.scrollTop || 0;
         if (y > 10) header.classList.add('scrolled'); else header.classList.remove('scrolled');
+        if (y < lastY) {
+          header.classList.add('slim');
+          var coll = document.getElementById('primary-navbar');
+          if (coll) coll.classList.remove('show');
+          var btn = document.querySelector('.navbar-toggler');
+          if (btn) btn.setAttribute('aria-expanded','false');
+        } else {
+          header.classList.remove('slim');
+        }
+        lastY = y;
       }
       onScroll();
       window.addEventListener('scroll', onScroll, { passive: true });
