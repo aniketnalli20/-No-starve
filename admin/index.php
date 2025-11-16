@@ -101,12 +101,12 @@ $users = [];
 $campaigns = [];
 $wallets = [];
 $limitRows = 15;
-$usersFull = isset($_GET['users_full']);
+$usersFull = true;
 $campaignsFull = isset($_GET['campaigns_full']);
 $walletsFull = isset($_GET['wallets_full']);
 $tablesFull = isset($_GET['tables_full']);
 try {
-  $users = $pdo->query('SELECT id, username, email, created_at, is_admin FROM users ORDER BY id DESC' . ($usersFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  $users = $pdo->query('SELECT id, username, email, created_at, is_admin FROM users ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC) ?: [];
   $campaigns = $pdo->query('SELECT id, title, status, area, created_at FROM campaigns ORDER BY id DESC' . ($campaignsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
   $wallets = $pdo->query('SELECT w.user_id, u.username, w.balance, w.updated_at FROM karma_wallets w JOIN users u ON u.id = w.user_id ORDER BY w.updated_at DESC' . ($walletsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {}
@@ -133,6 +133,15 @@ try {
 
   <main class="container">
     <h1>Database Tools</h1>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a class="home" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a>
+      <span>›</span>
+      <a class="admin" href="<?= h($BASE_PATH) ?>admin/index.php">Admin</a>
+      <span>›</span>
+      <a class="users" href="<?= h($BASE_PATH) ?>admin/index.php#users">Users</a>
+      <a class="campaigns" href="<?= h($BASE_PATH) ?>admin/index.php#campaigns">Campaigns</a>
+      <a class="rewards" href="<?= h($BASE_PATH) ?>admin/index.php#rewards">Rewards</a>
+    </nav>
     <div class="actions" style="margin: 8px 0 0;">
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#users">Users</a>
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#campaigns">Campaigns</a>
@@ -152,13 +161,7 @@ try {
     
     <section id="users" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="Users">
       <h2 class="section-title">Users</h2>
-      <div class="actions">
-        <?php if ($usersFull): ?>
-          <a class="btn btn-sm secondary" href="<?= h($BASE_PATH) ?>admin/index.php">Show 15</a>
-        <?php else: ?>
-          <a class="btn btn-sm secondary" href="<?= h($BASE_PATH) ?>admin/index.php?users_full=1">View full table</a>
-        <?php endif; ?>
-      </div>
+      <div class="actions"></div>
 
       <div class="card-plain">
         <strong>Users (latest)</strong>
@@ -176,7 +179,7 @@ try {
             <?php foreach ($users as $u): ?>
             <tr>
               <td>#<?= (int)$u['id'] ?></td>
-              <td><?= h($u['username']) ?></td>
+              <td><?= h($u['username']) ?><?= ((int)($u['is_admin'] ?? 0) === 1 ? '<span class="star-admin" aria-label="Admin">★</span>' : '') ?></td>
               <td><?= h($u['email']) ?></td>
               <td><?= ((int)($u['is_admin'] ?? 0) === 1 ? 'yes' : 'no') ?></td>
               <td>
@@ -192,9 +195,6 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
-      </div>
-      <div class="actions" style="margin-top:10px;">
-        <a class="btn pill" href="#campaigns">Next</a>
       </div>
     </section>
     
@@ -261,10 +261,6 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
-      </div>
-      <div class="actions" style="margin-top:10px;">
-        <a class="btn pill" href="#users">Previous</a>
-        <a class="btn pill" href="#rewards">Next</a>
       </div>
     </section>
     
@@ -335,9 +331,6 @@ try {
           </tbody>
         </table>
       </div>
-      <div class="actions" style="margin-top:10px;">
-        <a class="btn pill" href="#campaigns">Previous</a>
-      </div>
     </section>
 
     </div>
@@ -348,5 +341,18 @@ try {
       <small>&copy; 2025 No Starve</small>
     </div>
   </footer>
+  <script>
+    (function() {
+      if (!window.location.hash) {
+        window.scrollTo(0, 0);
+      }
+      var hash = (window.location.hash || '#users').toLowerCase();
+      var sel = null;
+      if (hash.indexOf('#campaigns') === 0) sel = document.querySelector('.breadcrumb .campaigns');
+      else if (hash.indexOf('#rewards') === 0) sel = document.querySelector('.breadcrumb .rewards');
+      else sel = document.querySelector('.breadcrumb .users');
+      if (sel) { sel.classList.add('active'); sel.setAttribute('aria-current', 'page'); }
+    })();
+  </script>
 </body>
 </html>
