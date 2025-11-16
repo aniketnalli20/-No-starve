@@ -1112,6 +1112,10 @@ ul { list-style: none; padding-left: 0; }
 .admin-grid .form .input { width: 100%; background: white; border: 1px solid var(--border); padding: 8px 10px; border-radius: 10px; margin-top: 8px; }
 .admin-grid .form .actions { margin-top: 8px; }
 
+/* Remove hover animations on cards */
+.card-plain:hover { border-color: var(--border) !important; box-shadow: none !important; filter: none !important; transform: none !important; }
+#recent-campaigns .card-plain:hover { border-color: var(--border) !important; box-shadow: none !important; filter: none !important; transform: none !important; }
+
 .admin-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; max-width: var(--content-max); margin: 12px auto; padding: 0 var(--content-pad); }
 @media (min-width: 840px) { .admin-grid { grid-template-columns: repeat(2, 1fr); } }
 .btn.dark { background: #1f2937; color: #ffffff; border-color: transparent; }

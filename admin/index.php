@@ -271,7 +271,10 @@ try {
       <form method="post" class="form">
         <input type="hidden" name="action" value="search_award">
         <input name="user_query" type="text" class="input" placeholder="Search by name or email" required>
-        <div class="actions"><button type="submit" class="btn pill">Find User</button></div>
+        <div class="actions">
+          <button type="submit" class="btn pill">Find User</button>
+          <button type="submit" class="btn pill">Proceed</button>
+        </div>
       </form>
       <?php if (!empty($awardUsers)): ?>
       <div class="card-plain">
