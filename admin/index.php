@@ -91,7 +91,7 @@ try {
         if ($uid > 0) {
           $amount = $amountReq > 0 ? $amountReq : max(1, intdiv($crowd > 0 ? $crowd : 100, 100));
           award_karma_coins($uid, $amount, 'campaign_bonus', 'campaign', $cid);
-          $message = 'Awarded ' . $amount . ' bonus coin(s) for campaign #' . $cid . ' to user #' . $uid;
+          $message = 'Awarded ' . $amount . ' Karma Coin(s) (Campaign Bonus) to user #' . $uid . ' for campaign #' . $cid . '.';
         } else {
           $errors[] = 'Campaign has no associated user; cannot award bonus.';
         }
@@ -170,8 +170,11 @@ try {
   <header class="site-header" role="banner">
     <div class="container header-inner">
       <a href="<?= h($BASE_PATH) ?>index.php#hero" class="brand" aria-label="No Starve home">No Starve</a>
+      <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
       <nav id="primary-navigation" class="nav-links" role="navigation" aria-label="Primary">
-        <a href="<?= h($BASE_PATH) ?>index.php#hero">Home</a>
+        <a href="<?= h($BASE_PATH) ?>index.php#hero"<?= $currentPath === 'index.php' ? ' class="active"' : '' ?>>Home</a>
+        <a href="<?= h($BASE_PATH) ?>create_campaign.php"<?= $currentPath === 'create_campaign.php' ? ' class="active"' : '' ?>>Create Campaign</a>
+        <a href="<?= h($BASE_PATH) ?>profile.php"<?= $currentPath === 'profile.php' ? ' class="active"' : '' ?>>Profile</a>
         <a href="<?= h($BASE_PATH) ?>admin/index.php" class="active">Admin</a>
         <a href="<?= h($BASE_PATH) ?>logout.php">Logout</a>
       </nav>
@@ -203,7 +206,7 @@ try {
       </div>
     <?php endif; ?>
     <?php if ($message): ?>
-      <div class="card-plain" role="status"><?= h($message) ?></div>
+      <div class="alert success" role="status"><?= h($message) ?></div>
     <?php endif; ?>
     
     <section id="users" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="Users">
@@ -291,6 +294,8 @@ try {
               <th>Status</th>
               <th>Area</th>
               <th>Contributor</th>
+              <th>Crowd</th>
+              <th>Bonus</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -302,6 +307,16 @@ try {
               <td><?= h($c['status']) ?></td>
               <td><?= h($c['area'] ?? '') ?></td>
               <td><?= h(($c['contributor_name'] ?? '') !== '' ? (string)$c['contributor_name'] : '—') ?></td>
+              <td><?= (int)($c['crowd_size'] ?? 0) ?></td>
+              <td>
+                <?php $crowd = (int)($c['crowd_size'] ?? 0); $suggest = max(1, intdiv($crowd > 0 ? $crowd : 100, 100)); ?>
+                <form method="post" style="display:inline-block;">
+                  <input type="hidden" name="action" value="award_campaign_bonus">
+                  <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
+                  <input name="amount" type="number" class="input" min="1" value="<?= (int)$suggest ?>" style="display:inline-block; width:110px;">
+                  <button type="submit" class="btn btn-sm pill" title="Award bonus Karma Coin based on contribution">Award</button>
+                </form>
+              </td>
               <td>
                 <div class="actions">
                   <form method="post">
@@ -318,21 +333,6 @@ try {
                     <input type="hidden" name="action" value="delete_campaign">
                     <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
                     <button type="submit" class="btn btn-sm pill">Delete</button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            <tr class="award-row">
-              <td colspan="6">
-                <?php $crowd = (int)($c['crowd_size'] ?? 0); $suggest = max(1, intdiv($crowd > 0 ? $crowd : 100, 100)); ?>
-                <div class="actions">
-                  <strong>Bonus allotment</strong>
-                  <span>Suggested: <?= (int)$suggest ?> coin(s)<?= $crowd > 0 ? ' · Crowd ' . (int)$crowd : '' ?></span>
-                  <form method="post" style="display:inline-block;">
-                    <input type="hidden" name="action" value="award_campaign_bonus">
-                    <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
-                    <input name="amount" type="number" class="input" min="1" value="<?= (int)$suggest ?>" style="display:inline-block; width:120px;">
-                    <button type="submit" class="btn btn-sm pill">Award Bonus</button>
                   </form>
                 </div>
               </td>
