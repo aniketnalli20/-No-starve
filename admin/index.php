@@ -26,6 +26,30 @@ try {
         $stmt->execute([$username, $email, $hash, $now, $isAdmin]);
         $message = 'User added: ' . htmlspecialchars($username);
       }
+    } else if ($action === 'export_users') {
+      try {
+        $uploadsDir = __DIR__ . '/../uploads';
+        if (!is_dir($uploadsDir)) { @mkdir($uploadsDir, 0777, true); }
+        $path = $uploadsDir . '/users_export.txt';
+        $stmt = $pdo->query('SELECT id, username, email, phone, address, is_admin, created_at FROM users ORDER BY id ASC');
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $out = [];
+        $out[] = 'No Starve Users Export (' . gmdate('c') . ')';
+        foreach ($rows as $u) {
+          $line = 'id=' . (int)$u['id']
+            . ', username=' . (string)$u['username']
+            . ', email=' . (string)$u['email']
+            . ', phone=' . (string)($u['phone'] ?? '')
+            . ', address=' . (string)($u['address'] ?? '')
+            . ', admin=' . (((int)($u['is_admin'] ?? 0) === 1) ? 'yes' : 'no')
+            . ', created_at=' . (string)$u['created_at'];
+          $out[] = $line;
+        }
+        file_put_contents($path, implode(PHP_EOL, $out) . PHP_EOL, LOCK_EX);
+        $message = 'Exported ' . count($rows) . ' users to uploads/users_export.txt';
+      } catch (Throwable $e) {
+        $errors[] = 'Export failed: ' . $e->getMessage();
+      }
     } else if ($action === 'delete_user') {
       $uid = (int)($_POST['user_id'] ?? 0);
       if ($uid > 0) {
@@ -253,6 +277,11 @@ try {
         <form method="post" onsubmit="return confirm('Remove non-admin users named like userXXXXX with example.com emails?');" style="display:inline-block; margin-left:8px;">
           <input type="hidden" name="action" value="bulk_delete_fake_users">
           <button type="submit" class="btn btn-sm pill">Remove fake users</button>
+        </form>
+        <form method="post" style="display:inline-block; margin-left:8px;">
+          <input type="hidden" name="action" value="export_users">
+          <button type="submit" class="btn btn-sm pill">Export to text</button>
+          <a href="<?= h($BASE_PATH) ?>uploads/users_export.txt" class="btn btn-sm pill" style="margin-left:6px;">Download</a>
         </form>
       </div>
 

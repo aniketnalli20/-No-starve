@@ -160,13 +160,23 @@ $listings = $listingsStmt->fetchAll();
 // Fetch recent campaigns
 $campaigns = [];
 try {
-    // Include contributor_name and endorse counts; show only actively open campaigns
-    // Community filter removed to allow campaigns without community selection to appear
-$campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, status, created_at, contributor_name, endorse_campaign, location, crowd_size, closing_time, latitude, longitude,\n  (SELECT COALESCE(SUM(amount), 0) FROM karma_events e WHERE e.ref_type = 'campaign' AND e.ref_id = campaigns.id) AS coins_received\n  FROM campaigns\n  WHERE status = 'open'\n    AND ((location IS NOT NULL AND location <> '') OR (area IS NOT NULL AND area <> ''))\n    AND crowd_size IS NOT NULL\n    AND closing_time IS NOT NULL AND closing_time <> ''\n  ORDER BY created_at DESC\n  LIMIT 20");
-    $campaignsStmt->execute();
+    $campSql = "SELECT id, title, summary, area, target_meals, status, created_at, contributor_name, endorse_campaign, location, crowd_size, closing_time, latitude, longitude,\n  (SELECT COALESCE(SUM(amount), 0) FROM karma_events e WHERE e.ref_type = 'campaign' AND e.ref_id = campaigns.id) AS coins_received\n  FROM campaigns\n  WHERE status = 'open'\n    AND ((location IS NOT NULL AND location <> '') OR (area IS NOT NULL AND area <> ''))\n    AND crowd_size IS NOT NULL\n    AND closing_time IS NOT NULL AND closing_time <> ''";
+    $campParams = [];
+    if ($cityFilter !== '') {
+        $campSql .= " AND ((area LIKE ?) OR (location LIKE ?))";
+        $campParams[] = '%' . $cityFilter . '%';
+        $campParams[] = '%' . $cityFilter . '%';
+    }
+    if ($pincodeFilter !== '') {
+        $campSql .= " AND ((area LIKE ?) OR (location LIKE ?))";
+        $campParams[] = '%' . $pincodeFilter . '%';
+        $campParams[] = '%' . $pincodeFilter . '%';
+    }
+    $campSql .= " ORDER BY created_at DESC LIMIT 20";
+    $campaignsStmt = $pdo->prepare($campSql);
+    $campaignsStmt->execute($campParams);
     $campaigns = $campaignsStmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {
-    // Silent: if table not available yet, skip section
 }
 ?>
 <!DOCTYPE html>
@@ -226,9 +236,9 @@ $campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, s
                 <button class="btn accent pill" type="submit">Search</button>
               </div>
               <?php if ($cityFilter !== '' || $pincodeFilter !== ''): ?>
-                <div class="search-meta" aria-live="polite">Showing results for 
-                  <?= $cityFilter !== '' ? '<span class="chip">' . h($cityFilter) . '</span>' : '' ?>
-                  <?= $pincodeFilter !== '' ? '<span class="chip">' . h($pincodeFilter) . '</span>' : '' ?>
+                <div class="search-meta" aria-live="polite">Showing <?= (int)count($campaigns) ?> result<?= count($campaigns) === 1 ? '' : 's' ?> for 
+                  <?= $cityFilter !== '' ? '<span class="chip highlight">' . h($cityFilter) . '</span>' : '' ?>
+                  <?= $pincodeFilter !== '' ? '<span class="chip highlight">' . h($pincodeFilter) . '</span>' : '' ?>
                 </div>
               <?php endif; ?>
             </form>
@@ -272,8 +282,21 @@ $campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, s
                                 else { $csLabel = 'Low'; $csClass = 'low'; }
                               }
                             ?>
-                            <div class="tweet-details">
-                                <div class="detail"><span class="d-label">Location</span><span class="d-value"><?= h(($c['location'] ?? '') !== '' ? $c['location'] : ($c['area'] ?? '—')) ?></span></div>
+                                <?php
+                                  $terms = [];
+                                  if ($cityFilter !== '') $terms[] = $cityFilter;
+                                  if ($pincodeFilter !== '') $terms[] = $pincodeFilter;
+                                  $locRaw = (($c['location'] ?? '') !== '' ? (string)$c['location'] : (string)($c['area'] ?? '—'));
+                                  $locText = $locRaw;
+                                  if (!empty($terms) && $locText !== '—') {
+                                    foreach ($terms as $t) {
+                                      $t = preg_quote($t, '/');
+                                      $locText = preg_replace('/(' . $t . ')/i', '<mark>$1</mark>', $locText);
+                                    }
+                                  }
+                                ?>
+                                <div class="tweet-details">
+                                <div class="detail"><span class="d-label">Location</span><span class="d-value"><?= $locText ?></span></div>
                                 <div class="detail"><span class="d-label">Crowd Size</span><span class="d-value">
                                   <?= ($csVal !== null ? h((string)$csVal) : '—') ?>
                                   <?php if ($csLabel): ?><span class="chip <?= h($csClass) ?>" style="margin-left:6px;"><?= h($csLabel) ?></span><?php endif; ?>
@@ -282,7 +305,18 @@ $campaignsStmt = $pdo->prepare("SELECT id, title, summary, area, target_meals, s
                                 <div class="detail"><span class="d-label"><span class="coin-icon" aria-hidden="true"></span>Karma Coins</span><span class="d-value"><?= (int)($c['coins_received'] ?? 0) ?></span></div>
                             </div>
                             <div class="tweet-meta">
-                                <?php if (!empty($c['area'])): ?><span class="chip">Area: <?= h($c['area']) ?></span><?php endif; ?>
+                                <?php if (!empty($c['area'])): ?>
+                                  <?php
+                                    $areaText = (string)$c['area'];
+                                    if (!empty($terms)) {
+                                      foreach ($terms as $t) {
+                                        $t = preg_quote($t, '/');
+                                        $areaText = preg_replace('/(' . $t . ')/i', '<mark>$1</mark>', $areaText);
+                                      }
+                                    }
+                                  ?>
+                                  <span class="chip">Area: <?= $areaText ?></span>
+                                <?php endif; ?>
                             </div>
                             <div class="tweet-actions">
                                 <button class="tweet-btn endorse-btn" type="button" data-campaign-id="<?= (int)$c['id'] ?>">Endorse <span class="endorse-count" data-campaign-id="<?= (int)$c['id'] ?>"><?= h((string)($c['endorse_campaign'] ?? 0)) ?></span></button>
