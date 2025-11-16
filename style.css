@@ -1097,5 +1097,22 @@ ul { list-style: none; padding-left: 0; }
 .cta-card { background: #ffffff; color: var(--text); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; box-shadow: none; text-align: center; }
 .cta-card h3 { margin: 0 0 10px; font-weight: 800; font-size: clamp(1.3rem, 1.6vw + 0.8rem, 1.9rem); }
 .cta-card .actions { display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end; }
+.btn.btn-sm { padding: 6px 10px; border-radius: 10px; font-size: 0.95rem; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.95rem; table-layout: fixed; }
+.table thead th { text-align: left; background: #fafafa; border-bottom: 2px solid var(--border); padding: 8px 10px; font-weight: 700; letter-spacing: -0.01em; }
+.table tbody td { border-bottom: 1px solid var(--border); padding: 8px 10px; vertical-align: middle; }
+.table tbody tr:hover { background: #fbfbfb; }
+.table .actions { display: flex; gap: 8px; align-items: center; }
+
+.table th, .table td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.admin-grid .card-plain { max-width: none; margin-left: 0; margin-right: 0; padding: 12px 14px; }
+.admin-grid .card-horizontal { gap: 12px; }
+@media (min-width: 720px) { .admin-grid .card-horizontal .section-title { flex: 0 0 220px; margin: 0; } }
+.admin-grid .form .input { width: 100%; background: white; border: 1px solid var(--border); padding: 8px 10px; border-radius: 10px; margin-top: 8px; }
+.admin-grid .form .actions { margin-top: 8px; }
+
+.admin-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; max-width: var(--content-max); margin: 12px auto; padding: 0 var(--content-pad); }
+@media (min-width: 840px) { .admin-grid { grid-template-columns: repeat(2, 1fr); } }
 .btn.dark { background: #1f2937; color: #ffffff; border-color: transparent; }
 .btn.light { background: #ffffff; color: #000000; border-color: transparent; }
