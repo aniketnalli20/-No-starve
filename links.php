@@ -8,6 +8,7 @@ require_once __DIR__ . '/app.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Links · No Starve</title>
     <link rel="stylesheet" href="<?= h($BASE_PATH) ?>style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" />
     <link rel="icon" type="image/png" href="<?= h($BASE_PATH) ?>uploads/favicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="<?= h($BASE_PATH) ?>uploads/favicon.png">
     <style>

@@ -56,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login · No Starve</title>
     <link rel="stylesheet" href="<?= h($BASE_PATH) ?>style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" />
 </head>
 <body class="page-login">
     <header class="site-header" role="banner">
@@ -83,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
     <main class="container login-page" style="max-width: var(--content-max); padding: var(--content-pad);">
-        <div class="container" style="max-width: 350px;">
-            <div class="heading">Sign In</div>
+        <div class="container" style="max-width: 380px;">
+            <div class="heading" style="margin: 6px 0 12px; text-align:center; font-weight:700;">Log in to your account</div>
             <?php if ($error): ?>
                 <div class="card-plain" role="alert" style="margin-top:12px;">
                     <?= h($error) ?>
@@ -94,6 +95,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if ($next !== ''): ?>
                     <input type="hidden" name="next" value="<?= h($next) ?>">
                 <?php endif; ?>
+                <div class="social-login" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
+                  <button type="button" class="btn-social google" aria-label="Log in with Google">
+                    <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+                    <span>Log in with Google</span>
+                  </button>
+                  <button type="button" class="btn-social github" aria-label="Log in with GitHub">
+                    <span class="material-symbols-outlined" aria-hidden="true">terminal</span>
+                    <span>Log in with GitHub</span>
+                  </button>
+                </div>
+                <div style="text-align:center; margin:10px 0; color:#888;">or</div>
                 <div class="form-field" aria-label="Login Type">
                     <label style="display:block; margin-bottom:8px;">Login As</label>
                     <div class="role-select" style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -107,10 +119,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
                 </div>
-                <input placeholder="E-mail" id="email" name="email" type="email" class="input" required />
-                <input placeholder="Password" id="password" name="password" type="password" class="input" required />
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+                  <input placeholder="Email" id="email" name="email" type="email" class="input" required />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+                  <input placeholder="Password" id="password" name="password" type="password" class="input" required />
+                </div>
                 <span class="forgot-password"><a href="#">Forgot Password ?</a></span>
-                <button type="submit" class="login-button">Sign In</button>
+                <button type="submit" class="login-button">Log In</button>
             </form>
             
         </div>

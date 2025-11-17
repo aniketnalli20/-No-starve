@@ -186,6 +186,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Food Waste Management</title>
     <link rel="stylesheet" href="<?= h($BASE_PATH) ?>style.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" />
     <!-- Using local Inter font from /fonts; external font links removed -->
     <meta name="description" content="Connect donors with NGOs to rescue surplus food in India." />
     <!-- Favicon -->
