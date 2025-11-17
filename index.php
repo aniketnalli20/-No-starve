@@ -270,8 +270,8 @@ try {
   </section>
   <section id="about" class="feature-section">
     <div class="feature-header">
-      <div class="title">Karma Coins & Platform</div>
-      <div class="subtitle">A quick overview of recognition and how No Starve helps</div>
+      <div class="title">Discover Meals, Earn Recognition</div>
+      <div class="subtitle">Find nearby meals fast and build community trust with Karma Coins</div>
     </div>
     <div class="feature-grid">
       <div class="feature-card">

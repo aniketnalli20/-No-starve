@@ -1399,6 +1399,17 @@ ul { list-style: none; padding-left: 0; }
 .profile-tabs { display:flex; align-items:center; gap:8px; margin-top: 12px; }
 .profile-tabs .tab { border:1px solid var(--border); background:#fff; color:#111; border-radius:999px; padding:6px 12px; }
 .profile-tabs .tab.active { background:#eef2ff; border-color:#c7d2fe; color:#1a7aff; }
+.tab-panel { display: none; margin-top: 12px; }
+.tab-panel.active { display: block; }
+.campaign-grid { display:grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 10px; }
+@media (max-width: 920px) { .campaign-grid { grid-template-columns: 1fr; } }
+.campaign-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px; }
+.campaign-card .title { font-weight:600; }
+.campaign-card .meta { color: var(--muted); font-size: 0.95rem; }
+.badge-list { display:flex; flex-wrap:wrap; gap:8px; }
+.badge-chip { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); border-radius:999px; padding:6px 10px; background:#fff; }
+.badge-chip.success { border-color:#c7e9cd; background:#e8f6ec; }
+.badge-chip.warn { border-color:#fde68a; background:#fff8e1; }
 .info-grid { display:grid; grid-template-columns: 1fr 1.5fr; gap: 12px; }
 .info-card, .feed-card { background:#fff; border:1px solid var(--border); border-radius:16px; padding:12px; }
 .info-card .item { display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border); border-radius:999px; padding:8px 10px; margin-bottom:8px; }

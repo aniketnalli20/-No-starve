@@ -226,82 +226,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                 <?= h($message) ?>
             </div>
         <?php endif; ?>
-        <div class="card-plain">
-            <div class="profile-grid">
-                <div class="label"><strong>Username</strong></div>
-                <div><?= h($user['username'] ?? '') ?></div>
-
-                <div class="label"><strong>Email</strong></div>
-                <div><?= h($user['email'] ?? '') ?></div>
-
-                <div class="label"><strong>Phone</strong></div>
-                <div><?= h(($user['phone'] ?? '') !== '' ? $user['phone'] : 'Not provided') ?></div>
-
-                <div class="label"><strong>Address</strong></div>
-                <div><?= h(($user['address'] ?? '') !== '' ? $user['address'] : 'Not provided') ?></div>
-
-                <div class="label"><strong>Member Since</strong></div>
-                <div><?= h($user['created_at'] ?? '') ?></div>
-            </div>
-            <div class="profile-grid" style="margin-top:12px;">
-                <div class="label"><strong>KYC Status</strong></div>
-                <div>
-                    <?php
-                      try {
-                        $stK = $pdo->prepare('SELECT status FROM kyc_requests WHERE user_id = ? ORDER BY updated_at DESC, created_at DESC LIMIT 1');
-                        $stK->execute([(int)$user['id']]);
-                        $kycStatus = (string)($stK->fetchColumn() ?: 'pending');
-                      } catch (Throwable $e) { $kycStatus = 'pending'; }
-                      $ok = ($kycStatus === 'approved');
-                    ?>
-                    <span id="f" class="<?= $ok ? 'status-success' : 'status-error' ?>"><?= $ok ? 'success' : 'pending' ?></span>
-                </div>
-                <div class="label"><em class="muted">Karma Coins earned since joined</em></div>
-                <div><?= h((string)$karmaBalance) ?></div>
-                <div class="label"><strong>Endorsements Received</strong></div>
-                <div><?= h((string)$endorseTotal) ?></div>
-                <div class="label"><strong>Next Coin In</strong></div>
-                <div><?= h((string)$nextIn) ?></div>
-            </div>
-            <div class="card-plain" style="margin-top:12px;">
-                <h3 class="section-title" style="border-bottom:none; margin:0 0 8px;">Wallet</h3>
-                <div class="stat" style="display:flex; gap:12px; align-items:center;">
-                    <span class="stat-label">Balance</span>
-                    <span class="stat-num"><?= (int)$karmaBalance ?></span>
-                </div>
-                <form method="post" action="<?= h($BASE_PATH) ?>profile.php" style="margin-top:10px;">
-                    <input type="hidden" name="action" value="wallet_convert">
-                    <button type="submit" class="btn pill">Convert karma to wallet</button>
-                </form>
-                <?php if ($walletMsg !== ''): ?><div class="muted" style="margin-top:6px;"><?= h($walletMsg) ?></div><?php endif; ?>
-                <?php
-                  $events = [];
-                  try {
-                      $stE = $pdo->prepare('SELECT amount, reason, ref_type, ref_id, created_at FROM karma_events WHERE user_id = ? ORDER BY created_at DESC LIMIT 200');
-                      $stE->execute([(int)$user['id']]);
-                      $events = $stE->fetchAll(PDO::FETCH_ASSOC) ?: [];
-                  } catch (Throwable $e) {}
-                ?>
-                <div class="card-plain" style="margin-top:10px;">
-                  <strong>Transactions</strong>
-                  <?php if (!empty($events)): ?>
-                    <div class="table" role="table" aria-label="Wallet events">
-                      <?php foreach ($events as $ev): ?>
-                        <div class="table-row" role="row" style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border);">
-                          <div><?= h(date('Y-m-d H:i', strtotime($ev['created_at']))) ?></div>
-                          <div><?= h((string)($ev['reason'] ?? '')) ?></div>
-                          <div><?= (int)$ev['amount'] ?></div>
-                        </div>
-                      <?php endforeach; ?>
-                    </div>
-                  <?php else: ?>
-                    <div class="muted">No transactions yet.</div>
-                  <?php endif; ?>
-                </div>
-            </div>
+        <?php
+          $myCampaigns = [];
+          try { $stC = $pdo->prepare('SELECT id, title, crowd_size, status, created_at FROM campaigns WHERE user_id = ? ORDER BY created_at DESC LIMIT 6'); $stC->execute([(int)$user['id']]); $myCampaigns = $stC->fetchAll(PDO::FETCH_ASSOC) ?: []; } catch (Throwable $e) {}
+        ?>
+        <div class="info-grid">
+          <div class="info-card" aria-label="Basic info">
+            <div class="item"><div class="left"><span class="material-symbols-outlined" aria-hidden="true">badge</span><span><?= h($user['username'] ?? '') ?></span></div><span class="material-symbols-outlined" aria-hidden="true">person</span></div>
+            <div class="item"><div class="left"><span class="material-symbols-outlined" aria-hidden="true">mail</span><span><?= h($user['email'] ?? '') ?></span></div><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></div>
+            <div class="item"><div class="left"><span class="material-symbols-outlined" aria-hidden="true">call</span><span><?= h(($user['phone'] ?? '') !== '' ? $user['phone'] : 'Not provided') ?></span></div><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></div>
+            <div class="item"><div class="left"><span class="material-symbols-outlined" aria-hidden="true">location_on</span><span><?= h(($user['address'] ?? '') !== '' ? $user['address'] : 'Not provided') ?></span></div><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></div>
+            <div class="item"><div class="left"><span class="material-symbols-outlined" aria-hidden="true">event</span><span><?= h($user['created_at'] ?? '') ?></span></div><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></div>
+          </div>
+          <div class="feed-card" aria-label="Quick update">
+            <div class="panel-title">Update Contact</div>
             <div class="form-frame">
               <div class="form-panel">
-                <div class="panel-title">Enter your details</div>
                 <form id="profileForm" method="post" action="<?= h($BASE_PATH) ?>profile.php" class="form" style="margin-top:8px;">
                   <input type="hidden" name="action" value="update_profile">
                   <label for="phone"><strong>Phone</strong></label>
@@ -316,14 +256,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                     <button type="button" class="chip" data-fill-phone="+91 98765 43210">Use sample</button>
                     <button type="button" class="chip" data-clear="phone">Clear</button>
                   </div>
-
                   <label for="address" style="margin-top:10px;"><strong>Address</strong></label>
                   <textarea id="address" name="address" class="input" placeholder="Street, City, State, PIN" rows="3" style="resize: vertical;" autocomplete="street-address"><?= h($user['address'] ?? '') ?></textarea>
                   <div class="preset-group" aria-label="Address presets" style="margin-top:6px;">
                     <button type="button" class="chip" id="open-map">Pick on Map</button>
                     <button type="button" class="chip" data-clear="address">Clear</button>
                   </div>
-
                   <div id="map-container" class="card-plain" style="display:none; margin-top:8px;">
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                       <strong>Select location on map</strong>
@@ -337,20 +275,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
               <aside class="summary-card">
                 <div class="summary-title">Profile Summary</div>
                 <ul class="summary-list">
-                  <li><span>Username</span><span><?= h((string)($user['username'] ?? '—')) ?></span></li>
-                  <li><span>Email</span><span><?= h((string)($user['email'] ?? '—')) ?></span></li>
-                  <?php $balance = 0; try { $stB = $pdo->prepare('SELECT COALESCE(balance,0) FROM karma_wallets WHERE user_id = ?'); $stB->execute([(int)$user['id']]); $balance = (int)($stB->fetchColumn() ?: 0); } catch (Throwable $e) {} ?>
-                  <li><span>Wallet</span><span><?= h(format_compact_number((int)$balance)) ?></span></li>
+                  <li><span>Wallet</span><span><?php $balance = 0; try { $stB = $pdo->prepare('SELECT COALESCE(balance,0) FROM karma_wallets WHERE user_id = ?'); $stB->execute([(int)$user['id']]); $balance = (int)($stB->fetchColumn() ?: 0); } catch (Throwable $e) {} echo h(format_compact_number((int)$balance)); ?></span></li>
+                  <li><span>Karma Coins</span><span><?= h(format_compact_number((int)$karmaBalance)) ?></span></li>
+                  <li><span>Endorsements</span><span><?= h(format_compact_number((int)$endorseTotal)) ?></span></li>
                 </ul>
                 <div class="summary-cta" style="margin-top:8px;">
                   <button type="submit" class="btn success pill" form="profileForm">Save Changes</button>
                 </div>
               </aside>
             </div>
-            <div class="profile-actions">
-                <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php#hero">Back to Home</a>
-                <a class="btn btn-bhargav" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"><span>Create Campaign</span></a>
-            </div>
+            <div class="panel-title" style="margin-top:10px;">Recent campaigns</div>
+            <?php if (!empty($myCampaigns)): ?>
+              <div class="profile-grid" style="grid-template-columns: repeat(3, minmax(160px, 1fr)); gap:8px;">
+                <?php foreach ($myCampaigns as $mc): ?>
+                  <div class="card-plain" style="padding:10px; border-radius:12px;">
+                    <div style="font-weight:600;"><?= h((string)($mc['title'] ?? 'Untitled')) ?></div>
+                    <div class="muted" style="margin-top:4px;">Crowd <?= h(format_compact_number((int)($mc['crowd_size'] ?? 0))) ?></div>
+                    <div class="muted">Status <?= h((string)($mc['status'] ?? '')) ?></div>
+                    <a class="chip" style="margin-top:6px; display:inline-block;" href="<?= h($BASE_PATH) ?>campaign.php?id=<?= (int)$mc['id'] ?>">Open</a>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            <?php else: ?>
+              <div class="muted">No campaigns yet.</div>
+            <?php endif; ?>
+          </div>
+        </div>
+        <div class="profile-actions" style="margin-top:12px;">
+          <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php#hero">Back to Home</a>
+          <a class="btn btn-bhargav" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"><span>Create Campaign</span></a>
+        </div>
         </div>
       </section>
     </main>
