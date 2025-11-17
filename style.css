@@ -1128,6 +1128,8 @@ ul { list-style: none; padding-left: 0; }
 .tweet-actions a:hover { background: rgba(0, 166, 147, 0.10); color: #00A693; border-color: rgba(0, 166, 147, 0.30); }
 /* icon styling within tweet actions */
 .tweet-actions .icon { width: 16px; height: 16px; vertical-align: -2px; margin-right: 6px; }
+.tweet-actions .material-symbols-outlined.icon { width: auto; height: auto; font-size: 18px; line-height: 1; vertical-align: -3px; }
+.tweet-mini-actions .material-symbols-outlined.icon { font-size: 18px; line-height: 1; vertical-align: -2px; }
 .tweet-actions button .icon, .tweet-actions a .icon { stroke: currentColor; fill: none; }
 .tweet-actions .count { color: var(--text-muted); margin-left: 4px; }
 .tweet-actions button.active { color: #00A693; border-color: rgba(0, 166, 147, 0.30); background: rgba(0, 166, 147, 0.10); }

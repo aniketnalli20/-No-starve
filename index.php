@@ -207,6 +207,9 @@ try {
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'index.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'profile.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a></li>
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'create_campaign.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a></li>
+                  <?php if (is_admin()): ?>
+                    <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>admin/index.php">Admin Tools</a></li>
+                  <?php endif; ?>
                   <?php if (is_logged_in()): ?>
                     <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>logout.php">Logout</a></li>
                   <?php else: ?>
@@ -271,11 +274,23 @@ try {
                     <article class="tweet-card" aria-label="Campaign" id="campaign-<?= (int)$c['id'] ?>">
                         <div class="tweet-avatar" aria-hidden="true"><span><?= h($initial) ?></span></div>
                         <div class="tweet-content">
-                            <div class="tweet-header">
-                                <span class="tweet-name"><?= h($name) ?></span>
-                                <?php if (((int)($c['contributor_verified'] ?? 0)) === 1): ?>
-                                  <span class="material-symbols-outlined verified-badge" title="Verified" aria-label="Verified">verified</span>
-                                <?php endif; ?>
+                            <div class="tweet-header" style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                                <div style="display:inline-flex; align-items:center; gap:6px;">
+                                  <span class="tweet-name"><?= h($name) ?></span>
+                                  <?php if (((int)($c['contributor_verified'] ?? 0)) === 1): ?>
+                                    <span class="material-symbols-outlined verified-badge" title="Verified" aria-label="Verified">verified</span>
+                                  <?php endif; ?>
+                                </div>
+                                <div class="tweet-mini-actions" style="display:flex; gap:6px;">
+                                  <?php $tuid = isset($c['user_id']) ? (int)$c['user_id'] : 0; $cname = trim((string)($c['contributor_name'] ?? '')); ?>
+                                  <?php if ($tuid > 0): ?>
+                                    <a class="tweet-btn" href="<?= h($BASE_PATH) ?>user.php?id=<?= (int)$tuid ?>" title="View Profile" aria-label="View Profile"><span class="material-symbols-outlined icon">person</span></a>
+                                    <button class="tweet-btn follow-btn" type="button" data-target-user-id="<?= (int)$tuid ?>" title="Follow" aria-label="Follow"><span class="material-symbols-outlined icon">person_add</span></button>
+                                  <?php elseif ($cname !== ''): ?>
+                                    <a class="tweet-btn" href="<?= h($BASE_PATH) ?>contributor.php?name=<?= rawurlencode($cname) ?>" title="View Profile" aria-label="View Profile"><span class="material-symbols-outlined icon">person</span></a>
+                                    <button class="tweet-btn follow-btn" type="button" data-contributor-name="<?= h($cname) ?>" title="Follow" aria-label="Follow"><span class="material-symbols-outlined icon">person_add</span></button>
+                                  <?php endif; ?>
+                                </div>
                             </div>
                             <?php
                               $csVal = isset($c['crowd_size']) && $c['crowd_size'] !== '' ? (int)$c['crowd_size'] : null;
@@ -304,16 +319,8 @@ try {
                                 <?php endif; ?>
                             </div>
                             <div class="tweet-actions">
-                                <button class="tweet-btn endorse-btn" type="button" data-campaign-id="<?= (int)$c['id'] ?>">Endorse <span class="endorse-count" data-campaign-id="<?= (int)$c['id'] ?>"><?= h((string)($c['endorse_campaign'] ?? 0)) ?></span></button>
-                                <button class="tweet-btn share-btn" type="button" data-campaign-id="<?= (int)$c['id'] ?>">Share</button>
-                                <?php $tuid = isset($c['user_id']) ? (int)$c['user_id'] : 0; $cname = trim((string)($c['contributor_name'] ?? '')); ?>
-                                <?php if ($tuid > 0): ?>
-                                  <a class="tweet-btn" href="<?= h($BASE_PATH) ?>user.php?id=<?= (int)$tuid ?>">View Profile</a>
-                                  <button class="tweet-btn follow-btn" type="button" data-target-user-id="<?= (int)$tuid ?>">Follow</button>
-                                <?php elseif ($cname !== ''): ?>
-                                  <a class="tweet-btn" href="<?= h($BASE_PATH) ?>contributor.php?name=<?= rawurlencode($cname) ?>">View Profile</a>
-                                  <button class="tweet-btn follow-btn" type="button" data-contributor-name="<?= h($cname) ?>">Follow</button>
-                                <?php endif; ?>
+                                <button class="tweet-btn endorse-btn" type="button" data-campaign-id="<?= (int)$c['id'] ?>" title="Endorse" aria-label="Endorse"><span class="material-symbols-outlined icon">thumb_up</span> <span class="endorse-count" data-campaign-id="<?= (int)$c['id'] ?>"><?= h((string)($c['endorse_campaign'] ?? 0)) ?></span></button>
+                                <button class="tweet-btn share-btn" type="button" data-campaign-id="<?= (int)$c['id'] ?>" title="Share" aria-label="Share"><span class="material-symbols-outlined icon">share</span></button>
                                 <?php
                                   $lat = isset($c['latitude']) && $c['latitude'] !== '' ? (float)$c['latitude'] : null;
                                   $lon = isset($c['longitude']) && $c['longitude'] !== '' ? (float)$c['longitude'] : null;
