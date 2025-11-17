@@ -1311,11 +1311,13 @@ ul { list-style: none; padding-left: 0; }
 .dash-tabs .tab-btn.active { background: #111; color: #fff; border-color: #111; }
 .tab-pane { display: none; }
 .tab-pane.active { display: block; }
-.dash-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.dash-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; }
 .metric-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
 .metric-value { font-size: clamp(1.2rem, 1.6vw + 0.6rem, 1.8rem); font-weight: 800; line-height: 1; }
 .metric-label { margin-top: 6px; color: var(--muted); font-weight: 600; }
 .chart-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+/* Admin dashboard: flush left, use full width */
+.page-admin .admin-main .card-plain { max-width: none; margin-left: 0; margin-right: 0; width: 100%; }
 
 /* Compact card width for KYC section */
 .card-compact { max-width: 900px; margin-left: auto; margin-right: auto; }
@@ -1340,3 +1342,6 @@ ul { list-style: none; padding-left: 0; }
 .chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; border: 1px solid transparent; }
 .chip-pass { background: #e8f9e9; color: #117a3c; border-color: #cfe8d3; }
 .chip-fail { background: #fff4e6; color: #b45309; border-color: #ffe0b3; }
+.dash-cards .metric-card::before { content: none; }
+.dash-cards .metric-card { background: #f9fafb; border-color: #e5e7eb; }
+.chart-card { background: #f9fafb; border-color: #e5e7eb; }

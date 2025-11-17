@@ -394,7 +394,7 @@ try {
       </div>
     </section>
     <h2 class="section-title" id="dbtools" style="margin-left: var(--content-pad);">Database Tools</h2>
-    <div class="admin-grid">
+    <div class="admin-grid stack-container">
     <?php if (!empty($errors)): ?>
       <div class="card-plain is-highlight" role="alert">
         <ul class="list-clean">
@@ -427,6 +427,7 @@ try {
 
       <div class="card-plain">
         <strong>Users (latest)</strong>
+        <div class="table-wrap">
         <table class="table" aria-label="Users table">
           <thead>
             <tr>
@@ -457,6 +458,7 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       </div>
     </section>
 
@@ -481,6 +483,7 @@ try {
       </form>
       <div class="card-plain">
         <strong>Campaigns (current endorsements)</strong>
+        <div class="table-wrap">
         <table class="table" aria-label="Campaign endorsements table">
           <thead>
             <tr>
@@ -503,6 +506,7 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       </div>
     </section>
 
@@ -534,6 +538,7 @@ try {
       </form>
       <div class="card-plain">
         <strong>Campaigns (latest)</strong>
+        <div class="table-wrap">
         <table class="table" aria-label="Campaigns table">
           <thead>
             <tr>
@@ -602,6 +607,7 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       </div>
     </section>
     
@@ -618,6 +624,7 @@ try {
       <?php if (!empty($awardUsers)): ?>
       <div class="card-plain">
         <strong>Search Results</strong>
+        <div class="table-wrap">
         <table class="table" aria-label="Award search results">
           <thead>
             <tr>
@@ -647,10 +654,12 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       </div>
       <?php endif; ?>
       <div class="card-plain">
         <strong>Wallets (latest)</strong>
+        <div class="table-wrap">
         <table class="table" aria-label="Wallets table">
           <thead>
             <tr>
@@ -671,6 +680,7 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       </div>
     </section>
 
@@ -686,6 +696,7 @@ try {
       </div>
       <div class="card-plain">
         <strong>Known Contributors</strong>
+        <div class="table-wrap">
         <table class="table" aria-label="Contributors table">
           <thead>
             <tr><th>Name</th><th>Verified</th><th>Actions</th></tr>
@@ -707,6 +718,7 @@ try {
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       </div>
     </section>
     <section id="kyc" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="KYC">
