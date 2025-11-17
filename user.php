@@ -85,6 +85,31 @@ try {
       <div class="muted">Joined <?= h(date('Y-m-d', strtotime($user['created_at']))) ?> · Followers: <?= (int)($followersOverride !== null ? $followersOverride : $followers) ?></div>
     </section>
 
+    <?php if (is_admin()): ?>
+    <section class="card-plain ig-card" aria-label="Admin Profile Preview" style="margin-top:10px;">
+      <div class="ig-header">
+        <div class="ig-avatar" aria-hidden="true"><span><?= h(strtoupper(substr((string)($user['username'] ?? 'U'),0,1))) ?></span></div>
+        <div class="ig-meta">
+          <div class="ig-name">
+            <span class="name-text"><?= h($user['username']) ?></span>
+            <?php if ($isVerified): ?><span class="material-symbols-outlined verified-badge" title="Verified" aria-label="Verified">verified</span><?php endif; ?>
+            <button type="button" class="btn pill" style="margin-left:8px;"><span class="material-symbols-outlined icon">person_add</span> Follow</button>
+          </div>
+          <div class="ig-sub muted">Joined <?= h(date('Y-m-d', strtotime($user['created_at']))) ?> · Followers: <?= (int)($followersOverride !== null ? $followersOverride : $followers) ?></div>
+        </div>
+      </div>
+      <form method="post" class="form" style="margin-top:10px;">
+        <input type="hidden" name="action" value="admin_profile_preview">
+        <label><strong>Followers</strong></label>
+        <input name="followers" type="number" class="input" min="0" value="<?= (int)($followersOverride !== null ? $followersOverride : $followers) ?>" style="width:140px; display:inline-block;">
+        <label style="margin-left:8px; display:inline-flex; align-items:center; gap:6px;"><input type="checkbox" name="verified" value="1" <?= $isVerified ? 'checked' : '' ?>> Verified</label>
+        <label style="margin-left:8px;"><strong>Joined (YYYY-MM-DD)</strong></label>
+        <input name="joined" type="text" class="input" value="<?= h(date('Y-m-d', strtotime($user['created_at']))) ?>" style="width:160px; display:inline-block;">
+        <div class="actions" style="margin-top:8px;"><button type="submit" class="btn pill">Save</button></div>
+      </form>
+    </section>
+    <?php endif; ?>
+
     <section class="card-plain" aria-label="User Campaigns">
       <h2 class="section-title">Campaigns</h2>
       <?php if (!empty($campaigns)): ?>
@@ -125,3 +150,28 @@ try {
   </script>
 </body>
 </html>
+// Admin profile preview controls
+if (is_admin() && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '') === 'admin_profile_preview') {
+  $followersNew = isset($_POST['followers']) ? (int)$_POST['followers'] : 0;
+  $verifiedNew = isset($_POST['verified']) ? 1 : 0;
+  $joinedNew = trim((string)($_POST['joined'] ?? ''));
+  try {
+    if ($joinedNew !== '') {
+      $pdo->prepare('UPDATE users SET created_at = ? WHERE id = ?')->execute([$joinedNew . ' 00:00:00', $id]);
+      $user['created_at'] = $joinedNew . ' 00:00:00';
+    }
+    $pdo->prepare('UPDATE users SET followers_override = ? WHERE id = ?')->execute([$followersNew, $id]);
+    $followersOverride = $followersNew;
+    $now = gmdate('Y-m-d H:i:s');
+    if ($DB_DRIVER === 'pgsql') {
+      $pdo->prepare('INSERT INTO contributors (name, verified, created_at, updated_at) VALUES (?, ?, ?, ?)
+                     ON CONFLICT (name) DO UPDATE SET verified = EXCLUDED.verified, updated_at = EXCLUDED.updated_at')
+          ->execute([$user['username'], $verifiedNew, $now, $now]);
+    } else {
+      $pdo->prepare('INSERT INTO contributors (name, verified, created_at, updated_at) VALUES (?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE verified = VALUES(verified), updated_at = VALUES(updated_at)')
+          ->execute([$user['username'], $verifiedNew, $now, $now]);
+    }
+    $isVerified = ($verifiedNew === 1);
+  } catch (Throwable $e) {}
+}
