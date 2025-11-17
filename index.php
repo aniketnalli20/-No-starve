@@ -194,12 +194,14 @@ try {
     <link rel="apple-touch-icon" href="<?= h($BASE_PATH) ?>uploads/favicon.png">
 </head>
 <body>
-    <header class="site-header" role="banner">
+    <header class="site-header header-area overlay" role="banner">
         <div class="container header-inner">
-            <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light" role="navigation" aria-label="Primary">
-              <button class="navbar-toggler" type="button" aria-controls="primary-navbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon" aria-hidden="true"></span>
+          <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
+            <nav class="navbar navbar-expand-md navbar-dark" role="navigation" aria-label="Primary">
+              <button class="navbar-toggler collapsed" type="button" aria-controls="primary-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="menu-icon-bar" aria-hidden="true"></span>
+                <span class="menu-icon-bar" aria-hidden="true"></span>
+                <span class="menu-icon-bar" aria-hidden="true"></span>
               </button>
               <div class="collapse navbar-collapse" id="primary-navbar">
                 <div class="navbar-left">
@@ -641,7 +643,7 @@ try {
           var coll = document.getElementById('primary-navbar');
           if (coll) coll.classList.remove('show');
           var btn = document.querySelector('.navbar-toggler');
-          if (btn) btn.setAttribute('aria-expanded','false');
+          if (btn) { btn.setAttribute('aria-expanded','false'); btn.classList.add('collapsed'); }
         } else {
           header.classList.remove('slim');
         }
@@ -657,9 +659,15 @@ try {
       var coll = document.getElementById('primary-navbar');
       if (btn && coll) {
         btn.addEventListener('click', function(){
-          var expanded = btn.getAttribute('aria-expanded') === 'true';
-          btn.setAttribute('aria-expanded', (!expanded).toString());
+          var wasExpanded = btn.getAttribute('aria-expanded') === 'true';
+          var nowExpanded = !wasExpanded;
+          btn.setAttribute('aria-expanded', nowExpanded.toString());
           coll.classList.toggle('show');
+          if (nowExpanded) {
+            btn.classList.remove('collapsed');
+          } else {
+            btn.classList.add('collapsed');
+          }
         });
       }
     })();
