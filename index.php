@@ -263,53 +263,12 @@ try {
             </div>
         </div>
   </section>
-  <section id="about" class="feature-section">
-    <div class="feature-header">
-      <div class="title">Discover Meals, Earn Recognition</div>
-      <div class="subtitle">Find nearby meals fast and build community trust with Karma Coins</div>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-card feature-card--karma">
-        <div class="head">
-          <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span></span>
-          <div class="title">Karma Coins: Your Community Reputation</div>
-        </div>
-        <div class="subchips" aria-label="Highlights">
-          <span class="chip">Automated</span>
-          <span class="chip">Trust Signal</span>
-          <span class="chip">Badges</span>
-        </div>
-        <ul class="list">
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Earn</strong> coins from endorsements and verified deliveries.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Amplify</strong> trusted, high‑impact campaigns.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Not a currency</strong>—powers badges, milestones, and visibility.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Trust signal</strong> on profiles and campaigns.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Automated</strong> recognition, no manual approvals.</span></li>
-        </ul>
-        <div class="actions" style="margin-top:10px;">
-          <a class="btn accent pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
-        </div>
-      </div>
-      <div class="feature-card feature-card--platform">
-        <div class="head">
-          <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span></span>
-          <div class="title">How No Starve Helps</div>
-        </div>
-        <div class="subchips" aria-label="Highlights">
-          <span class="chip">Instant</span>
-          <span class="chip">Real‑time</span>
-          <span class="chip">Waste reduction</span>
-        </div>
-        <ul class="list">
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Discover</strong> nearby meals and safe pickup details—instantly.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>See</strong> real‑time availability and closing times around you.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Built for</strong> working professionals, bachelors, and students.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Reduce</strong> food waste and daily meal challenges—one meal at a time.</span></li>
-        </ul>
-        <div class="actions" style="margin-top:10px;">
-          <a class="btn accent pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
-        </div>
-      </div>
+  <!-- Replaced About cards with a compact FAQ link to avoid repeated messaging -->
+  <section id="about" class="container" aria-label="About">
+    <div class="card-plain" style="text-align:center;">
+      <div class="section-title" style="border-bottom:none;">Questions? See FAQs</div>
+      <p style="margin:6px 0 10px;">Learn about Karma Coins and how No Starve helps in one place.</p>
+      <a class="btn pill" href="<?= h($BASE_PATH) ?>faqs.php">Open FAQs</a>
     </div>
   </section>
 

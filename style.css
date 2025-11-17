@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 /* Monochrome (B&W) theme */
 :root {
   --bg: #ffffff;        /* Max white */
@@ -1469,7 +1467,7 @@ ul { list-style: none; padding-left: 0; }
 .navbar.navbar-dark .navbar-brand, .navbar.navbar-dark .nav-link { color: #fff; }
 .navbar.navbar-dark .nav-link:hover, .navbar.navbar-dark .nav-link:focus { color: #fff; }
 .navbar.navbar-dark .navbar-nav .nav-link { background: transparent; border-color: transparent; }
-.site-header.header-area .navbar .navbar-brand { font-family: 'Lobster', cursive; font-size: clamp(1.8rem, 2vw + 1rem, 2.5rem); }
+.site-header.header-area .navbar .navbar-brand { font-family: inherit; font-size: clamp(1.05rem, 1.1vw + 0.6rem, 1.5rem); }
 .navbar .navbar-toggler { position: relative; height: 50px; width: 50px; border: none; background: transparent; outline: none; }
 .navbar .navbar-toggler .menu-icon-bar { position: absolute; left: 15px; right: 15px; height: 2px; background-color: #fff; opacity: 0; transform: translateY(-1px); transition: all 0.3s ease-in; }
 .navbar .navbar-toggler .menu-icon-bar:first-child { opacity: 1; transform: translateY(-1px) rotate(45deg); }
