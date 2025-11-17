@@ -89,7 +89,7 @@ try {
         <div class="muted" style="margin-top:6px;">Rate: 1000 Karma Coins = 10 paisa. Redemption is allowed only at 1 million Karma Coins.</div>
         <form method="post" action="<?= h($BASE_PATH) ?>wallet.php" style="margin-top:10px;">
           <input type="hidden" name="action" value="redeem">
-          <button type="submit" class="btn pill">Redeem to Paisa</button>
+          <button type="submit" class="btn pill">Paisa to redeem</button>
         </form>
         <?php if ($redeemMsg !== ''): ?><div class="muted" style="margin-top:6px;"><?= h($redeemMsg) ?></div><?php endif; ?>
       </div>
