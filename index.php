@@ -203,52 +203,10 @@ try {
               </button>
               <div class="collapse navbar-collapse" id="primary-navbar">
                 <div class="navbar-left">
-                  <ul class="navbar-nav nav-main">
-                    <li class="nav-item has-mega">
-                      <a class="nav-link" href="#" aria-haspopup="true" aria-expanded="false">Discover<span class="caret">▾</span></a>
-                      <div class="mega-panel" role="dialog" aria-label="Discover menu">
-                        <div class="mega-grid">
-                          <div class="mega-col">
-                            <div class="heading">Nearby</div>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>index.php#recent-campaigns"><span class="material-symbols-outlined" aria-hidden="true">location_on</span><span>Campaigns near you</span></a>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>index.php#about"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span><span>Available meals</span></a>
-                          </div>
-                          <div class="mega-col">
-                            <div class="heading">Trust</div>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>faqs.php"><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span><span>Karma Coins</span></a>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>faqs.php"><span class="material-symbols-outlined" aria-hidden="true">verified</span><span>Verified contributors</span></a>
-                          </div>
-                          <div class="mega-col">
-                            <div class="heading">Guides</div>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>faqs.php"><span class="material-symbols-outlined" aria-hidden="true">help</span><span>How it works</span></a>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>create_campaign.php"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span>Create a campaign</span></a>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="nav-item has-mega">
-                      <a class="nav-link" href="#" aria-haspopup="true" aria-expanded="false">Platform<span class="caret">▾</span></a>
-                      <div class="mega-panel" role="dialog" aria-label="Platform menu">
-                        <div class="mega-grid">
-                          <div class="mega-col">
-                            <div class="heading">For Users</div>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>index.php#recent-campaigns"><span class="material-symbols-outlined" aria-hidden="true">explore</span><span>Find meals</span></a>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>faqs.php"><span class="material-symbols-outlined" aria-hidden="true">info</span><span>FAQs</span></a>
-                          </div>
-                          <div class="mega-col">
-                            <div class="heading">For Contributors</div>
-                            <a class="mega-item" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"><span class="material-symbols-outlined" aria-hidden="true">edit</span><span>Create campaign</span></a>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>kyc.php"><span class="material-symbols-outlined" aria-hidden="true">badge</span><span>KYC</span></a>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>wallet.php"><span class="material-symbols-outlined" aria-hidden="true">savings</span><span>Wallet</span></a>
-                          </div>
-                          <div class="mega-col">
-                            <div class="heading">Community</div>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>index.php#about"><span class="material-symbols-outlined" aria-hidden="true">groups</span><span>About No Starve</span></a>
-                            <a class="mega-item" href="<?= h($BASE_PATH) ?>faqs.php"><span class="material-symbols-outlined" aria-hidden="true">support</span><span>Support</span></a>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
+                  <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link<?= $currentPath === 'index.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>index.php#recent-campaigns">Campaigns</a></li>
+                    <li class="nav-item"><a class="nav-link<?= $currentPath === 'create_campaign.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create</a></li>
                   </ul>
                 </div>
                 <div class="navbar-center">
