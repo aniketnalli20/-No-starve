@@ -46,6 +46,15 @@ try {
     <div class="container header-inner">
       <nav class="navbar navbar-expand-lg navbar-light bg-light" role="navigation" aria-label="Primary">
         <a class="navbar-brand" href="<?= h($BASE_PATH) ?>index.php#hero">No Starve</a>
+        <div class="collapse navbar-collapse" id="primary-navbar">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a></li>
+            <?php if (is_admin()): ?>
+              <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>admin/index.php">Admin Tools</a></li>
+            <?php endif; ?>
+          </ul>
+        </div>
       </nav>
     </div>
   </header>
