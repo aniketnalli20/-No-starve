@@ -419,11 +419,11 @@ function set_contributor_verified(string $name, int $verified): void {
 function format_compact_number(int $n): string {
     if ($n >= 1000000000) {
         $v = round($n / 1000000000, 1);
-        return rtrim(rtrim(sprintf('%.1f', $v), '0'), '.') . ' billion';
+        return rtrim(rtrim(sprintf('%.1f', $v), '0'), '.') . 'b';
     }
     if ($n >= 1000000) {
         $v = round($n / 1000000, 1);
-        return rtrim(rtrim(sprintf('%.1f', $v), '0'), '.') . ' million';
+        return rtrim(rtrim(sprintf('%.1f', $v), '0'), '.') . 'm';
     }
     if ($n >= 1000) {
         $v = round($n / 1000, 1);

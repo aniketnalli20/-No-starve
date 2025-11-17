@@ -1217,6 +1217,12 @@ ul { list-style: none; padding-left: 0; }
 .admin-grid .table .actions { gap: 6px; }
 .admin-grid .table .btn.btn-sm { padding: 6px 10px; font-size: 0.95rem; border-radius: 10px; }
 
+/* Compact status dot for KYC */
+.status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; }
+.status-approved { background: #16a34a; }
+.status-pending { background: #f59e0b; }
+.status-rejected { background: #dc2626; }
+
 .award-row td { background: #f7f7f7; }
 
 /* Admin panel: remove hover animations */

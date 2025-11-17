@@ -273,18 +273,16 @@ try {
       ?>
       <aside class="admin-sidebar" aria-label="Admin Navigation">
         <div class="sidebar-group">
-          <div class="sidebar-title">Sections</div>
+          <div class="sidebar-title">Database Tools</div>
           <a href="#dashboard" class="side-link">Dashboard</a>
-          <a href="#users" class="side-link">Users <span class="side-count"><?= (int)$usersCountSidebar ?></span></a>
-          <a href="#campaigns" class="side-link">Campaigns <span class="side-count"><?= (int)$campaignsCountSidebar ?></span></a>
+          <a href="#users" class="side-link">Users <span class="side-count"><?= h(format_compact_number((int)$usersCountSidebar)) ?></span></a>
+          <a href="#campaigns" class="side-link">Campaigns <span class="side-count"><?= h(format_compact_number((int)$campaignsCountSidebar)) ?></span></a>
           <a href="#endorsements" class="side-link">Endorsements</a>
           <a href="#rewards" class="side-link">Rewards</a>
           <a href="#contributors" class="side-link">Contributors</a>
-          <a href="#kyc" class="side-link">KYC <span class="side-count"><?= (int)$kycCountSidebar ?></span></a>
+          <a href="#kyc" class="side-link">KYC <span class="side-count"><?= h(format_compact_number((int)$kycCountSidebar)) ?></span></a>
         </div>
-        <div class="sidebar-group" style="margin-top:10px;">
-          <a href="#dbtools" class="side-link">Database Tools</a>
-        </div>
+        
       </aside>
       <section class="admin-main">
     <?php
@@ -357,14 +355,14 @@ try {
       </div>
       <div class="tab-pane active" id="tab-overview">
         <div class="dash-cards">
-          <div class="metric-card"><div class="metric-value"><?= (int)$totalUsers ?></div><div class="metric-label">Total Users</div></div>
-          <div class="metric-card"><div class="metric-value"><?= (int)$totalCampaigns ?></div><div class="metric-label">Campaigns</div></div>
-          <div class="metric-card"><div class="metric-value"><?= (int)$openCampaigns ?></div><div class="metric-label">Open Campaigns</div></div>
-          <div class="metric-card"><div class="metric-value"><?= (int)$closedCampaigns ?></div><div class="metric-label">Closed Campaigns</div></div>
-          <div class="metric-card"><div class="metric-value"><?= (int)$kycApproved ?></div><div class="metric-label">KYC Approved</div></div>
-          <div class="metric-card"><div class="metric-value"><?= (int)$kycPending ?></div><div class="metric-label">KYC Pending</div></div>
-          <div class="metric-card"><div class="metric-value"><?= (int)$walletsTotal ?></div><div class="metric-label">Wallets</div></div>
-          <div class="metric-card"><div class="metric-value"><?= (int)$endorseTotal ?></div><div class="metric-label">Endorsements</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$totalUsers)) ?></div><div class="metric-label">Total Users</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$totalCampaigns)) ?></div><div class="metric-label">Campaigns</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$openCampaigns)) ?></div><div class="metric-label">Open Campaigns</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$closedCampaigns)) ?></div><div class="metric-label">Closed Campaigns</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$kycApproved)) ?></div><div class="metric-label">KYC Approved</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$kycPending)) ?></div><div class="metric-label">KYC Pending</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$walletsTotal)) ?></div><div class="metric-label">Wallets</div></div>
+          <div class="metric-card"><div class="metric-value"><?= h(format_compact_number((int)$endorseTotal)) ?></div><div class="metric-label">Endorsements</div></div>
         </div>
         <div class="chart-card" style="margin-top:12px;">
           <div class="section-title" style="margin:0 0 8px;">Engagement</div>
@@ -494,7 +492,7 @@ try {
               <td>#<?= (int)$c['id'] ?></td>
               <td><?= h($c['title']) ?></td>
               <td><?= h($c['area'] ?? '') ?></td>
-              <td><?= (int)($c['endorse_campaign'] ?? 0) ?></td>
+              <td><?= h(format_compact_number((int)($c['endorse_campaign'] ?? 0))) ?></td>
               <td><?= h(($c["contributor_name"] ?? '') !== '' ? (string)$c["contributor_name"] : '—') ?></td>
             </tr>
             <?php endforeach; ?>
@@ -554,14 +552,14 @@ try {
               <td><?= h($c['status']) ?></td>
               <td><?= h($c['area'] ?? '') ?></td>
               <td><?= h(($c['contributor_name'] ?? '') !== '' ? (string)$c['contributor_name'] : '—') ?></td>
-              <td><?= (int)($c['crowd_size'] ?? 0) ?></td>
+              <td><?= h(format_compact_number((int)($c['crowd_size'] ?? 0))) ?></td>
               <td>
                 <?php $crowd = (int)($c['crowd_size'] ?? 0); $suggest = max(1, intdiv($crowd > 0 ? $crowd : 100, 100)); ?>
                 <form method="post" style="display:inline-block;">
                   <input type="hidden" name="action" value="award_campaign_bonus">
                   <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
-                  <input name="amount" type="number" class="input" min="1" value="<?= (int)$suggest ?>" style="display:inline-block; width:110px;">
-                  <button type="submit" class="btn btn-sm pill" title="Award bonus Karma Coin based on contribution">Award</button>
+                  <input type="hidden" name="amount" value="<?= (int)$suggest ?>">
+                  <button type="submit" class="btn btn-sm pill" title="Award suggested bonus">Award (<?= (int)$suggest ?>)</button>
                 </form>
               </td>
               <td>
@@ -580,17 +578,30 @@ try {
               </td>
               <td>
                 <div class="actions">
-                  <form method="post">
-                    <input type="hidden" name="action" value="update_campaign_status">
-                    <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
-                    <select name="status" class="input" style="display:inline-block; width:auto;">
-                      <option value="open">open</option>
-                      <option value="draft">draft</option>
-                      <option value="closed">closed</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm pill">Update</button>
-                  </form>
-                  <form method="post">
+                  <?php $st = (string)$c['status']; ?>
+                  <?php if ($st === 'open'): ?>
+                    <form method="post" style="display:inline-block;">
+                      <input type="hidden" name="action" value="update_campaign_status">
+                      <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
+                      <input type="hidden" name="status" value="closed">
+                      <button type="submit" class="btn btn-sm pill">Close</button>
+                    </form>
+                  <?php elseif ($st === 'closed'): ?>
+                    <form method="post" style="display:inline-block;">
+                      <input type="hidden" name="action" value="update_campaign_status">
+                      <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
+                      <input type="hidden" name="status" value="open">
+                      <button type="submit" class="btn btn-sm pill">Reopen</button>
+                    </form>
+                  <?php else: ?>
+                    <form method="post" style="display:inline-block;">
+                      <input type="hidden" name="action" value="update_campaign_status">
+                      <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
+                      <input type="hidden" name="status" value="open">
+                      <button type="submit" class="btn btn-sm pill">Publish</button>
+                    </form>
+                  <?php endif; ?>
+                  <form method="post" style="display:inline-block; margin-left:6px;">
                     <input type="hidden" name="action" value="delete_campaign">
                     <input type="hidden" name="campaign_id" value="<?= (int)$c['id'] ?>">
                     <button type="submit" class="btn btn-sm pill">Delete</button>
@@ -668,7 +679,7 @@ try {
             <tr>
               <td>#<?= (int)$w['user_id'] ?></td>
               <td><?= h($w['username']) ?></td>
-              <td><?= (int)$w['balance'] ?></td>
+              <td><?= h(format_compact_number((int)$w['balance'])) ?></td>
               <td><?= h($w['updated_at']) ?></td>
             </tr>
             <?php endforeach; ?>
@@ -785,27 +796,7 @@ try {
         $prevQS = $baseQS . '&kyc_page=' . max(1, $kycPage - 1);
         $nextQS = $baseQS . '&kyc_page=' . min($kycPages, $kycPage + 1);
       ?>
-      <div class="actions" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-        <form method="get" action="<?= h($BASE_PATH) ?>admin/index.php#kyc" style="display:flex; gap:6px; align-items:center;">
-          <input type="hidden" name="view" value="tools">
-          <select name="kyc_status" class="input" style="width:140px;">
-            <option value="" <?= ($kycStatus === '' ? 'selected' : '') ?>>all</option>
-            <option value="pending" <?= ($kycStatus === 'pending' ? 'selected' : '') ?>>pending</option>
-            <option value="approved" <?= ($kycStatus === 'approved' ? 'selected' : '') ?>>approved</option>
-            <option value="rejected" <?= ($kycStatus === 'rejected' ? 'selected' : '') ?>>rejected</option>
-          </select>
-          <input name="kyc_start" type="date" class="input" value="<?= h($kycStart) ?>" style="width:140px;">
-          <input name="kyc_end" type="date" class="input" value="<?= h($kycEnd) ?>" style="width:140px;">
-          <input name="kyc_q" type="text" class="input" value="<?= h($kycQ) ?>" placeholder="Search..." style="width:200px;">
-          <button type="submit" class="btn btn-sm pill">Apply</button>
-          <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?view=tools#kyc">Reset</a>
-        </form>
-        <div class="pagination" aria-label="Pagination" style="margin-left:auto; display:flex; align-items:center; gap:6px;">
-          <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?<?= h($prevQS) ?>#kyc" aria-label="Previous">Prev</a>
-          <span class="muted">Page <?= (int)$kycPage ?> / <?= (int)$kycPages ?></span>
-          <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?<?= h($nextQS) ?>#kyc" aria-label="Next">Next</a>
-        </div>
-      </div>
+      
       <div class="card-plain card-compact kyc-card">
         <div class="table-wrap">
         <table class="table table-compact" aria-label="KYC table">
@@ -842,19 +833,24 @@ try {
                 <td><?= h((string)($k['bank_name'] ?? '')) ?> / <?= h((string)($k['bank_account_number'] ?? '')) ?></td>
                 <td><?= h((string)($k['ifsc'] ?? '')) ?></td>
                 <td><?= h((string)($k['id_number'] ?? '')) ?></td>
-                <td><?= h((string)($k['status'] ?? 'pending')) ?></td>
+                <td><?php $stt = (string)($k['status'] ?? 'pending'); $cls = ($stt === 'approved' ? 'status-approved' : (($stt === 'rejected') ? 'status-rejected' : 'status-pending')); ?><span class="status-dot <?= h($cls) ?>" title="<?= h($stt) ?>" aria-label="KYC Status"></span></td>
+                <td><?= h((string)($k['created_at'] ?? '')) ?></td>
+                <td><?= h((string)($k['notes'] ?? '')) ?></td>
                 <td>
-                  <form method="post" style="display:inline-flex; gap:6px; align-items:center;">
-                    <input type="hidden" name="action" value="set_kyc_status">
-                    <input type="hidden" name="kyc_id" value="<?= (int)$k['id'] ?>">
-                    <select name="status" class="input" style="width:120px;">
-                      <option value="pending" <?= ((string)$k['status'] === 'pending' ? 'selected' : '') ?>>pending</option>
-                      <option value="approved" <?= ((string)$k['status'] === 'approved' ? 'selected' : '') ?>>approved</option>
-                      <option value="rejected" <?= ((string)$k['status'] === 'rejected' ? 'selected' : '') ?>>rejected</option>
-                    </select>
-                    <input name="note" type="text" class="input" placeholder="Note" style="width:160px;">
-                    <button type="submit" class="btn btn-sm pill">Save</button>
-                  </form>
+                  <div class="actions" style="display:flex; align-items:center; gap:6px;">
+                    <form method="post" style="display:inline-flex; gap:6px; align-items:center;">
+                      <input type="hidden" name="action" value="set_kyc_status">
+                      <input type="hidden" name="kyc_id" value="<?= (int)$k['id'] ?>">
+                      <input type="hidden" name="status" value="approved">
+                      <button type="submit" class="btn btn-sm pill">Approve</button>
+                    </form>
+                    <form method="post" style="display:inline-flex; gap:6px; align-items:center;">
+                      <input type="hidden" name="action" value="set_kyc_status">
+                      <input type="hidden" name="kyc_id" value="<?= (int)$k['id'] ?>">
+                      <input type="hidden" name="status" value="rejected">
+                      <button type="submit" class="btn btn-sm pill">Reject</button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             <?php endforeach; ?>
