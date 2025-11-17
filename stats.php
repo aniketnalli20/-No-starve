@@ -14,10 +14,10 @@ try {
             if (is_array($data) && !empty($data['enabled'])) { $override = $data; }
         } catch (Throwable $e) {}
     }
-    // Meals Made: sum of target_meals or crowd_size on open campaigns
+    // Meals Made: sum of crowd_size (fallback to target_meals) on open campaigns
     $mealsSaved = 0;
     try {
-        $mealsSaved = (int)($pdo->query("SELECT COALESCE(SUM(COALESCE(target_meals, crowd_size)), 0) FROM campaigns WHERE status = 'open'")->fetchColumn() ?: 0);
+        $mealsSaved = (int)($pdo->query("SELECT COALESCE(SUM(COALESCE(crowd_size, target_meals)), 0) FROM campaigns WHERE status = 'open'")->fetchColumn() ?: 0);
     } catch (Throwable $e) {}
 
     // Contributors: distinct users who created campaigns
@@ -41,8 +41,14 @@ try {
         $activeUsersCount = (int)($st->fetchColumn() ?: 0);
     } catch (Throwable $e) {}
 
+    // If override is enabled but mealsSaved is 0 or missing, fallback to live computed value to keep it linked to campaign crowd_size
+    $mealsOut = $mealsSaved;
+    if (isset($override['mealsSaved'])) {
+        $ovMeals = (int)$override['mealsSaved'];
+        if ($ovMeals > 0) $mealsOut = $ovMeals; // use manual only when > 0
+    }
     echo json_encode([
-        'mealsSaved' => isset($override['mealsSaved']) ? (int)$override['mealsSaved'] : $mealsSaved,
+        'mealsSaved' => $mealsOut,
         'donorsCount' => isset($override['donorsCount']) ? (int)$override['donorsCount'] : $donorsCount,
         'partnersCount' => isset($override['partnersCount']) ? (int)$override['partnersCount'] : $partnersCount,
         'activeUsersCount' => isset($override['activeUsersCount']) ? (int)$override['activeUsersCount'] : $activeUsersCount,

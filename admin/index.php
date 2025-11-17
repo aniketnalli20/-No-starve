@@ -248,6 +248,15 @@ $usersFull = isset($_GET['users_full']);
 $campaignsFull = isset($_GET['campaigns_full']);
 $walletsFull = isset($_GET['wallets_full']);
 $tablesFull = isset($_GET['tables_full']);
+// Read counters override to prefill form
+$countersOverride = ['enabled' => 0, 'mealsSaved' => '', 'donorsCount' => '', 'partnersCount' => '', 'activeUsersCount' => ''];
+try {
+  $path = __DIR__ . '/../uploads/counters_override.json';
+  if (is_file($path)) {
+    $data = json_decode((string)file_get_contents($path), true);
+    if (is_array($data)) { $countersOverride = array_merge($countersOverride, $data); }
+  }
+} catch (Throwable $e) {}
 try {
   $users = $pdo->query('SELECT id, username, email, created_at, is_admin FROM users ORDER BY id DESC' . ($usersFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
   $campaigns = $pdo->query('SELECT id, title, status, area, created_at, user_id, crowd_size, endorse_campaign, contributor_name, location, latitude, longitude FROM campaigns ORDER BY id DESC' . ($campaignsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
@@ -417,26 +426,27 @@ try {
     </section>
     <section id="counters" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="Counters">
       <h2 class="section-title">Control Counters</h2>
-      <div class="card-plain">
+      <div class="form-panel">
+        <div class="panel-title">Manual override</div>
         <form method="post" class="form" style="display:grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap:12px;">
           <input type="hidden" name="action" value="update_counters">
           <div>
             <label>Meals Made</label>
-            <input name="mealsSaved" type="number" class="input" min="0" placeholder="e.g., 1200">
+            <input name="mealsSaved" type="number" class="input" min="0" placeholder="e.g., 1200" value="<?= h((string)($countersOverride['mealsSaved'] ?? '')) ?>">
           </div>
           <div>
             <label>Contributors</label>
-            <input name="donorsCount" type="number" class="input" min="0" placeholder="e.g., 320">
+            <input name="donorsCount" type="number" class="input" min="0" placeholder="e.g., 320" value="<?= h((string)($countersOverride['donorsCount'] ?? '')) ?>">
           </div>
           <div>
             <label>Partners</label>
-            <input name="partnersCount" type="number" class="input" min="0" placeholder="e.g., 42">
+            <input name="partnersCount" type="number" class="input" min="0" placeholder="e.g., 42" value="<?= h((string)($countersOverride['partnersCount'] ?? '')) ?>">
           </div>
           <div>
             <label>Active Users</label>
-            <input name="activeUsersCount" type="number" class="input" min="0" placeholder="e.g., 18">
+            <input name="activeUsersCount" type="number" class="input" min="0" placeholder="e.g., 18" value="<?= h((string)($countersOverride['activeUsersCount'] ?? '')) ?>">
           </div>
-          <label style="grid-column: 1 / -1; display:inline-flex; align-items:center; gap:6px; margin-top:6px;"><input type="checkbox" name="enabled" value="1"> Enable manual override</label>
+          <label style="grid-column: 1 / -1; display:inline-flex; align-items:center; gap:6px; margin-top:6px;"><input type="checkbox" name="enabled" value="1"<?= !empty($countersOverride['enabled']) ? ' checked' : '' ?>> Enable manual override</label>
           <div class="actions" style="grid-column: 1 / -1; margin-top:8px;">
             <button type="submit" class="btn pill">Save Counters</button>
             <button type="submit" name="action" value="reset_counters" class="btn pill" style="margin-left:6px;">Reset to Live</button>
