@@ -123,6 +123,8 @@ function register_user(string $username, string $email, string $password, ?strin
     $stmt->execute([$username, $email, ($phone !== '' ? $phone : null), ($address !== '' ? $address : null), $hash, $now]);
     // Log the entry to a separate text file
     log_user_entry($username, $email, ($phone !== '' ? $phone : null), ($address !== '' ? $address : null), 'register');
+    // Ensure contributor record exists immediately for this username
+    try { set_contributor_verified((string)$username, 0); } catch (Throwable $e) {}
 
     return (int)$pdo->lastInsertId();
 }

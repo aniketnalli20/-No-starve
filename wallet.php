@@ -33,7 +33,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['action']) 
     try {
         $res = redeem_karma_to_cash((int)$user['id']);
         if ($res['ok']) {
-            $redeemMsg = 'Redeemed ' . (int)$res['coins'] . ' coins → ' . (int)$res['paisa'] . ' paisa';
+            $redeemMsg = 'Redeemed ' . (int)$res['coins'] . ' coins → ₹' . number_format(((int)$res['paisa']) / 100, 2);
         } else if ($res['error'] === 'threshold') {
             $redeemMsg = 'Redemption allowed only at 10,00,000 Karma Coins';
         } else {
@@ -86,10 +86,10 @@ try {
       <?php if ($msg !== ''): ?><div class="muted" style="margin-top:6px;"><?= h($msg) ?></div><?php endif; ?>
       <div class="card-plain" style="margin-top:10px;">
         <strong><span class="material-symbols-outlined" aria-hidden="true" style="vertical-align:-4px;">currency_rupee</span> Currency Conversion</strong>
-        <div class="muted" style="margin-top:6px;">Rate: 1000 Karma Coins = 10 paisa. Redemption is allowed only at 1 million Karma Coins.</div>
+        <div class="muted" style="margin-top:6px;">Conversion: 100 Karma Coins = ₹0.01. Redemption is allowed only at 1,000,000 Karma Coins.</div>
         <form method="post" action="<?= h($BASE_PATH) ?>wallet.php" style="margin-top:10px;">
           <input type="hidden" name="action" value="redeem">
-          <button type="submit" class="btn pill">Paisa to redeem</button>
+          <button type="submit" class="btn pill">Redeem</button>
         </form>
         <?php if ($redeemMsg !== ''): ?><div class="muted" style="margin-top:6px;"><?= h($redeemMsg) ?></div><?php endif; ?>
       </div>
