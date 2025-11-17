@@ -247,3 +247,56 @@ function require_admin(): void {
         exit;
     }
 }
+
+// Conversion: 1000 coins = 10 paisa
+function convert_coins_to_paisa(int $coins): int {
+    if ($coins <= 0) return 0;
+    return intdiv($coins, 1000) * 10;
+}
+
+// Redemption allowed only at 10 lakh (1,000,000) coins
+function can_redeem(int $coins): bool {
+    return $coins >= 1000000;
+}
+
+// Debit coins from wallet (records negative event)
+function debit_karma_coins(int $userId, int $amount, ?string $reason = 'redeem'): int {
+    global $pdo, $DB_DRIVER;
+    if ($userId <= 0) throw new InvalidArgumentException('Invalid user');
+    if ($amount <= 0) throw new InvalidArgumentException('Amount must be positive');
+    $current = get_karma_balance($userId);
+    if ($current < $amount) throw new InvalidArgumentException('Insufficient coins');
+    $pdo->beginTransaction();
+    try {
+        $now = gmdate('Y-m-d H:i:s');
+        if ($DB_DRIVER === 'pgsql') {
+            $pdo->prepare('INSERT INTO karma_wallets (user_id, balance, updated_at) VALUES (?, ?, ?)
+                           ON CONFLICT (user_id) DO UPDATE SET balance = karma_wallets.balance - EXCLUDED.balance, updated_at = EXCLUDED.updated_at')
+                ->execute([$userId, $amount, $now]);
+        } else {
+            // Use UPDATE to subtract to avoid odd ON DUPLICATE arithmetic
+            $pdo->prepare('UPDATE karma_wallets SET balance = balance - ?, updated_at = ? WHERE user_id = ?')
+                ->execute([$amount, $now, $userId]);
+        }
+        $pdo->prepare('INSERT INTO karma_events (user_id, amount, reason, ref_type, ref_id, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+            ->execute([$userId, -$amount, ($reason !== '' ? $reason : null), 'redeem', $userId, $now]);
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+    return get_karma_balance($userId);
+}
+
+// Redeem coins to cash (paisa); returns details
+function redeem_karma_to_cash(int $userId): array {
+    $balance = get_karma_balance($userId);
+    if (!can_redeem($balance)) {
+        return ['ok' => false, 'error' => 'threshold', 'balance' => $balance, 'paisa' => convert_coins_to_paisa($balance)];
+    }
+    // Redeem full balance to cash by blocks
+    $redeemCoins = $balance - ($balance % 1000); // full blocks of 1000
+    $paisa = convert_coins_to_paisa($redeemCoins);
+    debit_karma_coins($userId, $redeemCoins, 'redeem');
+    return ['ok' => true, 'coins' => $redeemCoins, 'paisa' => $paisa, 'balance' => get_karma_balance($userId)];
+}

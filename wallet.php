@@ -6,6 +6,7 @@ $user = current_user();
 if (!$user) { header('Location: ' . $BASE_PATH . 'login.php'); exit; }
 
 $msg = '';
+$redeemMsg = '';
 // Conversion: align wallet with endorsements-based expected earnings
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['action']) && $_POST['action'] === 'convert') {
     try {
@@ -24,6 +25,22 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['action']) 
         }
     } catch (Throwable $e) {
         $msg = 'Conversion failed';
+    }
+}
+
+// Redeem coins to paisa (requires 10 lakh coins)
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['action']) && $_POST['action'] === 'redeem') {
+    try {
+        $res = redeem_karma_to_cash((int)$user['id']);
+        if ($res['ok']) {
+            $redeemMsg = 'Redeemed ' . (int)$res['coins'] . ' coins → ' . (int)$res['paisa'] . ' paisa';
+        } else if ($res['error'] === 'threshold') {
+            $redeemMsg = 'Redemption allowed only at 10,00,000 Karma Coins';
+        } else {
+            $redeemMsg = 'Redemption failed';
+        }
+    } catch (Throwable $e) {
+        $redeemMsg = 'Redemption failed';
     }
 }
 
@@ -59,14 +76,23 @@ try {
     <section class="card-plain" aria-label="Wallet Balance">
       <h2 class="section-title">Wallet</h2>
       <div class="stat" style="display:flex; gap:12px; align-items:center;">
-        <span class="stat-label">Balance</span>
+        <span class="stat-label"><span class="material-symbols-outlined" aria-hidden="true" style="vertical-align:-4px;">savings</span> Balance</span>
         <span class="stat-num"><?= (int)$balance ?></span>
       </div>
       <form method="post" action="<?= h($BASE_PATH) ?>wallet.php" style="margin-top:10px;">
         <input type="hidden" name="action" value="convert">
-        <button type="submit" class="btn pill">Convert karma to wallet</button>
+        <button type="submit" class="btn pill">Convert endorsements → coins</button>
       </form>
       <?php if ($msg !== ''): ?><div class="muted" style="margin-top:6px;"><?= h($msg) ?></div><?php endif; ?>
+      <div class="card-plain" style="margin-top:10px;">
+        <strong><span class="material-symbols-outlined" aria-hidden="true" style="vertical-align:-4px;">currency_rupee</span> Currency Conversion</strong>
+        <div class="muted" style="margin-top:6px;">Rate: 1000 Karma Coins = 10 paisa. Redemption is allowed only at 10,00,000 Karma Coins.</div>
+        <form method="post" action="<?= h($BASE_PATH) ?>wallet.php" style="margin-top:10px;">
+          <input type="hidden" name="action" value="redeem">
+          <button type="submit" class="btn pill">Redeem to Paisa</button>
+        </form>
+        <?php if ($redeemMsg !== ''): ?><div class="muted" style="margin-top:6px;"><?= h($redeemMsg) ?></div><?php endif; ?>
+      </div>
     </section>
 
     <section class="card-plain" aria-label="Wallet History">
@@ -76,7 +102,12 @@ try {
           <?php foreach ($events as $ev): ?>
             <div class="table-row" role="row" style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border);">
               <div><?= h(date('Y-m-d H:i', strtotime($ev['created_at']))) ?></div>
-              <div><?= h((string)($ev['reason'] ?? '')) ?></div>
+              <div>
+                <?php if ((string)($ev['ref_type'] ?? '') === 'redeem'): ?>
+                  <span class="material-symbols-outlined" aria-hidden="true" style="vertical-align:-4px;">currency_rupee</span>
+                <?php endif; ?>
+                <?= h((string)($ev['reason'] ?? '')) ?>
+              </div>
               <div><?= (int)$ev['amount'] ?></div>
             </div>
           <?php endforeach; ?>
