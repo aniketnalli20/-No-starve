@@ -10,41 +10,63 @@ if (isset($_GET['next'])) {
 
 $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim((string)($_POST['email'] ?? ''));
-    $password = (string)($_POST['password'] ?? '');
-    if ($email === '' || $password === '') {
-        $error = 'Email and password are required';
-    } else {
+    $action = trim((string)($_POST['action'] ?? 'login'));
+    if ($action === 'register') {
         try {
-            $stmt = $pdo->prepare('SELECT id, username, email, password_hash FROM users WHERE email = ? LIMIT 1');
-            $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$user) {
-                $error = 'No account found for this email';
-            } else if (!password_verify($password, (string)$user['password_hash'])) {
-                $error = 'Incorrect password';
-            } else {
-                $_SESSION['user_id'] = (int)$user['id'];
-                // Persist selected login role (user or contributor)
-                $role = strtolower(trim((string)($_POST['role'] ?? 'user')));
-                if ($role !== 'contributor') { $role = 'user'; }
-                $_SESSION['login_role'] = $role;
-                // Auto‑recognize admin
-                $st = $pdo->prepare('SELECT is_admin FROM users WHERE id = ?');
-                $st->execute([(int)$user['id']]);
-                $row = $st->fetch(PDO::FETCH_ASSOC);
-                $_SESSION['is_admin'] = ($row && (int)($row['is_admin'] ?? 0) === 1) ? 1 : 0;
-                $dest = ($_SESSION['is_admin'] === 1) ? 'admin/index.php' : 'index.php#hero';
-                if ($next !== '') {
-                    if (preg_match('/^[A-Za-z0-9_\-]+(\.php)?(\?.*)?$/', $next)) {
-                        $dest = $next;
-                    }
-                }
-                header('Location: ' . $BASE_PATH . $dest);
-                exit;
-                }
+            $username = trim((string)($_POST['username'] ?? ''));
+            $email = trim((string)($_POST['email'] ?? ''));
+            $password = (string)($_POST['password'] ?? '');
+            $confirm = (string)($_POST['confirm'] ?? '');
+            $phone = trim((string)($_POST['phone'] ?? ''));
+            $address = trim((string)($_POST['address'] ?? ''));
+            if ($password !== $confirm) {
+                throw new InvalidArgumentException('Password and confirm must match');
+            }
+            $newId = register_user($username, $email, $password, ($phone !== '' ? $phone : null), ($address !== '' ? $address : null));
+            $_SESSION['user_id'] = (int)$newId;
+            $_SESSION['login_role'] = 'user';
+            $_SESSION['is_admin'] = 0;
+            $dest = $next !== '' ? $next : 'index.php#hero';
+            header('Location: ' . $BASE_PATH . $dest);
+            exit;
         } catch (Throwable $e) {
-            $error = 'Login failed; please try again later';
+            $error = $e->getMessage() ?: 'Registration failed';
+        }
+    } else {
+        $email = trim((string)($_POST['email'] ?? ''));
+        $password = (string)($_POST['password'] ?? '');
+        if ($email === '' || $password === '') {
+            $error = 'Email and password are required';
+        } else {
+            try {
+                $stmt = $pdo->prepare('SELECT id, username, email, password_hash FROM users WHERE email = ? LIMIT 1');
+                $stmt->execute([$email]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$user) {
+                    $error = 'No account found for this email';
+                } else if (!password_verify($password, (string)$user['password_hash'])) {
+                    $error = 'Incorrect password';
+                } else {
+                    $_SESSION['user_id'] = (int)$user['id'];
+                    $role = strtolower(trim((string)($_POST['role'] ?? 'user')));
+                    if ($role !== 'contributor') { $role = 'user'; }
+                    $_SESSION['login_role'] = $role;
+                    $st = $pdo->prepare('SELECT is_admin FROM users WHERE id = ?');
+                    $st->execute([(int)$user['id']]);
+                    $row = $st->fetch(PDO::FETCH_ASSOC);
+                    $_SESSION['is_admin'] = ($row && (int)($row['is_admin'] ?? 0) === 1) ? 1 : 0;
+                    $dest = ($_SESSION['is_admin'] === 1) ? 'admin/index.php' : 'index.php#hero';
+                    if ($next !== '') {
+                        if (preg_match('/^[A-Za-z0-9_\-]+(\.php)?(\?.*)?$/', $next)) {
+                            $dest = $next;
+                        }
+                    }
+                    header('Location: ' . $BASE_PATH . $dest);
+                    exit;
+                }
+            } catch (Throwable $e) {
+                $error = 'Login failed; please try again later';
+            }
         }
     }
 }
@@ -84,31 +106,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
     <main class="container login-page" style="max-width: var(--content-max); padding: var(--content-pad);">
-        <div class="container" style="max-width: 380px;">
-            <div class="heading" style="margin: 6px 0 12px; text-align:center; font-weight:700;">Log in to your account</div>
+        <div class="container" style="max-width: 460px;">
+            <div class="heading" style="margin: 6px 0 12px; text-align:center; font-weight:700;">Access your account</div>
+            <div class="login-tabs" style="display:flex; gap:8px; justify-content:center; margin-bottom:10px;">
+              <button type="button" class="tab-btn" data-tab="login">Log In</button>
+              <button type="button" class="tab-btn" data-tab="register">Register</button>
+            </div>
             <?php if ($error): ?>
                 <div class="card-plain" role="alert" style="margin-top:12px;">
                     <?= h($error) ?>
                 </div>
             <?php endif; ?>
-            <form class="form" method="post" action="<?= h($BASE_PATH) ?>login.php">
+            <form class="form" id="form-login" method="post" action="<?= h($BASE_PATH) ?>login.php">
                 <?php if ($next !== ''): ?>
                     <input type="hidden" name="next" value="<?= h($next) ?>">
                 <?php endif; ?>
+                <input type="hidden" name="action" value="login">
                 <div class="social-login" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
-                  <button type="button" class="btn-social google" aria-label="Log in with Google">
+                  <a class="btn-social google" href="<?= h($BASE_PATH) ?>google_login.php<?= $next ? ('?next=' . urlencode($next)) : '' ?>" aria-label="Log in with Google">
                     <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
                     <span>Log in with Google</span>
-                  </button>
-                  <button type="button" class="btn-social github" aria-label="Log in with GitHub">
+                  </a>
+                  <a class="btn-social github" href="<?= h($BASE_PATH) ?>github_login.php<?= $next ? ('?next=' . urlencode($next)) : '' ?>" aria-label="Log in with GitHub">
                     <span class="material-symbols-outlined" aria-hidden="true">terminal</span>
                     <span>Log in with GitHub</span>
-                  </button>
+                  </a>
                 </div>
                 <div style="text-align:center; margin:10px 0; color:#888;">or</div>
                 <div class="form-field" aria-label="Login Type">
-                    <label style="display:block; margin-bottom:8px;">Login As</label>
-                    <div class="role-select" style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <label style="display:block; margin-bottom:8px; text-align:center;">Login As</label>
+                    <div class="role-select" style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
                         <label class="community-chip" aria-label="No Starve User">
                             <input type="radio" name="role" value="user" checked>
                             <span class="text">No Starve User</span>
@@ -129,6 +156,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <span class="forgot-password"><a href="#">Forgot Password ?</a></span>
                 <button type="submit" class="login-button">Log In</button>
+            </form>
+
+            <form class="form" id="form-register" method="post" action="<?= h($BASE_PATH) ?>login.php" style="display:none;">
+                <?php if ($next !== ''): ?>
+                    <input type="hidden" name="next" value="<?= h($next) ?>">
+                <?php endif; ?>
+                <input type="hidden" name="action" value="register">
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">person</span>
+                  <input placeholder="Username" id="r_username" name="username" type="text" class="input" required />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+                  <input placeholder="Email" id="r_email" name="email" type="email" class="input" required />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+                  <input placeholder="Password" id="r_password" name="password" type="password" class="input" required minlength="6" />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+                  <input placeholder="Confirm Password" id="r_confirm" name="confirm" type="password" class="input" required minlength="6" />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">call</span>
+                  <input placeholder="Phone (optional)" id="r_phone" name="phone" type="text" class="input" pattern="[0-9+\-\s]{7,30}" />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">home</span>
+                  <textarea placeholder="Address (optional)" id="r_address" name="address" class="input" rows="3" style="padding-left:42px;"></textarea>
+                </div>
+                <button type="submit" class="login-button">Register</button>
             </form>
             
         </div>
@@ -190,6 +249,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         input.addEventListener('change', update);
         if (input.checked) { chip.classList.add('selected'); }
       });
+      // Tabs
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.login-tabs .tab-btn'));
+      var formLogin = document.getElementById('form-login');
+      var formRegister = document.getElementById('form-register');
+      function show(which){
+        if (!formLogin || !formRegister) return;
+        if (which === 'register') { formRegister.style.display = 'block'; formLogin.style.display = 'none'; }
+        else { formRegister.style.display = 'none'; formLogin.style.display = 'block'; }
+        tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab') === which); });
+      }
+      tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.getAttribute('data-tab')); }); });
+      show('login');
     });
     </script>
 </body>
