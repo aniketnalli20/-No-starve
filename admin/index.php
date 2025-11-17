@@ -240,7 +240,7 @@ try {
   <title>Database Tools · No Starve</title>
   <link rel="stylesheet" href="<?= h($BASE_PATH) ?>style.css">
 </head>
-<body class="admin-scroll">
+<body class="admin-scroll page-admin">
   <header class="site-header" role="banner">
     <div class="container header-inner">
       <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
@@ -262,7 +262,7 @@ try {
   </header>
 
   <main class="container">
-    <h1>Database Tools</h1>
+    <h1>Admin Dashboard</h1>
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a class="home" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a>
       <span>›</span>
@@ -284,6 +284,112 @@ try {
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#kyc">KYC</a>
       
     </div>
+    <div class="admin-layout">
+      <aside class="admin-sidebar" aria-label="Admin Navigation">
+        <div class="sidebar-group">
+          <div class="sidebar-title">Overview</div>
+          <a href="#dashboard" class="side-link">Dashboard</a>
+          <a href="#users" class="side-link">Users</a>
+          <a href="#campaigns" class="side-link">Campaigns</a>
+          <a href="#endorsements" class="side-link">Endorsements</a>
+          <a href="#rewards" class="side-link">Rewards</a>
+          <a href="#contributors" class="side-link">Contributors</a>
+          <a href="#kyc" class="side-link">KYC</a>
+        </div>
+      </aside>
+      <section class="admin-main">
+    <?php
+      // Dashboard aggregates
+      $totalUsers = 0; $totalCampaigns = 0; $openCampaigns = 0; $closedCampaigns = 0; $endorseTotal = 0; $kycApproved = 0; $kycPending = 0; $walletsTotal = 0;
+      try {
+        $totalUsers = (int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+      } catch (Throwable $e) {}
+      try {
+        $totalCampaigns = (int)$pdo->query('SELECT COUNT(*) FROM campaigns')->fetchColumn();
+        $openCampaigns = (int)$pdo->query("SELECT COUNT(*) FROM campaigns WHERE status = 'open'")->fetchColumn();
+        $closedCampaigns = (int)$pdo->query("SELECT COUNT(*) FROM campaigns WHERE status = 'closed'")->fetchColumn();
+        $endorseTotal = (int)($pdo->query('SELECT SUM(COALESCE(endorse_campaign,0)) FROM campaigns')->fetchColumn() ?: 0);
+      } catch (Throwable $e) {}
+      try {
+        $kycApproved = (int)$pdo->query("SELECT COUNT(*) FROM kyc_requests WHERE status = 'approved'")->fetchColumn();
+        $kycPending = (int)$pdo->query("SELECT COUNT(*) FROM kyc_requests WHERE status = 'pending'")->fetchColumn();
+      } catch (Throwable $e) {}
+      try {
+        $walletsTotal = (int)$pdo->query('SELECT COUNT(*) FROM karma_wallets')->fetchColumn();
+      } catch (Throwable $e) {}
+      // Bar: endorsements by area (top 5)
+      $endorseByArea = [];
+      try {
+        $sqlArea = "SELECT area, SUM(COALESCE(endorse_campaign,0)) AS total FROM campaigns WHERE area IS NOT NULL AND area <> '' GROUP BY area ORDER BY total DESC LIMIT 5";
+        $endorseByArea = $pdo->query($sqlArea)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+      } catch (Throwable $e) {}
+      // Donut: KYC completion distribution
+      $kycRejected = 0;
+      try { $kycRejected = (int)$pdo->query("SELECT COUNT(*) FROM kyc_requests WHERE status = 'rejected'")->fetchColumn(); } catch (Throwable $e) {}
+      $kycTotal = max(1, $kycApproved + $kycPending + $kycRejected);
+      $pApproved = ($kycApproved / $kycTotal);
+      $pPending = ($kycPending / $kycTotal);
+      $pRejected = ($kycRejected / $kycTotal);
+      // Donut SVG arc helpers
+      function arcLen($pct, $radius = 50) { return 2 * pi() * $radius * $pct; }
+      $circ = 2 * pi() * 50; // r=50
+      $lenApproved = arcLen($pApproved);
+      $lenPending = arcLen($pPending);
+      $lenRejected = arcLen($pRejected);
+    ?>
+    <section id="dashboard" class="card-plain card-horizontal card-fullbleed" aria-label="Dashboard">
+      <h2 class="section-title">Dashboard</h2>
+      <div class="dash-cards">
+        <div class="metric-card">
+          <div class="metric-label">Users</div>
+          <div class="metric-value"><?= (int)$totalUsers ?></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Open Campaigns</div>
+          <div class="metric-value"><?= (int)$openCampaigns ?></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Closed Campaigns</div>
+          <div class="metric-value"><?= (int)$closedCampaigns ?></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Endorsements</div>
+          <div class="metric-value"><?= (int)$endorseTotal ?></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Wallets</div>
+          <div class="metric-value"><?= (int)$walletsTotal ?></div>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">KYC status distribution</div>
+          <div class="donut-wrap">
+            <svg viewBox="0 0 120 120" class="donut" role="img" aria-label="KYC status">
+              <circle class="donut-base" cx="60" cy="60" r="50" />
+              <circle class="donut-approved" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenApproved,2,'.','') ?> <?= number_format($circ - $lenApproved,2,'.','') ?>" stroke-dashoffset="0" />
+              <circle class="donut-pending" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenPending,2,'.','') ?> <?= number_format($circ - $lenPending,2,'.','') ?>" stroke-dashoffset="-<?= number_format($lenApproved,2,'.','') ?>" />
+              <circle class="donut-rejected" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenRejected,2,'.','') ?> <?= number_format($circ - $lenRejected,2,'.','') ?>" stroke-dashoffset="-<?= number_format($lenApproved + $lenPending,2,'.','') ?>" />
+            </svg>
+            <div class="legend">
+              <div><span class="swatch approved"></span> Approved <?= (int)$kycApproved ?></div>
+              <div><span class="swatch pending"></span> Pending <?= (int)$kycPending ?></div>
+              <div><span class="swatch rejected"></span> Rejected <?= (int)$kycRejected ?></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Endorsements by area</div>
+          <?php $maxArea = 0; foreach ($endorseByArea as $ea) { $maxArea = max($maxArea, (int)($ea['total'] ?? 0)); } $maxArea = max($maxArea, 1); ?>
+          <svg viewBox="0 0 300 140" class="bar-chart" role="img" aria-label="Endorsements by area">
+            <?php $i = 0; foreach ($endorseByArea as $ea): $val = (int)($ea['total'] ?? 0); $h = (int)round(($val / $maxArea) * 100); $x = 20 + $i * 55; ?>
+              <rect x="<?= $x ?>" y="<?= 120 - $h ?>" width="36" height="<?= $h ?>" class="bar"></rect>
+              <text x="<?= $x + 18 ?>" y="130" text-anchor="middle" class="bar-label"><?= h(substr((string)$ea['area'],0,8)) ?></text>
+            <?php $i++; endforeach; ?>
+          </svg>
+        </div>
+      </div>
+    </section>
     <div class="admin-grid">
     <?php if (!empty($errors)): ?>
       <div class="card-plain is-highlight" role="alert">
@@ -655,6 +761,8 @@ try {
       </div>
     </section>
 
+    </div>
+      </section>
     </div>
   </main>
 
