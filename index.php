@@ -226,14 +226,7 @@ try {
             </div>
         </div>
   </section>
-  <!-- Replaced About cards with a compact FAQ link to avoid repeated messaging -->
-  <section id="about" class="container" aria-label="About">
-    <div class="card-plain" style="text-align:center;">
-      <div class="section-title" style="border-bottom:none;">Questions? See FAQs</div>
-      <p style="margin:6px 0 10px;">Learn about Karma Coins and how No Starve helps in one place.</p>
-      
-    </div>
-  </section>
+  
 
     <!-- Recent Campaigns section placed directly under hero -->
     <section id="recent-campaigns" class="container fullbleed" aria-label="Recent Campaigns" style="padding: var(--content-pad);">
