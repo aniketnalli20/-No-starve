@@ -260,7 +260,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab') === which); });
       }
       tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.getAttribute('data-tab')); }); });
-      show('login');
+      var params = new URLSearchParams(window.location.search || '');
+      var tab = params.get('tab') || (window.location.hash ? window.location.hash.replace('#','') : '');
+      if (tab !== 'register' && tab !== 'login') tab = 'login';
+      show(tab);
     });
     </script>
 </body>

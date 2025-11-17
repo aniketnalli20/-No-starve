@@ -314,6 +314,8 @@ ul { list-style: none; padding-left: 0; }
 }
 .login-page .heading { text-align: center; font-weight: 700; font-size: 1.15rem; color: var(--text); }
 .login-page .form { margin-top: 20px; }
+.login-tabs .tab-btn { background: #f0f2f6; color: #111; border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+.login-tabs .tab-btn.active { background: #111; color: #fff; border-color: #111; }
 .login-page .form .input {
   width: 100%;
   background: #f8f9fb;
@@ -321,6 +323,7 @@ ul { list-style: none; padding-left: 0; }
   padding: 14px 14px 14px 42px;
   border-radius: 12px;
   margin-top: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 .login-page .form .input::placeholder { color: rgb(170, 170, 170); }
 .login-page .form .input:focus { outline: none; border-color: #c9c9c9; box-shadow: 0 0 0 3px rgba(26, 122, 255, 0.12); }
