@@ -1260,7 +1260,7 @@ ul { list-style: none; padding-left: 0; }
 .star-admin { color: #f5b301; margin-left: 6px; font-size: 0.95em; }
 .admin-scroll h1 { margin-left: 0; padding-left: var(--content-pad); }
 /* Toast */
-.toast { position: fixed; bottom: 20px; right: 20px; background: #111; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); opacity: 0; transform: translateY(6px); transition: opacity 140ms ease, transform 140ms ease; z-index: 1000; }
+.toast { position: fixed; bottom: 18px; right: 18px; background: #111; color: #fff; padding: 8px 12px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); opacity: 0; transform: translateY(6px); transition: opacity 140ms ease, transform 140ms ease; z-index: 1000; font-size: 0.95rem; }
 .toast.success { background: #167a2a; }
 .toast.error { background: #8b0000; }
 .toast.show { opacity: 1; transform: translateY(0); }
@@ -1300,6 +1300,8 @@ ul { list-style: none; padding-left: 0; }
 .side-link { display: block; padding: 8px 10px; border-radius: 8px; color: var(--text); text-decoration: none; border: 1px solid transparent; }
 .side-link:hover, .side-link:focus-visible { border-color: var(--border); background: #fafafa; }
 .admin-main { padding-right: var(--content-pad); }
+/* Ensure anchor scroll brings sections below header */
+.admin-main section { scroll-margin-top: 82px; }
 
 /* Admin dashboard layout */
 .dash-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 6px 0 10px; }
@@ -1332,6 +1334,9 @@ ul { list-style: none; padding-left: 0; }
 .bar { fill: #1a7aff; opacity: 0.8; }
 .bar-label { font-size: 9px; fill: #555; }
 
+/* Empty state */
+.empty-state { display: grid; place-items: center; min-height: 120px; color: #6b7280; font-weight: 600; border: 1px dashed #e5e7eb; border-radius: 10px; background: #fafafa; }
+
 /* Compact card width for KYC section */
 .card-compact { max-width: 900px; margin-left: auto; margin-right: auto; }
 @media (max-width: 920px) { .card-compact { max-width: 720px; } }
@@ -1349,3 +1354,4 @@ ul { list-style: none; padding-left: 0; }
 .admin-tabs { display: flex; gap: 6px; margin: 6px 0 8px; }
 .admin-tabs .tab-btn { background: #f0f2f6; color: #111; border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
 .admin-tabs .tab-btn.active { background: #111; color: #fff; border-color: #111; }
+.filter-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }

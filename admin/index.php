@@ -268,31 +268,11 @@ try {
       <a class="tab-btn<?= (!isset($_GET['view']) || $_GET['view'] === 'dashboard' ? ' active' : '') ?>" href="<?= h($BASE_PATH) ?>admin/index.php?view=dashboard#dashboard">Dashboard</a>
       <a class="tab-btn<?= (isset($_GET['view']) && $_GET['view'] === 'tools' ? ' active' : '') ?>" href="<?= h($BASE_PATH) ?>admin/index.php?view=tools#dbtools">Tools</a>
     </div>
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a class="home" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a>
-      <span>›</span>
-      <a class="admin" href="<?= h($BASE_PATH) ?>admin/index.php">Admin</a>
-      <span>›</span>
-      <a class="users" href="<?= h($BASE_PATH) ?>admin/index.php#users">Users</a>
-      <a class="campaigns" href="<?= h($BASE_PATH) ?>admin/index.php#campaigns">Campaigns</a>
-      <a class="endorsements" href="<?= h($BASE_PATH) ?>admin/index.php#endorsements">Endorsements</a>
-      <a class="rewards" href="<?= h($BASE_PATH) ?>admin/index.php#rewards">Rewards</a>
-      <a class="contributors" href="<?= h($BASE_PATH) ?>admin/index.php#contributors">Contributors</a>
-      <a class="kyc" href="<?= h($BASE_PATH) ?>admin/index.php#kyc">KYC</a>
-    </nav>
-    <div class="actions" style="margin: 8px 0 0;">
-      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#users">Users</a>
-      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#campaigns">Campaigns</a>
-      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#endorsements">Endorsements</a>
-      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#rewards">Rewards</a>
-      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#contributors">Contributors</a>
-      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#kyc">KYC</a>
-      
-    </div>
+    
     <div class="admin-layout">
       <aside class="admin-sidebar" aria-label="Admin Navigation">
         <div class="sidebar-group">
-          <div class="sidebar-title">Overview</div>
+          <div class="sidebar-title">Sections</div>
           <a href="#dashboard" class="side-link">Dashboard</a>
           <a href="#users" class="side-link">Users</a>
           <a href="#campaigns" class="side-link">Campaigns</a>
@@ -300,6 +280,10 @@ try {
           <a href="#rewards" class="side-link">Rewards</a>
           <a href="#contributors" class="side-link">Contributors</a>
           <a href="#kyc" class="side-link">KYC</a>
+        </div>
+        <div class="sidebar-group" style="margin-top:10px;">
+          <div class="sidebar-title">Tools</div>
+          <a href="#dbtools" class="side-link">Database Tools</a>
         </div>
       </aside>
       <section class="admin-main">
@@ -369,20 +353,6 @@ try {
       $lenRejected = arcLen($pRejected);
     ?>
     <section id="dashboard" class="card-plain card-horizontal card-fullbleed" aria-label="Dashboard">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-        <h2 class="section-title" style="margin:0;">Dashboard</h2>
-        <div class="actions" style="display:flex; gap:8px;">
-          <form method="get" action="<?= h($BASE_PATH) ?>admin/index.php#dashboard" style="display:flex; gap:6px; align-items:center;">
-            <input type="hidden" name="view" value="dashboard">
-            <input name="start" type="date" class="input" value="<?= h($start) ?>" style="width:140px;">
-            <input name="end" type="date" class="input" value="<?= h($end) ?>" style="width:140px;">
-            <input name="area" type="text" class="input" placeholder="Area" value="<?= h($areaFilter) ?>" style="width:160px;">
-            <button type="submit" class="btn btn-sm pill">Apply</button>
-            <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?view=dashboard#dashboard">Reset</a>
-          </form>
-          <button type="button" id="btn-add-chart" class="btn btn-sm pill">Add Chart</button>
-        </div>
-      </div>
       <div class="dash-cards">
         <div class="metric-card">
           <div class="metric-label">Users</div>
@@ -404,33 +374,77 @@ try {
           <div class="metric-label">Wallets</div>
           <div class="metric-value"><?= (int)$walletsTotal ?></div>
         </div>
+        <div class="metric-card">
+          <div class="metric-label">KYC Approved</div>
+          <div class="metric-value"><?= (int)$kycApproved ?></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">KYC Pending</div>
+          <div class="metric-value"><?= (int)$kycPending ?></div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px;">
+        <h2 class="section-title" style="margin:0;">Dashboard</h2>
+        <div class="actions" style="display:flex; gap:8px;">
+          <form method="get" action="<?= h($BASE_PATH) ?>admin/index.php#dashboard" style="display:flex; gap:6px; align-items:center;">
+            <input type="hidden" name="view" value="dashboard">
+            <input name="start" type="date" class="input" value="<?= h($start) ?>" style="width:140px;">
+            <input name="end" type="date" class="input" value="<?= h($end) ?>" style="width:140px;">
+            <input name="area" type="text" class="input" placeholder="Area" value="<?= h($areaFilter) ?>" style="width:160px;">
+            <button type="submit" class="btn btn-sm pill">Apply</button>
+            <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?view=dashboard#dashboard">Reset</a>
+          </form>
+          <button type="button" id="btn-add-chart" class="btn btn-sm pill">Add Chart</button>
+        </div>
       </div>
       <div class="charts-grid">
         <div class="chart-card">
           <div class="chart-title">KYC status distribution</div>
-          <div class="donut-wrap">
-            <svg viewBox="0 0 120 120" class="donut" role="img" aria-label="KYC status">
-              <circle class="donut-base" cx="60" cy="60" r="50" />
-              <circle class="donut-approved" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenApproved,2,'.','') ?> <?= number_format($circ - $lenApproved,2,'.','') ?>" stroke-dashoffset="0" />
-              <circle class="donut-pending" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenPending,2,'.','') ?> <?= number_format($circ - $lenPending,2,'.','') ?>" stroke-dashoffset="-<?= number_format($lenApproved,2,'.','') ?>" />
-              <circle class="donut-rejected" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenRejected,2,'.','') ?> <?= number_format($circ - $lenRejected,2,'.','') ?>" stroke-dashoffset="-<?= number_format($lenApproved + $lenPending,2,'.','') ?>" />
-            </svg>
-            <div class="legend">
-              <div><span class="swatch approved"></span> Approved <?= (int)$kycApproved ?></div>
-              <div><span class="swatch pending"></span> Pending <?= (int)$kycPending ?></div>
-              <div><span class="swatch rejected"></span> Rejected <?= (int)$kycRejected ?></div>
+          <?php if (($start !== '') || ($end !== '') || ($areaFilter !== '')): ?>
+            <div class="filter-chips">
+              <?php if ($start !== ''): ?><span class="chip">Start: <?= h($start) ?></span><?php endif; ?>
+              <?php if ($end !== ''): ?><span class="chip">End: <?= h($end) ?></span><?php endif; ?>
+              <?php if ($areaFilter !== ''): ?><span class="chip">Area: <?= h($areaFilter) ?></span><?php endif; ?>
             </div>
-          </div>
+          <?php endif; ?>
+          <?php if ((int)$kycApproved + (int)$kycPending + (int)$kycRejected === 0): ?>
+            <div class="empty-state">No KYC data yet</div>
+          <?php else: ?>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 120 120" class="donut" role="img" aria-label="KYC status">
+                <circle class="donut-base" cx="60" cy="60" r="50" />
+                <circle class="donut-approved" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenApproved,2,'.','') ?> <?= number_format($circ - $lenApproved,2,'.','') ?>" stroke-dashoffset="0" />
+                <circle class="donut-pending" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenPending,2,'.','') ?> <?= number_format($circ - $lenPending,2,'.','') ?>" stroke-dashoffset="-<?= number_format($lenApproved,2,'.','') ?>" />
+                <circle class="donut-rejected" cx="60" cy="60" r="50" stroke-dasharray="<?= number_format($lenRejected,2,'.','') ?> <?= number_format($circ - $lenRejected,2,'.','') ?>" stroke-dashoffset="-<?= number_format($lenApproved + $lenPending,2,'.','') ?>" />
+              </svg>
+              <div class="legend">
+                <div><span class="swatch approved"></span> Approved <?= (int)$kycApproved ?></div>
+                <div><span class="swatch pending"></span> Pending <?= (int)$kycPending ?></div>
+                <div><span class="swatch rejected"></span> Rejected <?= (int)$kycRejected ?></div>
+              </div>
+            </div>
+          <?php endif; ?>
         </div>
         <div class="chart-card">
           <div class="chart-title">Endorsements by area</div>
-          <?php $maxArea = 0; foreach ($endorseByArea as $ea) { $maxArea = max($maxArea, (int)($ea['total'] ?? 0)); } $maxArea = max($maxArea, 1); ?>
-          <svg viewBox="0 0 300 120" class="bar-chart" role="img" aria-label="Endorsements by area">
-            <?php $i = 0; foreach ($endorseByArea as $ea): $val = (int)($ea['total'] ?? 0); $h = (int)round(($val / $maxArea) * 100); $x = 20 + $i * 55; ?>
-              <rect x="<?= $x ?>" y="<?= 120 - $h ?>" width="36" height="<?= $h ?>" class="bar"></rect>
-              <text x="<?= $x + 18 ?>" y="115" text-anchor="middle" class="bar-label"><?= h(substr((string)$ea['area'],0,8)) ?></text>
-            <?php $i++; endforeach; ?>
-          </svg>
+          <?php if (($start !== '') || ($end !== '') || ($areaFilter !== '')): ?>
+            <div class="filter-chips">
+              <?php if ($start !== ''): ?><span class="chip">Start: <?= h($start) ?></span><?php endif; ?>
+              <?php if ($end !== ''): ?><span class="chip">End: <?= h($end) ?></span><?php endif; ?>
+              <?php if ($areaFilter !== ''): ?><span class="chip">Area: <?= h($areaFilter) ?></span><?php endif; ?>
+            </div>
+          <?php endif; ?>
+          <?php if (empty($endorseByArea)): ?>
+            <div class="empty-state">No area endorsements yet</div>
+          <?php else: ?>
+            <?php $maxArea = 0; foreach ($endorseByArea as $ea) { $maxArea = max($maxArea, (int)($ea['total'] ?? 0)); } $maxArea = max($maxArea, 1); ?>
+            <svg viewBox="0 0 300 120" class="bar-chart" role="img" aria-label="Endorsements by area">
+              <?php $i = 0; foreach ($endorseByArea as $ea): $val = (int)($ea['total'] ?? 0); $h = (int)round(($val / $maxArea) * 100); $x = 20 + $i * 55; ?>
+                <rect x="<?= $x ?>" y="<?= 120 - $h ?>" width="36" height="<?= $h ?>" class="bar"></rect>
+                <text x="<?= $x + 18 ?>" y="115" text-anchor="middle" class="bar-label"><?= h(substr((string)$ea['area'],0,8)) ?></text>
+              <?php $i++; endforeach; ?>
+            </svg>
+          <?php endif; ?>
         </div>
       </div>
     </section>
@@ -754,10 +768,36 @@ try {
       <h2 class="section-title">KYC</h2>
       <?php
         $kycList = [];
+        $kycTotalRows = 0;
+        $kycPages = 1;
+        $kycPage = max(1, (int)($_GET['kyc_page'] ?? 1));
+        $kycPerPage = 20;
+        $kycStatus = strtolower(trim((string)($_GET['kyc_status'] ?? '')));
+        if (!in_array($kycStatus, ['pending','approved','rejected'], true)) { $kycStatus = ''; }
+        $kycStart = isset($_GET['kyc_start']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$_GET['kyc_start']) ? (string)$_GET['kyc_start'] : '';
+        $kycEnd = isset($_GET['kyc_end']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$_GET['kyc_end']) ? (string)$_GET['kyc_end'] : '';
+        $kycSort = strtolower(trim((string)($_GET['kyc_sort'] ?? 'created_at')));
+        if (!in_array($kycSort, ['id','status','created_at'], true)) { $kycSort = 'created_at'; }
+        $kycDir = strtolower(trim((string)($_GET['kyc_dir'] ?? 'desc')));
+        $kycDir = ($kycDir === 'asc') ? 'asc' : 'desc';
         try {
+          $where = [];
+          $binds = [];
+          if ($kycStatus !== '') { $where[] = 'k.status = ?'; $binds[] = $kycStatus; }
+          if ($kycStart !== '') { $where[] = 'k.created_at >= ?'; $binds[] = $kycStart . ' 00:00:00'; }
+          if ($kycEnd !== '') { $where[] = 'k.created_at <= ?'; $binds[] = $kycEnd . ' 23:59:59'; }
+          $cond = empty($where) ? '' : (' WHERE ' . implode(' AND ', $where));
+          $stCount = $pdo->prepare('SELECT COUNT(*) FROM kyc_requests k' . $cond);
+          $stCount->execute($binds);
+          $kycTotalRows = (int)($stCount->fetchColumn() ?: 0);
+          $kycPages = max(1, (int)ceil($kycTotalRows / $kycPerPage));
+          $kycPage = min(max(1, $kycPage), $kycPages);
+          $offset = ($kycPage - 1) * $kycPerPage;
           $sql = 'SELECT k.id, k.user_id, u.username, u.email, k.full_name, k.phone, k.bank_name, k.bank_account_number, k.ifsc, k.id_number, k.status, k.created_at
-                  FROM kyc_requests k LEFT JOIN users u ON u.id = k.user_id ORDER BY k.created_at DESC LIMIT 100';
-          $kycList = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+                  FROM kyc_requests k LEFT JOIN users u ON u.id = k.user_id' . $cond . ' ORDER BY k.' . $kycSort . ' ' . strtoupper($kycDir) . ' LIMIT ' . (int)$kycPerPage . ' OFFSET ' . (int)$offset;
+          $st = $pdo->prepare($sql);
+          $st->execute($binds);
+          $kycList = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Throwable $e) {}
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '') === 'set_kyc_status') {
           $kid = isset($_POST['kyc_id']) ? (int)$_POST['kyc_id'] : 0;
@@ -772,6 +812,37 @@ try {
           }
         }
       ?>
+      <?php
+        $qs = ['view' => 'tools'];
+        if ($kycStatus !== '') $qs['kyc_status'] = $kycStatus;
+        if ($kycStart !== '') $qs['kyc_start'] = $kycStart;
+        if ($kycEnd !== '') $qs['kyc_end'] = $kycEnd;
+        if ($kycSort !== '') $qs['kyc_sort'] = $kycSort;
+        if ($kycDir !== '') $qs['kyc_dir'] = $kycDir;
+        $baseQS = http_build_query($qs);
+        $prevQS = $baseQS . '&kyc_page=' . max(1, $kycPage - 1);
+        $nextQS = $baseQS . '&kyc_page=' . min($kycPages, $kycPage + 1);
+      ?>
+      <div class="actions" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <form method="get" action="<?= h($BASE_PATH) ?>admin/index.php#kyc" style="display:flex; gap:6px; align-items:center;">
+          <input type="hidden" name="view" value="tools">
+          <select name="kyc_status" class="input" style="width:140px;">
+            <option value="" <?= ($kycStatus === '' ? 'selected' : '') ?>>all</option>
+            <option value="pending" <?= ($kycStatus === 'pending' ? 'selected' : '') ?>>pending</option>
+            <option value="approved" <?= ($kycStatus === 'approved' ? 'selected' : '') ?>>approved</option>
+            <option value="rejected" <?= ($kycStatus === 'rejected' ? 'selected' : '') ?>>rejected</option>
+          </select>
+          <input name="kyc_start" type="date" class="input" value="<?= h($kycStart) ?>" style="width:140px;">
+          <input name="kyc_end" type="date" class="input" value="<?= h($kycEnd) ?>" style="width:140px;">
+          <button type="submit" class="btn btn-sm pill">Apply</button>
+          <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?view=tools#kyc">Reset</a>
+        </form>
+        <div class="pagination" aria-label="Pagination" style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+          <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?<?= h($prevQS) ?>#kyc" aria-label="Previous">Prev</a>
+          <span class="muted">Page <?= (int)$kycPage ?> / <?= (int)$kycPages ?></span>
+          <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php?<?= h($nextQS) ?>#kyc" aria-label="Next">Next</a>
+        </div>
+      </div>
       <div class="card-plain card-compact kyc-card">
         <div class="table-wrap">
         <table class="table table-compact" aria-label="KYC table">
@@ -786,7 +857,25 @@ try {
             <col style="width:12%">
             <col style="width:14%">
           </colgroup>
-          <thead><tr><th>ID</th><th>User</th><th>Email</th><th>Phone</th><th>Bank</th><th>IFSC</th><th>ID Number</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead>
+            <tr>
+              <?php
+                $dirToggleId = ($kycSort === 'id' && $kycDir === 'asc') ? 'desc' : 'asc';
+                $qsId = $baseQS . '&kyc_sort=id&kyc_dir=' . $dirToggleId . '&kyc_page=1';
+                $dirToggleSt = ($kycSort === 'status' && $kycDir === 'asc') ? 'desc' : 'asc';
+                $qsSt = $baseQS . '&kyc_sort=status&kyc_dir=' . $dirToggleSt . '&kyc_page=1';
+              ?>
+              <th><a href="<?= h($BASE_PATH) ?>admin/index.php?<?= h($qsId) ?>#kyc">ID</a></th>
+              <th>User</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Bank</th>
+              <th>IFSC</th>
+              <th>ID Number</th>
+              <th><a href="<?= h($BASE_PATH) ?>admin/index.php?<?= h($qsSt) ?>#kyc">Status</a></th>
+              <th>Actions</th>
+            </tr>
+          </thead>
           <tbody>
             <?php foreach ($kycList as $k): ?>
               <tr>
@@ -833,30 +922,9 @@ try {
     (function(){
       var add = document.getElementById('btn-add-chart');
       if (!add) return;
-      var toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = 'Chart added (sample)';
-      document.body.appendChild(toast);
       add.addEventListener('click', function(){
-        toast.classList.add('show');
-        setTimeout(function(){ toast.classList.remove('show'); }, 1600);
+        if (window.showToast) window.showToast('Chart added','success');
       });
-    })();
-  </script>
-  <script>
-    (function() {
-      if (!window.location.hash) {
-        window.scrollTo(0, 0);
-      }
-      var hash = (window.location.hash || '#users').toLowerCase();
-      var sel = null;
-      if (hash.indexOf('#campaigns') === 0) sel = document.querySelector('.breadcrumb .campaigns');
-      else if (hash.indexOf('#endorsements') === 0) sel = document.querySelector('.breadcrumb .endorsements');
-      else if (hash.indexOf('#rewards') === 0) sel = document.querySelector('.breadcrumb .rewards');
-      else if (hash.indexOf('#contributors') === 0) sel = document.querySelector('.breadcrumb .contributors');
-      else if (hash.indexOf('#kyc') === 0) sel = document.querySelector('.breadcrumb .kyc');
-      else sel = document.querySelector('.breadcrumb .users');
-      if (sel) { sel.classList.add('active'); sel.setAttribute('aria-current', 'page'); }
     })();
   </script>
   <script>
