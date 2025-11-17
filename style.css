@@ -1296,16 +1296,8 @@ ul { list-style: none; padding-left: 0; }
 /* Sidebar active and badges */
 .side-link.active { border-color: var(--border); background: #eef4ff; }
 .side-link .side-count { margin-left: auto; display: inline-block; padding: 0 8px; border-radius: 999px; background: #f3f4f6; color: #111; font-weight: 700; font-size: 0.82rem; }
-.side-ico { display: inline-block; width: 14px; height: 14px; border-radius: 3px; background: #e5e7eb; }
-.ico-dashboard { background: #dbeafe; }
-.ico-users { background: #fde68a; }
-.ico-campaigns { background: #bbf7d0; }
-.ico-endorsements { background: #bfdbfe; }
-.ico-rewards { background: #fee2e2; }
-.ico-contributors { background: #ddd6fe; }
-.ico-kyc { background: #dcfce7; }
-.ico-tools { background: #f5f5f5; }
-.page-admin .container { padding-top: 8px; }
+.side-ico, .ico-dashboard, .ico-users, .ico-campaigns, .ico-endorsements, .ico-rewards, .ico-contributors, .ico-kyc, .ico-tools { display: none !important; }
+.page-admin .container { padding-top: 0; }
 .metric-card { position: relative; }
 .metric-card:first-child::before { content: none; }
 .metric-card::before { content: ''; position: absolute; left: -4px; top: 8px; bottom: 8px; width: 1px; background: #e5e7eb; }

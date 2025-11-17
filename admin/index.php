@@ -274,17 +274,17 @@ try {
       <aside class="admin-sidebar" aria-label="Admin Navigation">
         <div class="sidebar-group">
           <div class="sidebar-title">Sections</div>
-          <a href="#dashboard" class="side-link"><span class="side-ico ico-dashboard" aria-hidden="true"></span> Dashboard</a>
-          <a href="#users" class="side-link"><span class="side-ico ico-users" aria-hidden="true"></span> Users <span class="side-count"><?= (int)$usersCountSidebar ?></span></a>
-          <a href="#campaigns" class="side-link"><span class="side-ico ico-campaigns" aria-hidden="true"></span> Campaigns <span class="side-count"><?= (int)$campaignsCountSidebar ?></span></a>
-          <a href="#endorsements" class="side-link"><span class="side-ico ico-endorsements" aria-hidden="true"></span> Endorsements</a>
-          <a href="#rewards" class="side-link"><span class="side-ico ico-rewards" aria-hidden="true"></span> Rewards</a>
-          <a href="#contributors" class="side-link"><span class="side-ico ico-contributors" aria-hidden="true"></span> Contributors</a>
-          <a href="#kyc" class="side-link"><span class="side-ico ico-kyc" aria-hidden="true"></span> KYC <span class="side-count"><?= (int)$kycCountSidebar ?></span></a>
+          <a href="#dashboard" class="side-link">Dashboard</a>
+          <a href="#users" class="side-link">Users <span class="side-count"><?= (int)$usersCountSidebar ?></span></a>
+          <a href="#campaigns" class="side-link">Campaigns <span class="side-count"><?= (int)$campaignsCountSidebar ?></span></a>
+          <a href="#endorsements" class="side-link">Endorsements</a>
+          <a href="#rewards" class="side-link">Rewards</a>
+          <a href="#contributors" class="side-link">Contributors</a>
+          <a href="#kyc" class="side-link">KYC <span class="side-count"><?= (int)$kycCountSidebar ?></span></a>
         </div>
         <div class="sidebar-group" style="margin-top:10px;">
           <div class="sidebar-title">Tools</div>
-          <a href="#dbtools" class="side-link"><span class="side-ico ico-tools" aria-hidden="true"></span> Database Tools</a>
+          <a href="#dbtools" class="side-link">Database Tools</a>
         </div>
       </aside>
       <section class="admin-main">
@@ -384,8 +384,7 @@ try {
           <div class="metric-value"><?= (int)$kycPending ?></div>
         </div>
       </div>
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px;">
-        <h2 class="section-title" style="margin:0;">Dashboard</h2>
+      <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:6px;">
         <div class="actions" style="display:flex; gap:8px;">
           <form method="get" action="<?= h($BASE_PATH) ?>admin/index.php#dashboard" style="display:flex; gap:6px; align-items:center;">
             <input type="hidden" name="view" value="dashboard">
