@@ -405,7 +405,7 @@ try {
         </div>
         <div class="chart-card" style="margin-top:12px;">
           <div class="section-title" style="margin:0 0 8px;">Engagement</div>
-          <div class="chart" style="height:160px; border:1px dashed var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--muted);">Line chart coming soon</div>
+          <canvas id="engagement-chart" class="chart" style="height:160px; width:100%; border:1px dashed var(--border); border-radius:10px;"></canvas>
         </div>
       </div>
       <div class="tab-pane" id="tab-calendar">
@@ -1103,6 +1103,38 @@ try {
           coll.classList.toggle('show');
         });
       }
+    })();
+  </script>
+  <script>
+    (function(){
+      var canvas = document.getElementById('engagement-chart');
+      if (!canvas) return;
+      function draw(series){
+        var dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+        var w = canvas.clientWidth || 600, h = canvas.clientHeight || 160;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        var ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0,0,w,h);
+        var pad = 24;
+        var max = 0; for (var i=0;i<series.length;i++){ var v = Number(series[i].meals||0); if (v>max) max=v; }
+        max = Math.max(max, 1);
+        ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(pad, h-pad); ctx.lineTo(w-pad, h-pad); ctx.lineTo(w-pad, pad); ctx.stroke();
+        var n = series.length; var step = (w - pad*2) / Math.max(n-1, 1);
+        ctx.strokeStyle = '#1a7aff'; ctx.lineWidth = 2; ctx.beginPath();
+        for (var i=0;i<n;i++){
+          var x = pad + i*step; var y = h - pad - (Number(series[i].meals||0)/max) * (h - pad*2);
+          if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+        ctx.fillStyle = '#1a7aff';
+        for (var i=0;i<n;i++){
+          var x = pad + i*step; var y = h - pad - (Number(series[i].meals||0)/max) * (h - pad*2);
+          ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
+        }
+      }
+      fetch('<?= h($BASE_PATH) ?>stats.php?mode=series&status=all&days=14').then(function(r){return r.json();}).then(function(d){ draw(d.series||[]); }).catch(function(){});
     })();
   </script>
   <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" style="display:none;"></div>
