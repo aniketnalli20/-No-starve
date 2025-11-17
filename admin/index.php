@@ -8,6 +8,7 @@ $errors = [];
 $section = isset($_GET['section']) ? strtolower(trim((string)$_GET['section'])) : 'users';
 if (!in_array($section, ['users','campaigns','rewards','contributors'], true)) { $section = 'users'; }
 $awardUsers = [];
+$previewUser = null;
 
 try {
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -203,6 +204,51 @@ try {
           $message = 'Contributor ' . htmlspecialchars($name) . ' set to ' . ($verified ? 'verified' : 'unverified');
         } catch (Throwable $e) { $errors[] = 'Failed to set contributor: ' . $e->getMessage(); }
       }
+    } else if ($action === 'set_profile_preview') {
+      global $DB_DRIVER;
+      $email = strtolower(trim((string)($_POST['email'] ?? '')));
+      $followers = isset($_POST['followers']) ? (int)$_POST['followers'] : 0;
+      $verified = isset($_POST['verified']) ? 1 : 0;
+      $joined = trim((string)($_POST['joined'] ?? ''));
+      if ($email === '') { $errors[] = 'Email is required'; }
+      else {
+        try {
+          $st = $pdo->prepare('SELECT id, username, created_at FROM users WHERE email = ?');
+          $st->execute([$email]);
+          $u = $st->fetch(PDO::FETCH_ASSOC);
+          if (!$u) {
+            $username = strstr($email, '@', true) ?: $email;
+            $pass = password_hash(bin2hex(random_bytes(6)), PASSWORD_DEFAULT);
+            $created = ($joined !== '' ? ($joined . ' 00:00:00') : gmdate('Y-m-d H:i:s'));
+            $ins = $pdo->prepare('INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)');
+            $ins->execute([$username, $email, $pass, $created]);
+            $uid = (int)$pdo->lastInsertId();
+            $u = ['id' => $uid, 'username' => $username, 'created_at' => $created];
+          }
+          $uid = (int)$u['id'];
+          if ($joined !== '') {
+            $pdo->prepare('UPDATE users SET created_at = ? WHERE id = ?')->execute([$joined . ' 00:00:00', $uid]);
+            $u['created_at'] = $joined . ' 00:00:00';
+          }
+          $pdo->prepare('UPDATE users SET followers_override = ? WHERE id = ?')->execute([$followers, $uid]);
+          // Set contributor verified for this username
+          $now = gmdate('Y-m-d H:i:s');
+          if ($DB_DRIVER === 'pgsql') {
+            $pdo->prepare('INSERT INTO contributors (name, verified, created_at, updated_at) VALUES (?, ?, ?, ?)
+                           ON CONFLICT (name) DO UPDATE SET verified = EXCLUDED.verified, updated_at = EXCLUDED.updated_at')
+                ->execute([$u['username'], $verified, $now, $now]);
+          } else {
+            $pdo->prepare('INSERT INTO contributors (name, verified, created_at, updated_at) VALUES (?, ?, ?, ?)
+                           ON DUPLICATE KEY UPDATE verified = VALUES(verified), updated_at = VALUES(updated_at)')
+                ->execute([$u['username'], $verified, $now, $now]);
+          }
+          // Reload preview user
+          $stp = $pdo->prepare('SELECT id, username, email, created_at, followers_override FROM users WHERE id = ?');
+          $stp->execute([$uid]);
+          $previewUser = $stp->fetch(PDO::FETCH_ASSOC) ?: null;
+          $message = 'Updated profile preview settings for ' . htmlspecialchars($email);
+        } catch (Throwable $e) { $errors[] = 'Failed: ' . $e->getMessage(); }
+      }
     }
   }
 } catch (Throwable $e) {
@@ -278,6 +324,7 @@ try {
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#endorsements">Endorsements</a>
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#rewards">Rewards</a>
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#contributors">Contributors</a>
+      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#profile-preview">Profile Preview</a>
     </div>
     <div class="admin-grid stack-container">
     <?php if (!empty($errors)): ?>
@@ -654,4 +701,40 @@ try {
           </tbody>
         </table>
       </div>
+    </section>
+    <section id="profile-preview" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="Profile Preview">
+      <h2 class="section-title">Profile Preview</h2>
+      <div class="card-plain">
+        <form method="post" class="form">
+          <input type="hidden" name="action" value="set_profile_preview">
+          <label><strong>Email</strong></label>
+          <input name="email" type="email" class="input" placeholder="user@example.com" required value="<?= h((string)($_POST['email'] ?? 'karen.gonzalez723@company.com')) ?>" style="max-width:320px;">
+          <label style="margin-left:8px;"><strong>Followers</strong></label>
+          <input name="followers" type="number" class="input" min="0" value="<?= h((string)($_POST['followers'] ?? '0')) ?>" style="width:140px; display:inline-block;">
+          <label style="margin-left:8px; display:inline-flex; align-items:center; gap:6px;"><input type="checkbox" name="verified" value="1" <?= isset($_POST['verified']) ? 'checked' : '' ?>> Verified</label>
+          <label style="margin-left:8px;"><strong>Joined (YYYY-MM-DD)</strong></label>
+          <input name="joined" type="text" class="input" placeholder="2025-11-17" value="<?= h((string)($_POST['joined'] ?? '2025-11-17')) ?>" style="width:160px; display:inline-block;">
+          <div class="actions" style="margin-top:8px;"><button type="submit" class="btn pill">Save</button></div>
+        </form>
+      </div>
+      <?php if ($previewUser): ?>
+      <div class="card-plain ig-card" aria-label="Instagram style profile">
+        <div class="ig-header">
+          <div class="ig-avatar" aria-hidden="true"><span><?= h(strtoupper(substr((string)($previewUser['username'] ?? 'U'),0,1))) ?></span></div>
+          <div class="ig-meta">
+            <div class="ig-name">
+              <span class="name-text"><?= h((string)($previewUser['username'] ?? '')) ?></span>
+              <?php
+                $stV = $pdo->prepare('SELECT verified FROM contributors WHERE name = ?');
+                $stV->execute([trim((string)($previewUser['username'] ?? ''))]);
+                $isV = ((int)($stV->fetchColumn() ?: 0)) === 1;
+              ?>
+              <?php if ($isV): ?><span class="material-symbols-outlined verified-badge" title="Verified" aria-label="Verified">verified</span><?php endif; ?>
+              <button type="button" class="btn pill" style="margin-left:8px;"><span class="material-symbols-outlined icon">person_add</span> Follow</button>
+            </div>
+            <div class="ig-sub muted">Joined <?= h(date('Y-m-d', strtotime((string)$previewUser['created_at']))) ?> · Followers: <?= (int)($previewUser['followers_override'] ?? 0) ?></div>
+          </div>
+        </div>
+      </div>
+      <?php endif; ?>
     </section>

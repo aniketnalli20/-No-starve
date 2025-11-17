@@ -24,10 +24,17 @@ try {
 $followers = 0;
 $isFollowing = false;
 $isVerified = false;
+$followersOverride = null;
 try {
   $stc = $pdo->prepare('SELECT COUNT(*) FROM follows WHERE target_user_id = ?');
   $stc->execute([$id]);
   $followers = (int)($stc->fetchColumn() ?: 0);
+} catch (Throwable $e) {}
+try {
+  $stOv = $pdo->prepare('SELECT followers_override FROM users WHERE id = ?');
+  $stOv->execute([$id]);
+  $ov = $stOv->fetchColumn();
+  if ($ov !== false && $ov !== null) { $followersOverride = (int)$ov; }
 } catch (Throwable $e) {}
 // Consider a creator verified if contributors table has their username marked verified
 try {
@@ -75,7 +82,7 @@ try {
           <a class="btn pill" href="<?= h($BASE_PATH) ?>wallet.php">Wallet</a>
         <?php endif; ?>
       </div>
-      <div class="muted">Joined <?= h(date('Y-m-d', strtotime($user['created_at']))) ?> · Followers: <?= (int)$followers ?></div>
+      <div class="muted">Joined <?= h(date('Y-m-d', strtotime($user['created_at']))) ?> · Followers: <?= (int)($followersOverride !== null ? $followersOverride : $followers) ?></div>
     </section>
 
     <section class="card-plain" aria-label="User Campaigns">

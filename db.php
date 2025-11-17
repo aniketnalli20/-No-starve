@@ -309,6 +309,9 @@ if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
         updated_at DATETIME NOT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
 }
+
+// Optional followers override on users for admin preview/tools
+try { $pdo->exec('ALTER TABLE users ADD COLUMN followers_override INT'); } catch (Throwable $e) {}
 // Follows: users can follow creators (users) or named contributors (string)
 if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec('CREATE TABLE IF NOT EXISTS follows (

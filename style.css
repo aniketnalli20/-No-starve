@@ -1257,3 +1257,11 @@ ul { list-style: none; padding-left: 0; }
 
 /* Verified badge (Material Symbols) */
 .verified-badge { font-variation-settings: 'OPSZ' 24; font-size: 20px; line-height: 1; vertical-align: middle; color: #1DA1F2; margin-left: 6px; }
+
+/* Instagram-like profile card */
+.ig-card { border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: var(--shadow-1); }
+.ig-header { display: flex; align-items: center; gap: 12px; }
+.ig-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(180deg, #f8f8f8, #f1f1f1); border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8); }
+.ig-meta { display: flex; flex-direction: column; gap: 6px; }
+.ig-name { display: inline-flex; align-items: center; gap: 6px; }
+.ig-name .name-text { font-size: clamp(1.2rem, 1.2vw + 0.8rem, 1.6rem); font-weight: 800; }
