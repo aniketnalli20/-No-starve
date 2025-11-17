@@ -1265,3 +1265,16 @@ ul { list-style: none; padding-left: 0; }
 .ig-meta { display: flex; flex-direction: column; gap: 6px; }
 .ig-name { display: inline-flex; align-items: center; gap: 6px; }
 .ig-name .name-text { font-size: clamp(1.2rem, 1.2vw + 0.8rem, 1.6rem); font-weight: 800; }
+
+/* KYC form UI */
+.kyc-form .group-title { font-weight: 700; margin-bottom: 6px; }
+.kyc-form .form-grid { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 12px; }
+.kyc-form .form-grid .full { grid-column: 1 / -1; }
+.kyc-form .input { background: #f8f9fb; border: 1px solid var(--border); padding: 12px 14px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+.kyc-form textarea.input { resize: vertical; }
+.kyc-form label { display: block; margin-top: 8px; color: var(--muted); font-size: 0.95rem; }
+.kyc-form .actions { margin-top: 10px; }
+
+/* Navbar font size consistency */
+.navbar .nav-link { font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px; }
+.navbar .nav-link .material-symbols-outlined { font-size: 18px; line-height: 1; vertical-align: middle; }

@@ -76,29 +76,56 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '')
       <?php if ($message): ?>
         <div class="alert success" role="status"><?= h($message) ?></div>
       <?php endif; ?>
-      <form method="post" class="form" action="<?= h($BASE_PATH) ?>kyc.php">
+      <form method="post" class="form kyc-form" action="<?= h($BASE_PATH) ?>kyc.php">
         <input type="hidden" name="action" value="submit_kyc">
-        <label><strong>Full Name</strong></label>
-        <input name="full_name" type="text" class="input" value="<?= h((string)($user['username'] ?? '')) ?>" required>
-        <label style="margin-top:8px;"><strong>Phone</strong></label>
-        <input name="phone" type="text" class="input" value="<?= h((string)($user['phone'] ?? '')) ?>" required>
-        <label style="margin-top:8px;"><strong>Address</strong></label>
-        <textarea name="address" class="input" rows="3" required><?= h((string)($user['address'] ?? '')) ?></textarea>
-        <label style="margin-top:8px;"><strong>Bank Account Holder Name</strong></label>
-        <input name="bank_account_name" type="text" class="input" required>
-        <label style="margin-top:8px;"><strong>Bank Account Number</strong></label>
-        <input name="bank_account_number" type="text" class="input" required>
-        <label style="margin-top:8px;"><strong>IFSC</strong></label>
-        <input name="ifsc" type="text" class="input" placeholder="e.g., HDFC0001234" required>
-        <label style="margin-top:8px;"><strong>Bank Name</strong></label>
-        <input name="bank_name" type="text" class="input" required>
-        <label style="margin-top:8px;"><strong>ID Number (PAN/Aadhaar)</strong></label>
-        <input name="id_number" type="text" class="input" required>
-        <label style="margin-top:8px;"><strong>Notes</strong></label>
-        <textarea name="notes" class="input" rows="2" placeholder="Any remarks"></textarea>
-        <div class="actions" style="margin-top:10px;">
-          <button type="submit" class="btn pill"><span class="material-symbols-outlined" aria-hidden="true" style="vertical-align:-4px;">badge</span> Submit KYC</button>
+        <div class="group-title">User Details</div>
+        <div class="form-grid">
+          <div class="field full">
+            <label>Full Name</label>
+            <input name="full_name" type="text" class="input" placeholder="Full Name" value="<?= h((string)($user['username'] ?? '')) ?>" required>
+          </div>
+          <div class="field full">
+            <label>Email</label>
+            <input name="email" type="email" class="input" placeholder="user@example.com" value="<?= h((string)($user['email'] ?? '')) ?>" required disabled>
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input name="phone" type="text" class="input" placeholder="+91 98765 43210" value="<?= h((string)($user['phone'] ?? '')) ?>" required>
+          </div>
+          <div class="field full">
+            <label>Address</label>
+            <textarea name="address" class="input" rows="3" placeholder="Malpur Taluka, Aravalli, Gujarat, 383345, India" required><?= h((string)($user['address'] ?? '')) ?></textarea>
+          </div>
         </div>
+
+        <div class="group-title" style="margin-top:12px;">Wallet Details</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Bank Account Holder Name</label>
+            <input name="bank_account_name" type="text" class="input" placeholder="Account holder name" required>
+          </div>
+          <div class="field">
+            <label>Bank Account Number</label>
+            <input name="bank_account_number" type="text" class="input" placeholder="Account number" required>
+          </div>
+          <div class="field">
+            <label>IFSC</label>
+            <input name="ifsc" type="text" class="input" placeholder="e.g., HDFC0001234" required>
+          </div>
+          <div class="field">
+            <label>Bank Name</label>
+            <input name="bank_name" type="text" class="input" placeholder="Bank name" required>
+          </div>
+          <div class="field full">
+            <label>ID Number (PAN/Aadhaar)</label>
+            <input name="id_number" type="text" class="input" placeholder="ID number" required>
+          </div>
+          <div class="field full">
+            <label>Notes</label>
+            <textarea name="notes" class="input" rows="2" placeholder="Any remarks"></textarea>
+          </div>
+        </div>
+        <div class="actions"><button type="submit" class="btn pill"><span class="material-symbols-outlined" aria-hidden="true">badge</span> Submit KYC</button></div>
       </form>
     </section>
   </main>

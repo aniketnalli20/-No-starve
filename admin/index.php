@@ -6,7 +6,7 @@ require_admin();
 $message = '';
 $errors = [];
 $section = isset($_GET['section']) ? strtolower(trim((string)$_GET['section'])) : 'users';
-if (!in_array($section, ['users','campaigns','rewards','contributors'], true)) { $section = 'users'; }
+if (!in_array($section, ['users','campaigns','rewards','contributors','kyc'], true)) { $section = 'users'; }
 $awardUsers = [];
 $previewUser = null;
 
@@ -279,6 +279,7 @@ try {
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#endorsements">Endorsements</a>
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#rewards">Rewards</a>
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#contributors">Contributors</a>
+      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#kyc">KYC</a>
       
     </div>
     <div class="admin-grid stack-container">
@@ -649,6 +650,61 @@ try {
                     <input type="hidden" name="name" value="<?= h($c['name']) ?>">
                     <input type="hidden" name="verified" value="<?= ((int)$c['verified'] === 1 ? '0' : '1') ?>">
                     <button type="submit" class="btn btn-sm pill"><?= ((int)$c['verified'] === 1 ? 'Unverify' : 'Verify') ?></button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section id="kyc" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="KYC">
+      <h2 class="section-title">KYC</h2>
+      <?php
+        $kycList = [];
+        try {
+          $sql = 'SELECT k.id, k.user_id, u.username, u.email, k.full_name, k.phone, k.bank_name, k.bank_account_number, k.ifsc, k.id_number, k.status, k.created_at
+                  FROM kyc_requests k LEFT JOIN users u ON u.id = k.user_id ORDER BY k.created_at DESC LIMIT 100';
+          $kycList = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Throwable $e) {}
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '') === 'set_kyc_status') {
+          $kid = isset($_POST['kyc_id']) ? (int)$_POST['kyc_id'] : 0;
+          $stt = trim((string)($_POST['status'] ?? 'pending'));
+          $note = trim((string)($_POST['note'] ?? ''));
+          if ($kid > 0 && in_array($stt, ['pending','approved','rejected'], true)) {
+            try {
+              $pdo->prepare('UPDATE kyc_requests SET status = ?, notes = ?, updated_at = ? WHERE id = ?')
+                  ->execute([$stt, ($note !== '' ? $note : null), gmdate('Y-m-d H:i:s'), $kid]);
+              $message = 'KYC #' . $kid . ' updated';
+            } catch (Throwable $e) { $errors[] = 'Failed to update KYC'; }
+          }
+        }
+      ?>
+      <div class="card-plain">
+        <table class="table" aria-label="KYC table">
+          <thead><tr><th>ID</th><th>User</th><th>Email</th><th>Phone</th><th>Bank</th><th>IFSC</th><th>ID Number</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <?php foreach ($kycList as $k): ?>
+              <tr>
+                <td><?= (int)$k['id'] ?></td>
+                <td><?= h((string)($k['username'] ?? $k['full_name'] ?? '')) ?></td>
+                <td><?= h((string)($k['email'] ?? '')) ?></td>
+                <td><?= h((string)($k['phone'] ?? '')) ?></td>
+                <td><?= h((string)($k['bank_name'] ?? '')) ?> / <?= h((string)($k['bank_account_number'] ?? '')) ?></td>
+                <td><?= h((string)($k['ifsc'] ?? '')) ?></td>
+                <td><?= h((string)($k['id_number'] ?? '')) ?></td>
+                <td><?= h((string)($k['status'] ?? 'pending')) ?></td>
+                <td>
+                  <form method="post" style="display:inline-flex; gap:6px; align-items:center;">
+                    <input type="hidden" name="action" value="set_kyc_status">
+                    <input type="hidden" name="kyc_id" value="<?= (int)$k['id'] ?>">
+                    <select name="status" class="input" style="width:140px;">
+                      <option value="pending" <?= ((string)$k['status'] === 'pending' ? 'selected' : '') ?>>pending</option>
+                      <option value="approved" <?= ((string)$k['status'] === 'approved' ? 'selected' : '') ?>>approved</option>
+                      <option value="rejected" <?= ((string)$k['status'] === 'rejected' ? 'selected' : '') ?>>rejected</option>
+                    </select>
+                    <input name="note" type="text" class="input" placeholder="Note" style="width:180px;">
+                    <button type="submit" class="btn btn-sm pill">Save</button>
                   </form>
                 </td>
               </tr>
