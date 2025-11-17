@@ -1257,6 +1257,9 @@ ul { list-style: none; padding-left: 0; }
 
 /* Verified badge (Material Symbols) */
 .verified-badge { font-variation-settings: 'OPSZ' 24; font-size: 20px; line-height: 1; vertical-align: middle; color: #1DA1F2; margin-left: 6px; }
+/* Status colors */
+.status-success { color: #167a2a; font-weight: 700; }
+.status-error { color: #8b0000; font-weight: 700; }
 
 /* Instagram-like profile card */
 .ig-card { border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: var(--shadow-1); }

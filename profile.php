@@ -17,6 +17,7 @@ $endorseTotal = 0;
 $karmaBalance = 0;
 $nextIn = 0;
 $walletMsg = '';
+$kycStatus = 'pending';
 try {
     $stmt = $pdo->prepare('SELECT COALESCE(SUM(endorse_campaign),0) AS total FROM campaigns WHERE user_id = ?');
     $stmt->execute([(int)$user['id']]);
@@ -217,6 +218,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                 <div><?= h($user['created_at'] ?? '') ?></div>
             </div>
             <div class="profile-grid" style="margin-top:12px;">
+                <div class="label"><strong>KYC Status</strong></div>
+                <div>
+                    <?php
+                      try {
+                        $stK = $pdo->prepare('SELECT status FROM kyc_requests WHERE user_id = ? ORDER BY updated_at DESC, created_at DESC LIMIT 1');
+                        $stK->execute([(int)$user['id']]);
+                        $kycStatus = (string)($stK->fetchColumn() ?: 'pending');
+                      } catch (Throwable $e) { $kycStatus = 'pending'; }
+                      $ok = ($kycStatus === 'approved');
+                    ?>
+                    <span id="f" class="<?= $ok ? 'status-success' : 'status-error' ?>"><?= $ok ? 'success' : 'pending' ?></span>
+                </div>
                 <div class="label"><em class="muted">Karma Coins earned since joined</em></div>
                 <div><?= h((string)$karmaBalance) ?></div>
                 <div class="label"><strong>Endorsements Received</strong></div>
