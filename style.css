@@ -1377,14 +1377,19 @@ ul { list-style: none; padding-left: 0; }
 .feature-header .subtitle { color: var(--muted); margin-top: 4px; }
 .feature-grid { display: grid; grid-template-columns: repeat(2, minmax(240px, 1fr)); gap: 14px; align-items: stretch; }
 @media (max-width: 860px) { .feature-grid { grid-template-columns: 1fr; } }
-.feature-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
+.feature-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; box-shadow: var(--shadow-1); }
 .feature-card .head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.feature-card .head .icon { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#eef2ff; color:#1a7aff; }
+.feature-card .head .icon { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:#eef2ff; color:#1a7aff; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.06); }
 .feature-card .title { font-weight:700; font-size:1.05rem; }
 .feature-card .list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
 .feature-card .list li { display:flex; align-items:flex-start; gap:8px; }
 .feature-card .list li .check { color:#16a34a; }
 .feature-card .actions { margin-top: auto; }
+/* Feature card variants */
+.feature-card--karma .head .icon { background: radial-gradient(circle at 35% 35%, #fff8cc 0%, #ffe27a 35%, #ffd24d 60%, #e0b400 100%); border: 1px solid #d9a800; color:#7a4f00; }
+.feature-card--platform .head .icon { background:#eaf9ea; color:#167a2a; border:1px solid #cfe8d3; }
+.feature-card .subchips { display:flex; flex-wrap:wrap; gap:6px; margin: 6px 0 8px; }
+.feature-card .subchips .chip { background:#fafafa; color:#333; border-color:#e5e5e5; }
 .page-faqs main.container { max-width: none; margin-left: 0; margin-right: 0; padding-left: var(--content-pad); padding-right: var(--content-pad); }
 .profile-header { margin: 0 auto; padding: var(--content-pad); }
 .profile-cover { height: 220px; border-radius: 16px; background: linear-gradient(135deg,#e2e8f0,#f1f5f9); background-size: cover; background-position: center; position: relative; }

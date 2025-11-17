@@ -187,7 +187,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
         <h2 class="section-title">My Profile</h2>
         <?php $avatarUrl = $BASE_PATH . 'uploads/avatar.png'; if (is_file(__DIR__ . '/uploads/avatars/' . (int)$user['id'] . '.png')) { $avatarUrl = $BASE_PATH . 'uploads/avatars/' . (int)$user['id'] . '.png'; } $coverUrl = is_file(__DIR__ . '/uploads/cover.jpg') ? ($BASE_PATH . 'uploads/cover.jpg') : ''; ?>
         <section class="profile-header" aria-label="Profile Header">
-          <div class="profile-cover"<?= $coverUrl !== '' ? ' style="background-image:url(' . h($coverUrl) . ')"' : '' ?>></div>
           <div class="profile-meta">
             <div class="profile-ident">
               <img src="<?= h($avatarUrl) ?>" alt="Avatar" class="profile-avatar">
@@ -199,16 +198,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                 </div>
               </div>
             </div>
-            <div class="profile-actions">
-              <button class="btn icon pill"><span class="material-symbols-outlined" aria-hidden="true">person_add</span><span>Follow</span></button>
-              <button class="btn icon pill"><span class="material-symbols-outlined" aria-hidden="true">chat</span><span>Message</span></button>
-            </div>
           </div>
           <div class="profile-tabs">
-            <button class="tab active">Overview</button>
-            <button class="tab">About</button>
-            <button class="tab">Campaigns</button>
-            <button class="tab">Badges</button>
+            <button class="tab active" data-tab="overview">Overview</button>
+            <button class="tab" data-tab="campaigns">Campaigns</button>
           </div>
         </section>
         <?php if (!empty($errors)): ?>
@@ -229,7 +222,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
         <?php
           $myCampaigns = [];
           try { $stC = $pdo->prepare('SELECT id, title, crowd_size, status, created_at FROM campaigns WHERE user_id = ? ORDER BY created_at DESC LIMIT 6'); $stC->execute([(int)$user['id']]); $myCampaigns = $stC->fetchAll(PDO::FETCH_ASSOC) ?: []; } catch (Throwable $e) {}
+          $allCampaigns = [];
+          try { $stAll = $pdo->prepare('SELECT id, title, area, location, crowd_size, closing_time, endorse_campaign, coins_received, created_at FROM campaigns WHERE user_id = ? ORDER BY created_at DESC LIMIT 30'); $stAll->execute([(int)$user['id']]); $allCampaigns = $stAll->fetchAll(PDO::FETCH_ASSOC) ?: []; } catch (Throwable $e) {}
         ?>
+        <div id="tab-overview" class="tab-panel active">
         <div class="info-grid">
           <div class="info-card" aria-label="Basic info">
             <div class="item"><div class="left"><span class="material-symbols-outlined" aria-hidden="true">badge</span><span><?= h($user['username'] ?? '') ?></span></div><span class="material-symbols-outlined" aria-hidden="true">person</span></div>
@@ -301,6 +297,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
             <?php endif; ?>
           </div>
         </div>
+        </div>
+        <div id="tab-campaigns" class="tab-panel">
+          <?php if (!empty($allCampaigns)): ?>
+            <div class="tweet-list">
+              <?php foreach ($allCampaigns as $c): ?>
+                <?php $name = trim((string)($user['username'] ?? 'Campaign')); $initial = strtoupper(substr($name, 0, 1)); ?>
+                <article class="tweet-card" aria-label="Campaign" id="campaign-<?= (int)$c['id'] ?>">
+                  <div class="tweet-avatar" aria-hidden="true"><span><?= h($initial) ?></span></div>
+                  <div class="tweet-content">
+                    <div class="tweet-header" style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                      <div style="display:inline-flex; align-items:center; gap:6px;">
+                        <span class="tweet-name"><?= h((string)($c['title'] ?? 'Campaign')) ?></span>
+                      </div>
+                      <a class="tweet-btn" href="<?= h($BASE_PATH) ?>campaign.php?id=<?= (int)$c['id'] ?>" title="Open" aria-label="Open"><span class="material-symbols-outlined icon">open_in_new</span></a>
+                    </div>
+                    <?php
+                      $csVal = isset($c['crowd_size']) && $c['crowd_size'] !== '' ? (int)$c['crowd_size'] : null;
+                      $locRaw = (($c['location'] ?? '') !== '' ? (string)$c['location'] : (string)($c['area'] ?? '—'));
+                      $locText = $locRaw;
+                    ?>
+                    <div class="tweet-details">
+                      <div class="detail"><span class="d-label">Location</span><span class="d-value"><?= $locText ?></span></div>
+                      <div class="detail"><span class="d-label">Crowd Size</span><span class="d-value"><?= ($csVal !== null ? h((string)$csVal) : '—') ?></span></div>
+                      <div class="detail"><span class="d-label">Closing Time</span><span class="d-value"><?= h($c['closing_time'] ?? '—') ?></span></div>
+                      <div class="detail"><span class="d-label"><span class="coin-icon" aria-hidden="true"></span>Karma Coins</span><span class="d-value"><?= (int)($c['coins_received'] ?? 0) ?></span></div>
+                    </div>
+                  </div>
+                </article>
+              <?php endforeach; ?>
+            </div>
+          <?php else: ?>
+            <div class="muted">You have no campaigns yet.</div>
+          <?php endif; ?>
+        </div>
         <div class="profile-actions" style="margin-top:12px;">
           <a class="btn pill" href="<?= h($BASE_PATH) ?>index.php#hero">Back to Home</a>
           <a class="btn btn-bhargav" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"><span>Create Campaign</span></a>
@@ -311,6 +341,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.profile-tabs .tab'));
+      tabs.forEach(function(t){
+        t.addEventListener('click', function(){
+          tabs.forEach(function(x){ x.classList.remove('active'); });
+          t.classList.add('active');
+          var key = t.getAttribute('data-tab');
+          document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+          var panel = document.getElementById('tab-' + key);
+          if (panel) panel.classList.add('active');
+        });
+      });
       document.querySelectorAll('.preset-group .chip').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var phoneInput = document.getElementById('phone');

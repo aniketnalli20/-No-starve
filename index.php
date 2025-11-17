@@ -273,39 +273,49 @@ try {
       <div class="title">Discover Meals, Earn Recognition</div>
       <div class="subtitle">Find nearby meals fast and build community trust with Karma Coins</div>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card">
+      <div class="feature-grid">
+      <div class="feature-card feature-card--karma">
         <div class="head">
           <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span></span>
           <div class="title">Karma Coins: Your Community Reputation</div>
         </div>
+        <div class="subchips" aria-label="Highlights">
+          <span class="chip">Automated</span>
+          <span class="chip">Trust Signal</span>
+          <span class="chip">Badges</span>
+        </div>
         <ul class="list">
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Earn coins when people endorse your campaigns and when meal deliveries are verified.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Coins lift trusted, high‑impact campaigns so more people can find and support them.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Not a currency; they power badges, milestones, and profile visibility.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Clear trust signal shown on profiles and campaigns.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Fully automated recognition—no manual approvals.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Earn</strong> coins from endorsements and verified deliveries.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Amplify</strong> trusted, high‑impact campaigns.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Not a currency</strong>—powers badges, milestones, and visibility.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Trust signal</strong> on profiles and campaigns.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Automated</strong> recognition, no manual approvals.</span></li>
         </ul>
         <div class="actions" style="margin-top:10px;">
-          <a class="btn pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
+          <a class="btn accent pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
         </div>
       </div>
-      <div class="feature-card">
+      <div class="feature-card feature-card--platform">
         <div class="head">
           <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span></span>
           <div class="title">How No Starve Helps</div>
         </div>
+        <div class="subchips" aria-label="Highlights">
+          <span class="chip">Instant</span>
+          <span class="chip">Real‑time</span>
+          <span class="chip">Waste reduction</span>
+        </div>
         <ul class="list">
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Instantly discover nearby meals and safe pickup details.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>See real‑time availability and closing times from campaigns around you.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Designed for working professionals, bachelors, and students.</span></li>
-          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Reduce food waste and daily meal challenges—one meal at a time.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Discover</strong> nearby meals and safe pickup details—instantly.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>See</strong> real‑time availability and closing times around you.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Built for</strong> working professionals, bachelors, and students.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span><strong>Reduce</strong> food waste and daily meal challenges—one meal at a time.</span></li>
         </ul>
         <div class="actions" style="margin-top:10px;">
-          <a class="btn pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
+          <a class="btn accent pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
         </div>
       </div>
-    </div>
+      </div>
   </section>
 
     <!-- Recent Campaigns section placed directly under hero -->
