@@ -126,21 +126,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
         <div class="container header-inner">
             <?php $currentPath = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
             <nav class="navbar navbar-expand-lg navbar-light bg-light" role="navigation" aria-label="Primary">
-              <a class="navbar-brand" href="<?= h($BASE_PATH) ?>index.php#hero">No Starve</a>
               <button class="navbar-toggler" type="button" aria-controls="primary-navbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon" aria-hidden="true"></span>
               </button>
               <div class="collapse navbar-collapse" id="primary-navbar">
-                <ul class="navbar-nav">
-                  <li class="nav-item"><a class="nav-link<?= $currentPath === 'index.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>index.php#hero">Home</a></li>
-                  <li class="nav-item"><a class="nav-link active" href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a></li>
-                  <li class="nav-item"><a class="nav-link<?= $currentPath === 'create_campaign.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a></li>
-                  <?php if (is_logged_in()): ?>
-                    <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>logout.php">Logout</a></li>
+                <div class="navbar-left">
+                  <ul class="navbar-nav nav-main">
+                    <li class="nav-item has-mega">
+                      <a class="nav-link" href="#" aria-haspopup="true" aria-expanded="false">Discover<span class="caret">▾</span></a>
+                      <div class="mega-panel" role="dialog" aria-label="Discover menu">
+                        <div class="mega-grid">
+                          <div class="mega-col">
+                            <div class="heading">Nearby</div>
+                            <a class="mega-item" href="<?= h($BASE_PATH) ?>index.php#recent-campaigns"><span class="material-symbols-outlined" aria-hidden="true">location_on</span><span>Campaigns near you</span></a>
+                            <a class="mega-item" href="<?= h($BASE_PATH) ?>index.php#about"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span><span>Available meals</span></a>
+                          </div>
+                          <div class="mega-col">
+                            <div class="heading">Trust</div>
+                            <a class="mega-item" href="<?= h($BASE_PATH) ?>faqs.php"><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span><span>Karma Coins</span></a>
+                            <a class="mega-item" href="<?= h($BASE_PATH) ?>faqs.php"><span class="material-symbols-outlined" aria-hidden="true">verified</span><span>Verified contributors</span></a>
+                          </div>
+                          <div class="mega-col">
+                            <div class="heading">Contribute</div>
+                            <a class="mega-item" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>"><span class="material-symbols-outlined" aria-hidden="true">edit</span><span>Create campaign</span></a>
+                            <a class="mega-item" href="<?= h($BASE_PATH) ?>wallet.php"><span class="material-symbols-outlined" aria-hidden="true">savings</span><span>Wallet</span></a>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div class="navbar-center">
+                  <a class="navbar-brand" href="<?= h($BASE_PATH) ?>index.php#hero">No Starve</a>
+                </div>
+                <div class="navbar-right">
+                  <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>index.php#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= h($BASE_PATH) ?>faqs.php">Help</a></li>
+                  </ul>
+                  <?php if (!is_logged_in()): ?>
+                    <a class="btn pill" href="<?= h($BASE_PATH) ?>login.php">Get started</a>
                   <?php else: ?>
-                    <li class="nav-item"><a class="nav-link<?= $currentPath === 'login.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>login.php">Login</a></li>
+                    <a class="btn pill" href="<?= h($BASE_PATH) ?>profile.php">Profile</a>
                   <?php endif; ?>
-                </ul>
+                </div>
               </div>
             </nav>
         </div>
@@ -185,11 +214,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
     <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);" aria-label="My Profile">
       <section class="card-plain card-fullbleed page-profile" aria-label="Profile">
         <h2 class="section-title">My Profile</h2>
-        <?php $avatarUrl = $BASE_PATH . 'uploads/avatar.png'; if (is_file(__DIR__ . '/uploads/avatars/' . (int)$user['id'] . '.png')) { $avatarUrl = $BASE_PATH . 'uploads/avatars/' . (int)$user['id'] . '.png'; } $coverUrl = is_file(__DIR__ . '/uploads/cover.jpg') ? ($BASE_PATH . 'uploads/cover.jpg') : ''; ?>
+        <?php /* Avatar/cover removed for a cleaner header */ ?>
         <section class="profile-header" aria-label="Profile Header">
           <div class="profile-meta">
             <div class="profile-ident">
-              <img src="<?= h($avatarUrl) ?>" alt="Avatar" class="profile-avatar">
               <div>
                 <div class="profile-name"><?= h((string)($user['username'] ?? 'User')) ?></div>
                 <div class="profile-stats">
