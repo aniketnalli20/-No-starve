@@ -24,7 +24,9 @@ try {
 $followers = 0;
 $isFollowing = false;
 try {
-  $followers = (int)($pdo->prepare('SELECT COUNT(*) FROM follows WHERE target_user_id = ?')->execute([$id]) ? $pdo->prepare('SELECT COUNT(*) FROM follows WHERE target_user_id = ?')->execute([$id]) : 0);
+  $stc = $pdo->prepare('SELECT COUNT(*) FROM follows WHERE target_user_id = ?');
+  $stc->execute([$id]);
+  $followers = (int)($stc->fetchColumn() ?: 0);
 } catch (Throwable $e) {}
 try {
   $st3 = $pdo->prepare('SELECT COUNT(*) FROM follows WHERE follower_user_id = ? AND target_user_id = ?');
@@ -53,19 +55,19 @@ try {
 
   <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);">
     <section class="card-plain" aria-label="User Profile">
-      <h2 class="section-title"><?= h($user['username']) ?></h2>
-      <div class="muted">Joined <?= h(date('Y-m-d', strtotime($user['created_at']))) ?></div>
-      <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
-        <span class="chip">Followers: <?= (int)$followers ?></span>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <h2 class="section-title" style="margin:0;">
+          <?= h($user['username']) ?>
+        </h2>
         <?php if (is_logged_in() && (int)$_SESSION['user_id'] !== $id): ?>
-          <form method="post" action="<?= h($BASE_PATH) ?>follow.php" onsubmit="return false;" style="display:inline;">
-            <button type="button" class="btn pill follow-toggle" data-target-user-id="<?= (int)$id ?>"><?= $isFollowing ? 'Following' : 'Follow' ?></button>
-          </form>
+          <button type="button" class="btn pill follow-toggle" data-target-user-id="<?= (int)$id ?>"><?= $isFollowing ? 'Following' : 'Follow' ?></button>
         <?php endif; ?>
         <?php if (is_logged_in() && (int)$_SESSION['user_id'] === $id): ?>
-          <a class="btn pill" href="<?= h($BASE_PATH) ?>wallet.php">View Wallet</a>
+          <a class="btn pill" href="<?= h($BASE_PATH) ?>profile.php">Settings</a>
+          <a class="btn pill" href="<?= h($BASE_PATH) ?>wallet.php">Wallet</a>
         <?php endif; ?>
       </div>
+      <div class="muted">Joined <?= h(date('Y-m-d', strtotime($user['created_at']))) ?> · Followers: <?= (int)$followers ?></div>
     </section>
 
     <section class="card-plain" aria-label="User Campaigns">

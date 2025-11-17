@@ -46,13 +46,15 @@ try {
 
   <main class="container" style="max-width: var(--content-max); padding: var(--content-pad);">
     <section class="card-plain" aria-label="Contributor Profile">
-      <h2 class="section-title"><?= h($name) ?></h2>
-      <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
-        <span class="chip">Followers: <?= (int)$followers ?></span>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <h2 class="section-title" style="margin:0;">
+          <?= h($name) ?>
+        </h2>
         <?php if (is_logged_in()): ?>
           <button type="button" class="btn pill follow-toggle" data-contributor-name="<?= h($name) ?>"><?= $isFollowing ? 'Following' : 'Follow' ?></button>
         <?php endif; ?>
       </div>
+      <div class="muted">Followers: <?= (int)$followers ?></div>
     </section>
 
     <section class="card-plain" aria-label="Contributor Campaigns">

@@ -6,7 +6,7 @@ require_admin();
 $message = '';
 $errors = [];
 $section = isset($_GET['section']) ? strtolower(trim((string)$_GET['section'])) : 'users';
-if (!in_array($section, ['users','campaigns','rewards'], true)) { $section = 'users'; }
+if (!in_array($section, ['users','campaigns','rewards','contributors'], true)) { $section = 'users'; }
 $awardUsers = [];
 
 try {
@@ -184,6 +184,25 @@ try {
       } else {
         $errors[] = 'Count must be between 1 and 1000';
       }
+    } else if ($action === 'set_contributor_verified') {
+      $name = trim((string)($_POST['name'] ?? ''));
+      $verified = isset($_POST['verified']) ? 1 : 0;
+      if ($name === '') { $errors[] = 'Contributor name is required'; }
+      else {
+        $now = gmdate('Y-m-d H:i:s');
+        try {
+          if ($DB_DRIVER === 'pgsql') {
+            $pdo->prepare('INSERT INTO contributors (name, verified, created_at, updated_at) VALUES (?, ?, ?, ?)
+                           ON CONFLICT (name) DO UPDATE SET verified = EXCLUDED.verified, updated_at = EXCLUDED.updated_at')
+                ->execute([$name, $verified, $now, $now]);
+          } else {
+            $pdo->prepare('INSERT INTO contributors (name, verified, created_at, updated_at) VALUES (?, ?, ?, ?)
+                           ON DUPLICATE KEY UPDATE verified = VALUES(verified), updated_at = VALUES(updated_at)')
+                ->execute([$name, $verified, $now, $now]);
+          }
+          $message = 'Contributor ' . htmlspecialchars($name) . ' set to ' . ($verified ? 'verified' : 'unverified');
+        } catch (Throwable $e) { $errors[] = 'Failed to set contributor: ' . $e->getMessage(); }
+      }
     }
   }
 } catch (Throwable $e) {
@@ -193,8 +212,8 @@ try {
 // Fetch lists
 $users = [];
 $campaigns = [];
-$wallets = [];
-$limitRows = 15;
+  $wallets = [];
+  $limitRows = 15;
 $usersFull = isset($_GET['users_full']);
 $campaignsFull = isset($_GET['campaigns_full']);
 $walletsFull = isset($_GET['wallets_full']);
@@ -205,6 +224,11 @@ try {
   // Endorsements section: show only actual posts (eligible/open campaigns)
   $endorseableCampaigns = $pdo->query("SELECT id, title, area, endorse_campaign, contributor_name FROM campaigns\n    WHERE status = 'open'\n      AND ((location IS NOT NULL AND location <> '') OR (area IS NOT NULL AND area <> ''))\n    ORDER BY id DESC" . ($campaignsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
   $wallets = $pdo->query('SELECT w.user_id, u.username, w.balance, w.updated_at FROM karma_wallets w JOIN users u ON u.id = w.user_id ORDER BY w.updated_at DESC' . ($walletsFull ? '' : ' LIMIT ' . (int)$limitRows))->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  $contributorsList = [];
+  try {
+    $sql = "SELECT c.contributor_name AS name, COALESCE(cc.verified, 0) AS verified\n            FROM (SELECT DISTINCT contributor_name FROM campaigns WHERE contributor_name IS NOT NULL AND contributor_name <> '') c\n            LEFT JOIN contributors cc ON cc.name = c.contributor_name\n            ORDER BY c.contributor_name ASC";
+    $contributorsList = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  } catch (Throwable $e) {}
 } catch (Throwable $e) {}
 ?>
 <!doctype html>
@@ -253,6 +277,7 @@ try {
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#campaigns">Campaigns</a>
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#endorsements">Endorsements</a>
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#rewards">Rewards</a>
+      <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#contributors">Contributors</a>
     </div>
     <div class="admin-grid stack-container">
     <?php if (!empty($errors)): ?>
@@ -595,3 +620,36 @@ try {
   </script>
 </body>
 </html>
+    <section id="contributors" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="Contributors">
+      <h2 class="section-title">Contributors</h2>
+      <form method="post" class="form" style="margin-bottom:10px;">
+        <input type="hidden" name="action" value="set_contributor_verified">
+        <input name="name" type="text" class="input" placeholder="Contributor name" required style="max-width:320px;">
+        <label style="margin-left:8px; display:inline-flex; align-items:center; gap:6px;"><input type="checkbox" name="verified" value="1"> Verified</label>
+        <div class="actions" style="margin-top:8px;"><button type="submit" class="btn pill">Save</button></div>
+      </form>
+      <div class="card-plain">
+        <strong>Known Contributors</strong>
+        <table class="table" aria-label="Contributors table">
+          <thead>
+            <tr><th>Name</th><th>Verified</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <?php foreach ($contributorsList as $c): ?>
+              <tr>
+                <td><?= h($c['name']) ?></td>
+                <td><?= ((int)$c['verified'] === 1 ? 'yes' : 'no') ?></td>
+                <td>
+                  <form method="post" style="display:inline-block;">
+                    <input type="hidden" name="action" value="set_contributor_verified">
+                    <input type="hidden" name="name" value="<?= h($c['name']) ?>">
+                    <input type="hidden" name="verified" value="<?= ((int)$c['verified'] === 1 ? '0' : '1') ?>">
+                    <button type="submit" class="btn btn-sm pill"><?= ((int)$c['verified'] === 1 ? 'Unverify' : 'Verify') ?></button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </section>

@@ -290,6 +290,25 @@ if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
         CONSTRAINT fk_karma_events_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
 }
+
+// Contributors registry: verification
+if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
+    $pdo->exec('CREATE TABLE IF NOT EXISTS contributors (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) UNIQUE NOT NULL,
+        verified SMALLINT NOT NULL DEFAULT 0,
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL
+    )');
+} else {
+    $pdo->exec('CREATE TABLE IF NOT EXISTS contributors (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE,
+        verified TINYINT NOT NULL DEFAULT 0,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=' . $DB_CHARSET);
+}
 // Follows: users can follow creators (users) or named contributors (string)
 if (($DRIVER ?? ($DB_DRIVER ?? 'mysql')) === 'pgsql') {
     $pdo->exec('CREATE TABLE IF NOT EXISTS follows (
