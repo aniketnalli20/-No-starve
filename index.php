@@ -208,8 +208,8 @@ try {
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'profile.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'profile.php') : ($BASE_PATH . 'login.php?next=profile.php')) ?>">Profile</a></li>
                   <li class="nav-item"><a class="nav-link<?= $currentPath === 'create_campaign.php' ? ' active' : '' ?>" href="<?= h(is_logged_in() ? ($BASE_PATH . 'create_campaign.php') : ($BASE_PATH . 'login.php?next=create_campaign.php')) ?>">Create Campaign</a></li>
                   <?php if (is_logged_in()): ?>
-                    <?php $uidNav = (int)($_SESSION['user_id'] ?? 0); $hasAccess = ($uidNav > 0 ? has_wallet_access($uidNav) : false); ?>
-                    <?php if ($hasAccess): ?>
+                    <?php $uidNav = (int)($_SESSION['user_id'] ?? 0); $hasApproved = ($uidNav > 0 ? has_approved_kyc($uidNav) : false); ?>
+                    <?php if ($hasApproved): ?>
                       <li class="nav-item"><a class="nav-link<?= $currentPath === 'wallet.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>wallet.php"><span class="material-symbols-outlined" aria-hidden="true" style="vertical-align:-4px;">savings</span> Wallet</a></li>
                     <?php else: ?>
                       <li class="nav-item"><a class="nav-link<?= $currentPath === 'kyc.php' ? ' active' : '' ?>" href="<?= h($BASE_PATH) ?>kyc.php"><span class="material-symbols-outlined" aria-hidden="true" style="vertical-align:-4px;">badge</span> KYC</a></li>

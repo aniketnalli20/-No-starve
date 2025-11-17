@@ -803,17 +803,6 @@ try {
       <div class="card-plain card-compact kyc-card">
         <div class="table-wrap">
         <table class="table table-compact" aria-label="KYC table">
-          <colgroup>
-            <col style="width:8%">
-            <col style="width:16%">
-            <col style="width:20%">
-            <col style="width:14%">
-            <col style="width:20%">
-            <col style="width:10%">
-            <col style="width:16%">
-            <col style="width:12%">
-            <col style="width:14%">
-          </colgroup>
           <thead>
             <tr>
               <?php

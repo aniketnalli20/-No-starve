@@ -1210,7 +1210,7 @@ ul { list-style: none; padding-left: 0; }
 .admin-grid .form .input { width: 100%; background: white; border: 1px solid var(--border); padding: 8px 10px; border-radius: 10px; margin-top: 8px; }
 .admin-grid .form .actions { margin-top: 8px; }
 
-.admin-grid .table { font-size: 0.95rem; }
+.admin-grid .table { font-size: 0.95rem; table-layout: fixed; width: 100%; }
 .admin-grid .table thead th { padding: 6px 8px; }
 .admin-grid .table tbody td { padding: 6px 8px; }
 .admin-grid .table td, .admin-grid .table th { line-height: 1.25; }
@@ -1323,7 +1323,7 @@ ul { list-style: none; padding-left: 0; }
 .card-compact { max-width: 900px; margin-left: auto; margin-right: auto; }
 @media (max-width: 920px) { .card-compact { max-width: 720px; } }
 @media (max-width: 720px) { .card-compact { max-width: 100%; } }
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: visible; }
 .table-compact { width: 100%; table-layout: fixed; font-size: 0.9rem; }
 .table-compact thead th { position: sticky; top: 0; z-index: 1; background: #fafafa; }
 .table-compact thead th, .table-compact tbody td { padding: 5px 6px; }
