@@ -8,7 +8,7 @@ if (isset($_GET['next'])) {
     $next = trim((string)$_POST['next']);
 }
 
-$error = null;
+$error = null; $resetInfo = null; $resetTokenQS = isset($_GET['token']) ? trim((string)$_GET['token']) : '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = trim((string)($_POST['action'] ?? 'login'));
     if ($action === 'register') {
@@ -33,6 +33,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } catch (Throwable $e) {
             $error = $e->getMessage() ?: 'Registration failed';
+        }
+    } else if ($action === 'forgot') {
+        $email = trim((string)($_POST['email'] ?? ''));
+        if ($email === '') { $error = 'Email is required'; }
+        else {
+            try {
+                $st = $pdo->prepare('SELECT id, email FROM users WHERE email = ? LIMIT 1');
+                $st->execute([$email]);
+                $u = $st->fetch(PDO::FETCH_ASSOC);
+                if (!$u) { $error = 'No account found for this email'; }
+                else {
+                    $token = create_password_reset_token((int)$u['id'], (string)$u['email']);
+                    $link = $BASE_PATH . 'login.php?tab=reset&token=' . urlencode($token);
+                    $sent = send_password_reset_email((string)$u['email'], $link);
+                    if ($sent) {
+                        $resetInfo = 'Reset link sent to your email.';
+                    } else {
+                        $resetInfo = 'Email sending failed. Use this link to reset: ' . $link;
+                    }
+                    $resetTokenQS = $token;
+                }
+            } catch (Throwable $e) { $error = 'Request failed; try again later'; }
+        }
+    } else if ($action === 'reset') {
+        $token = trim((string)($_POST['token'] ?? ''));
+        $password = (string)($_POST['password'] ?? '');
+        $confirm = (string)($_POST['confirm'] ?? '');
+        if ($token === '' || $password === '' || $confirm === '') { $error = 'All fields are required'; }
+        else if ($password !== $confirm) { $error = 'Password and confirm must match'; }
+        else {
+            if (complete_password_reset($token, $password)) {
+                $resetInfo = 'Password updated. Please log in.';
+            } else {
+                $error = 'Reset failed or token expired';
+                $resetTokenQS = $token;
+            }
         }
     } else {
         $email = trim((string)($_POST['email'] ?? ''));
@@ -119,7 +155,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?= h($error) ?>
                 </div>
             <?php endif; ?>
-            <form class="form" id="form-login" method="post" action="<?= h($BASE_PATH) ?>login.php">
+            <?php $tab = isset($_GET['tab']) ? (string)$_GET['tab'] : ''; $showResetTab = ($tab === 'reset'); ?>
+            <form class="form" id="form-login" method="post" action="<?= h($BASE_PATH) ?>login.php" style="<?= $showResetTab ? 'display:none;' : '' ?>">
                 <?php if ($next !== ''): ?>
                     <input type="hidden" name="next" value="<?= h($next) ?>">
                 <?php endif; ?>
@@ -156,8 +193,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <span class="material-symbols-outlined" aria-hidden="true">lock</span>
                   <input placeholder="Password" id="password" name="password" type="password" class="input" required />
                 </div>
-                <span class="forgot-password"><a href="#">Forgot Password ?</a></span>
+                <span class="forgot-password"><a href="#" id="link-forgot">Forgot Password ?</a></span>
                 <button type="submit" class="login-button">Log In</button>
+            </form>
+
+            <form class="form" id="form-forgot" method="post" action="<?= h($BASE_PATH) ?>login.php" style="display:none;">
+                <input type="hidden" name="action" value="forgot">
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+                  <input placeholder="Email" name="email" type="email" class="input" required />
+                </div>
+                <div class="muted" style="margin:8px 0;">We will generate a one-time reset link.</div>
+                <?php if ($resetInfo): ?><div class="card-plain" style="margin-top:8px;"><?= h($resetInfo) ?></div><?php endif; ?>
+                <button type="submit" class="login-button">Send Reset Link</button>
+            </form>
+
+            <form class="form" id="form-reset" method="post" action="<?= h($BASE_PATH) ?>login.php" style="display:<?= $showResetTab ? 'block' : 'none' ?>; margin-top:10px;">
+                <input type="hidden" name="action" value="reset">
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">key</span>
+                  <input placeholder="Token" name="token" type="text" class="input" required value="<?= h($resetTokenQS) ?>" />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+                  <input placeholder="New Password" name="password" type="password" class="input" required minlength="6" />
+                </div>
+                <div class="input-with-icon">
+                  <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+                  <input placeholder="Confirm Password" name="confirm" type="password" class="input" required minlength="6" />
+                </div>
+                <button type="submit" class="login-button">Update Password</button>
             </form>
 
             <form class="form" id="form-register" method="post" action="<?= h($BASE_PATH) ?>login.php" style="display:none;">
@@ -221,6 +286,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       onScroll();
       window.addEventListener('scroll', onScroll, { passive: true });
+    })();
+    </script>
+    <script>
+    (function(){
+      var linkForgot = document.getElementById('link-forgot');
+      var formLogin = document.getElementById('form-login');
+      var formForgot = document.getElementById('form-forgot');
+      var formReset = document.getElementById('form-reset');
+      if (linkForgot) { linkForgot.addEventListener('click', function(ev){ ev.preventDefault(); if (formLogin) formLogin.style.display='none'; if (formForgot) formForgot.style.display='block'; if (formReset) formReset.style.display='none'; }); }
     })();
     </script>
     <script>

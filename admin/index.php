@@ -233,6 +233,24 @@ try {
         }
         $message = 'Counters reset to live';
       } catch (Throwable $e) { $errors[] = 'Failed to reset counters'; }
+    } else if ($action === 'set_contributor_verified_bulk') {
+      // Verify/unverify up to 10 contributors at once
+      try {
+        $namesRaw = (string)($_POST['names'] ?? '');
+        $verified = isset($_POST['verified']) ? 1 : 0;
+        $lines = preg_split('/\r?\n/', trim($namesRaw));
+        $count = 0;
+        $seen = [];
+        foreach ($lines as $line) {
+          $name = trim($line);
+          if ($name === '' || isset($seen[strtolower($name)])) continue;
+          $seen[strtolower($name)] = 1;
+          set_contributor_verified($name, $verified);
+          $count++;
+          if ($count >= 10) break;
+        }
+        $message = 'Updated ' . (int)$count . ' contributors';
+      } catch (Throwable $e) { $errors[] = 'Failed to update contributors'; }
     }
   }
 } catch (Throwable $e) {
@@ -781,6 +799,14 @@ try {
           <input name="name" type="text" class="input" placeholder="Contributor name" required style="max-width:320px;">
           <label style="margin-left:8px; display:inline-flex; align-items:center; gap:6px;"><input type="checkbox" name="verified" value="1"> Verified</label>
           <div class="actions" style="margin-top:8px;"><button type="submit" class="btn pill">Save</button></div>
+        </form>
+        <form method="post" class="form form-card" style="margin-bottom:10px;">
+          <input type="hidden" name="action" value="set_contributor_verified_bulk">
+          <label><strong>Verify up to 10 users at once</strong></label>
+          <textarea name="names" class="input" rows="5" placeholder="One username per line" required style="max-width:420px;"></textarea>
+          <label style="display:inline-flex; align-items:center; gap:6px; margin-top:6px;"><input type="checkbox" name="verified" value="1" checked> Verified</label>
+          <div class="actions" style="margin-top:8px;"><button type="submit" class="btn pill">Update</button></div>
+          <small class="input-hint">Duplicates and empty lines are ignored; maximum 10 processed.</small>
         </form>
       </div>
       <div class="card-plain">

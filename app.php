@@ -498,3 +498,51 @@ function complete_password_reset(string $token, string $newPassword): bool {
         return true;
     } catch (Throwable $e) { return false; }
 }
+
+// Minimal mail sender with optional Resend (free) integration
+function send_mail(string $to, string $subject, string $html, ?string $text = null): bool {
+    $apiKey = getenv('RESEND_API_KEY') ?: '';
+    $from = getenv('MAIL_FROM') ?: 'No Starve <noreply@nostrv.local>'; // configurable sender
+    if ($apiKey !== '') {
+        // Use Resend API
+        $payload = json_encode([
+            'from' => $from,
+            'to' => [$to],
+            'subject' => $subject,
+            'html' => $html,
+            'text' => $text ?? strip_tags($html),
+        ]);
+        try {
+            $ch = curl_init('https://api.resend.com/emails');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json',
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            $resp = curl_exec($ch);
+            $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            if ($code >= 200 && $code < 300) return true;
+        } catch (Throwable $e) {
+            // fall through to mail()
+        }
+    }
+    // Fallback to PHP mail()
+    $headers = "MIME-Version: 1.0\r\n" .
+               "Content-type:text/html;charset=UTF-8\r\n" .
+               "From: " . $from . "\r\n";
+    try { return @mail($to, $subject, $html, $headers); } catch (Throwable $e) { return false; }
+}
+
+function send_password_reset_email(string $to, string $link): bool {
+    $subject = 'Reset your No Starve password';
+    $html = '<div style="font-family:system-ui,Segoe UI,Arial;">'
+          . '<p>Click the button below to reset your password. The link expires in 1 hour.</p>'
+          . '<p><a href="' . htmlspecialchars($link, ENT_QUOTES, 'UTF-8') . '" style="display:inline-block;padding:10px 14px;background:#1a7aff;color:#fff;text-decoration:none;border-radius:8px;">Reset Password</a></p>'
+          . '<p>If the button doesn\'t work, copy and paste this link into your browser:</p>'
+          . '<p>' . htmlspecialchars($link, ENT_QUOTES, 'UTF-8') . '</p>'
+          . '</div>';
+    return send_mail($to, $subject, $html);
+}

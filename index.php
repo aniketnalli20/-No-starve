@@ -267,7 +267,47 @@ try {
                 <button type="button" class="btn pill" onclick="location.reload()">Refresh</button>
             </div>
         </div>
-    </section>
+  </section>
+  <section id="about" class="feature-section">
+    <div class="feature-header">
+      <div class="title">Karma Coins & Platform</div>
+      <div class="subtitle">A quick overview of recognition and how No Starve helps</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="head">
+          <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span></span>
+          <div class="title">What are Karma Coins?</div>
+        </div>
+        <ul class="list">
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Karma Coins are community recognition points that reflect support and impact for a campaign or contributor.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Earned through endorsements and verified meal deliveries; awarding is automated (not admin-based).</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Help surface high‑impact campaigns to the top so people can find and support them faster.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Not a currency and have no cash value; used for badges, milestones, and visibility.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Visible on each campaign as a simple way to gauge community trust and activity.</span></li>
+        </ul>
+        <div class="actions" style="margin-top:10px;">
+          <a class="btn pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="head">
+          <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span></span>
+          <div class="title">What is No Starve?</div>
+        </div>
+        <ul class="list">
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>No Starve helps people quickly find available meals nearby and connect safely to reduce everyday food challenges.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Discover affordable or free food options around you.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>See real‑time availability from campaigns and listings in your area.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Designed for working professionals, bachelors, and students.</span></li>
+          <li><span class="material-symbols-outlined check" aria-hidden="true">check_circle</span><span>Built to reduce food waste—one meal, one user at a time.</span></li>
+        </ul>
+        <div class="actions" style="margin-top:10px;">
+          <a class="btn pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
     <!-- Recent Campaigns section placed directly under hero -->
     <section id="recent-campaigns" class="container fullbleed" aria-label="Recent Campaigns" style="padding: var(--content-pad);">
