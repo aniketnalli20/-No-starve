@@ -433,3 +433,23 @@ function format_compact_number(int $n): string {
     }
     return (string)$n;
 }
+
+// Auto-close campaigns whose closing_time or end_date has passed
+function auto_close_expired_campaigns(): void {
+    global $pdo;
+    try {
+        $nowDT = gmdate('Y-m-d H:i:s');
+        $today = gmdate('Y-m-d');
+        // Close campaigns by closing_time
+        $sql1 = "UPDATE campaigns SET status = 'closed' WHERE status = 'open' AND closing_time IS NOT NULL AND closing_time <> '' AND closing_time <= ?";
+        $st1 = $pdo->prepare($sql1);
+        $st1->execute([$nowDT]);
+        // Close campaigns by end_date
+        $sql2 = "UPDATE campaigns SET status = 'closed' WHERE status = 'open' AND end_date IS NOT NULL AND end_date <> '' AND end_date < ?";
+        $st2 = $pdo->prepare($sql2);
+        $st2->execute([$today]);
+    } catch (Throwable $e) { /* silent */ }
+}
+
+// Invoke auto-close on every request to keep status fresh without manual admin action
+try { auto_close_expired_campaigns(); } catch (Throwable $e) {}

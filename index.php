@@ -524,7 +524,7 @@ try {
     // Live counters: fetch from server and update periodically
     (function(){
       function updateCounters(){
-        fetch((window.BASE_PATH || '<?= h($BASE_PATH) ?>') + 'stats.php')
+        fetch((window.BASE_PATH || '<?= h($BASE_PATH) ?>') + 'stats.php?mode=summary&status=all')
           .then(function(r){ return r.json(); })
           .then(function(j){
             if (!j) return;
