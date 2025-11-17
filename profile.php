@@ -16,6 +16,7 @@ global $pdo;
 $endorseTotal = 0;
 $karmaBalance = 0;
 $nextIn = 0;
+$walletMsg = '';
 try {
     $stmt = $pdo->prepare('SELECT COALESCE(SUM(endorse_campaign),0) AS total FROM campaigns WHERE user_id = ?');
     $stmt->execute([(int)$user['id']]);
@@ -55,6 +56,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         } catch (Throwable $e) {
             $errors[] = 'Update failed; please try again later.';
         }
+    }
+}
+
+// Wallet convert: align wallet with endorsements-based expected earnings (1 coin per 100 endorsements)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'wallet_convert') {
+    try {
+        $stmt = $pdo->prepare('SELECT COALESCE(SUM(endorse_campaign),0) AS total FROM campaigns WHERE user_id = ?');
+        $stmt->execute([(int)$user['id']]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $endorseTotalX = $row ? (int)$row['total'] : 0;
+        $expectedCoinsX = intdiv($endorseTotalX, 100);
+        $currentBalanceX = get_karma_balance((int)$user['id']);
+        $deltaX = $expectedCoinsX - $currentBalanceX;
+        if ($deltaX > 0) {
+            award_karma_coins((int)$user['id'], $deltaX, 'conversion', 'user', (int)$user['id']);
+            $walletMsg = 'Converted ' . $deltaX . ' coin(s) to wallet.';
+            $karmaBalance = get_karma_balance((int)$user['id']);
+        } else {
+            $walletMsg = 'No conversion needed.';
+        }
+    } catch (Throwable $e) {
+        $errors[] = 'Conversion failed; please try again later.';
     }
 }
 
@@ -200,6 +223,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                 <div><?= h((string)$endorseTotal) ?></div>
                 <div class="label"><strong>Next Coin In</strong></div>
                 <div><?= h((string)$nextIn) ?></div>
+            </div>
+            <div class="card-plain" style="margin-top:12px;">
+                <h3 class="section-title" style="border-bottom:none; margin:0 0 8px;">Wallet</h3>
+                <div class="stat" style="display:flex; gap:12px; align-items:center;">
+                    <span class="stat-label">Balance</span>
+                    <span class="stat-num"><?= (int)$karmaBalance ?></span>
+                </div>
+                <form method="post" action="<?= h($BASE_PATH) ?>profile.php" style="margin-top:10px;">
+                    <input type="hidden" name="action" value="wallet_convert">
+                    <button type="submit" class="btn pill">Convert karma to wallet</button>
+                </form>
+                <?php if ($walletMsg !== ''): ?><div class="muted" style="margin-top:6px;"><?= h($walletMsg) ?></div><?php endif; ?>
+                <?php
+                  $events = [];
+                  try {
+                      $stE = $pdo->prepare('SELECT amount, reason, ref_type, ref_id, created_at FROM karma_events WHERE user_id = ? ORDER BY created_at DESC LIMIT 200');
+                      $stE->execute([(int)$user['id']]);
+                      $events = $stE->fetchAll(PDO::FETCH_ASSOC) ?: [];
+                  } catch (Throwable $e) {}
+                ?>
+                <div class="card-plain" style="margin-top:10px;">
+                  <strong>Transactions</strong>
+                  <?php if (!empty($events)): ?>
+                    <div class="table" role="table" aria-label="Wallet events">
+                      <?php foreach ($events as $ev): ?>
+                        <div class="table-row" role="row" style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border);">
+                          <div><?= h(date('Y-m-d H:i', strtotime($ev['created_at']))) ?></div>
+                          <div><?= h((string)($ev['reason'] ?? '')) ?></div>
+                          <div><?= (int)$ev['amount'] ?></div>
+                        </div>
+                      <?php endforeach; ?>
+                    </div>
+                  <?php else: ?>
+                    <div class="muted">No transactions yet.</div>
+                  <?php endif; ?>
+                </div>
             </div>
             <form method="post" action="<?= h($BASE_PATH) ?>profile.php" class="form" style="margin-top:16px;">
                 <input type="hidden" name="action" value="update_profile">
