@@ -272,6 +272,8 @@ try {
       <a class="campaigns" href="<?= h($BASE_PATH) ?>admin/index.php#campaigns">Campaigns</a>
       <a class="endorsements" href="<?= h($BASE_PATH) ?>admin/index.php#endorsements">Endorsements</a>
       <a class="rewards" href="<?= h($BASE_PATH) ?>admin/index.php#rewards">Rewards</a>
+      <a class="contributors" href="<?= h($BASE_PATH) ?>admin/index.php#contributors">Contributors</a>
+      <a class="kyc" href="<?= h($BASE_PATH) ?>admin/index.php#kyc">KYC</a>
     </nav>
     <div class="actions" style="margin: 8px 0 0;">
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#users">Users</a>
@@ -282,7 +284,7 @@ try {
       <a class="btn btn-sm pill" href="<?= h($BASE_PATH) ?>admin/index.php#kyc">KYC</a>
       
     </div>
-    <div class="admin-grid stack-container">
+    <div class="admin-grid">
     <?php if (!empty($errors)): ?>
       <div class="card-plain is-highlight" role="alert">
         <ul class="list-clean">
@@ -322,7 +324,6 @@ try {
               <th>Username</th>
               <th>Email</th>
               <th>Admin</th>
-              <th>Map</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -330,7 +331,7 @@ try {
             <?php foreach ($users as $u): ?>
             <tr>
               <td>#<?= (int)$u['id'] ?></td>
-              <td><?= h($u['username']) ?><?= ((int)($u['is_admin'] ?? 0) === 1 ? '<span class="star-admin" aria-label="Admin">★</span>' : '') ?></td>
+              <td><?= h($u['username']) ?><?= ((int)($u['is_admin'] ?? 0) === 1 ? '<span class="chip status" aria-label="Admin">admin</span>' : '') ?></td>
               <td><?= h($u['email']) ?></td>
               <td><?= ((int)($u['is_admin'] ?? 0) === 1 ? 'yes' : 'no') ?></td>
               <td>
@@ -563,66 +564,6 @@ try {
       </div>
     </section>
 
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <small>&copy; 2025 No Starve</small>
-    </div>
-  </footer>
-  <script>
-    (function() {
-      if (!window.location.hash) {
-        window.scrollTo(0, 0);
-      }
-      var hash = (window.location.hash || '#users').toLowerCase();
-      var sel = null;
-      if (hash.indexOf('#campaigns') === 0) sel = document.querySelector('.breadcrumb .campaigns');
-      else if (hash.indexOf('#endorsements') === 0) sel = document.querySelector('.breadcrumb .endorsements');
-      else if (hash.indexOf('#rewards') === 0) sel = document.querySelector('.breadcrumb .rewards');
-      else sel = document.querySelector('.breadcrumb .users');
-      if (sel) { sel.classList.add('active'); sel.setAttribute('aria-current', 'page'); }
-    })();
-  </script>
-  <script>
-    (function(){
-      var header = document.querySelector('.site-header');
-      var lastY = window.scrollY || document.documentElement.scrollTop || 0;
-      function onScroll(){
-        if (!header) return;
-        var y = window.scrollY || document.documentElement.scrollTop || 0;
-        if (y > 10) header.classList.add('scrolled'); else header.classList.remove('scrolled');
-        if (y < lastY) {
-          header.classList.add('slim');
-          var coll = document.getElementById('primary-navbar');
-          if (coll) coll.classList.remove('show');
-          var btn = document.querySelector('.navbar-toggler');
-          if (btn) btn.setAttribute('aria-expanded','false');
-        } else {
-          header.classList.remove('slim');
-        }
-        lastY = y;
-      }
-      onScroll();
-      window.addEventListener('scroll', onScroll, { passive: true });
-    })();
-  </script>
-  <script>
-    (function(){
-      var btn = document.querySelector('.navbar-toggler');
-      var coll = document.getElementById('primary-navbar');
-      if (btn && coll) {
-        btn.addEventListener('click', function(){
-          var expanded = btn.getAttribute('aria-expanded') === 'true';
-          btn.setAttribute('aria-expanded', (!expanded).toString());
-          coll.classList.toggle('show');
-        });
-      }
-    })();
-  </script>
-</body>
-</html>
     <section id="contributors" class="card-plain card-horizontal card-fullbleed stack-card" aria-label="Contributors">
       <h2 class="section-title">Contributors</h2>
       <div class="card-plain">
@@ -713,3 +654,66 @@ try {
         </table>
       </div>
     </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <small>&copy; 2025 No Starve</small>
+    </div>
+  </footer>
+  <script>
+    (function() {
+      if (!window.location.hash) {
+        window.scrollTo(0, 0);
+      }
+      var hash = (window.location.hash || '#users').toLowerCase();
+      var sel = null;
+      if (hash.indexOf('#campaigns') === 0) sel = document.querySelector('.breadcrumb .campaigns');
+      else if (hash.indexOf('#endorsements') === 0) sel = document.querySelector('.breadcrumb .endorsements');
+      else if (hash.indexOf('#rewards') === 0) sel = document.querySelector('.breadcrumb .rewards');
+      else if (hash.indexOf('#contributors') === 0) sel = document.querySelector('.breadcrumb .contributors');
+      else if (hash.indexOf('#kyc') === 0) sel = document.querySelector('.breadcrumb .kyc');
+      else sel = document.querySelector('.breadcrumb .users');
+      if (sel) { sel.classList.add('active'); sel.setAttribute('aria-current', 'page'); }
+    })();
+  </script>
+  <script>
+    (function(){
+      var header = document.querySelector('.site-header');
+      var lastY = window.scrollY || document.documentElement.scrollTop || 0;
+      function onScroll(){
+        if (!header) return;
+        var y = window.scrollY || document.documentElement.scrollTop || 0;
+        if (y > 10) header.classList.add('scrolled'); else header.classList.remove('scrolled');
+        if (y < lastY) {
+          header.classList.add('slim');
+          var coll = document.getElementById('primary-navbar');
+          if (coll) coll.classList.remove('show');
+          var btn = document.querySelector('.navbar-toggler');
+          if (btn) btn.setAttribute('aria-expanded','false');
+        } else {
+          header.classList.remove('slim');
+        }
+        lastY = y;
+      }
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    })();
+  </script>
+  <script>
+    (function(){
+      var btn = document.querySelector('.navbar-toggler');
+      var coll = document.getElementById('primary-navbar');
+      if (btn && coll) {
+        btn.addEventListener('click', function(){
+          var expanded = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', (!expanded).toString());
+          coll.classList.toggle('show');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

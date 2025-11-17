@@ -1246,6 +1246,9 @@ ul { list-style: none; padding-left: 0; }
 .breadcrumb .users { background: #eaf2ff; color: #1a7aff; border-color: #cfe3ff; }
 .breadcrumb .campaigns { background: #e8f9e9; color: #117a3c; border-color: #cfe8d3; }
 .breadcrumb .rewards { background: #fff4e6; color: #b45309; border-color: #ffe0b3; }
+.breadcrumb .endorsements { background: #f0f9ff; color: #0369a1; border-color: #dbeafe; }
+.breadcrumb .contributors { background: #f6f7ff; color: #3f3f9a; border-color: #e0e3ff; }
+.breadcrumb .kyc { background: #f0fff4; color: #0f6b36; border-color: #d9f2e3; }
 .breadcrumb a.active { box-shadow: 0 0 0 2px rgba(26,122,255,0.18) inset; }
 .star-admin { color: #f5b301; margin-left: 6px; font-size: 0.95em; }
 .admin-scroll h1 { margin-left: 0; padding-left: var(--content-pad); }
