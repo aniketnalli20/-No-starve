@@ -266,7 +266,7 @@ try {
       <div class="title">Discover Meals, Earn Recognition</div>
       <div class="subtitle">Find nearby meals fast and build community trust with Karma Coins</div>
     </div>
-      <div class="feature-grid">
+    <div class="feature-grid">
       <div class="feature-card feature-card--karma">
         <div class="head">
           <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span></span>
@@ -308,7 +308,7 @@ try {
           <a class="btn accent pill" href="<?= h($BASE_PATH) ?>faqs.php">Learn More</a>
         </div>
       </div>
-      </div>
+    </div>
   </section>
 
     <!-- Recent Campaigns section placed directly under hero -->
@@ -393,35 +393,7 @@ try {
         <?php endif; ?>
     </section>
 
-    <!-- Informational cards below posts -->
-    <section class="container fullbleed" aria-label="Karma Coins Info" style="padding: 0;">
-      <div class="card-plain card-horizontal card-fullbleed stack-card compact info-card">
-        <h2 class="section-title"><span class="coin-icon" aria-hidden="true" style="margin-right:8px;"></span>Karma Coins: Your Community Reputation</h2>
-        <div class="content-center">
-          <p>Karma Coins are earned through endorsements and verified deliveries. They highlight trusted contributors and amplify high‑impact campaigns.</p>
-          <ul>
-            <li>Automated recognition—no admin approvals.</li>
-            <li>Power badges, milestones, and visibility; not a currency.</li>
-            <li>Shown on campaigns and profiles as a clear trust signal.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="container fullbleed" aria-label="About No Starve" style="padding: 0;">
-      <div class="card-plain card-horizontal card-fullbleed stack-card compact info-card">
-        <h2 class="section-title">How No Starve Helps</h2>
-        <div class="content-center">
-          <p>No Starve makes it simple to find available meals nearby and connect safely.</p>
-          <ul>
-            <li>Discover <strong>affordable or free food options</strong> instantly.</li>
-            <li>Real‑time listings with area and closing time.</li>
-            <li>Built for <strong>working professionals</strong>, <strong>bachelors</strong>, and <strong>students</strong>.</li>
-            <li>Reduce <strong>food waste</strong>—one meal, one user at a time.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+    
 
     <main>
         <!-- Trending donations grid removed per request -->
