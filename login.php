@@ -221,9 +221,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </a>
                   <div class="input-with-icon">
                     <span class="material-symbols-outlined" aria-hidden="true">mail</span>
-                    <input placeholder="Your Google email" id="google_email" type="email" class="input" aria-label="Your Google email" />
+                    <input placeholder="Email" id="google_email" type="email" class="input" aria-label="Email" />
                   </div>
-                  <div class="muted" id="google_email_hint">Enter your email to continue with Google</div>
+                  <div class="muted" id="google_email_hint"></div>
                   <a class="btn-social github" href="<?= h($BASE_PATH) ?>github_login.php<?= $next ? ('?next=' . urlencode($next)) : '' ?>" aria-label="Log in with GitHub">
                     <span class="material-symbols-outlined" aria-hidden="true">terminal</span>
                     <span>Log in with GitHub</span>
@@ -366,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       function setHint(text){ if (hint) { hint.textContent = text || ''; } }
       function check(){
         var val = (input && input.value || '').trim();
-        if (val === '') { setHint('Enter your email to continue with Google'); return; }
+        if (val === '') { setHint(''); return; }
         var body = 'action=' + encodeURIComponent('check_email') + '&email=' + encodeURIComponent(val);
         fetch('<?= h($BASE_PATH) ?>login.php', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
           .then(function(r){ return r.json(); })
