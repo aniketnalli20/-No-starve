@@ -305,7 +305,7 @@ try {
                                   <?php if ($csLabel): ?><span class="chip <?= h($csClass) ?>" style="margin-left:6px;"><?= h($csLabel) ?></span><?php endif; ?>
                                 </span></div>
                                 <div class="detail"><span class="d-label">Closing Time</span><span class="d-value"><?= h($c['closing_time'] ?? '—') ?></span></div>
-                                <div class="detail"><span class="d-label"><span class="coin-icon" aria-hidden="true"></span>Karma Coins</span><span class="d-value"><?= (int)($c['coins_received'] ?? 0) ?></span></div>
+                                <div class="detail"><span class="d-label"><span class="coin-icon" aria-hidden="true"></span>Karma Coins</span><span class="d-value coin-count" data-campaign-id="<?= (int)$c['id'] ?>"><?php $endorse = (int)($c['endorse_campaign'] ?? 0); echo (int)floor($endorse / 100); ?></span></div>
                             </div>
                             <div class="tweet-meta">
                                 <?php if (!empty($c['area'])): ?>
@@ -512,6 +512,8 @@ try {
             .then(function(j){
               var countEl = document.querySelector('.endorse-count[data-campaign-id="' + id + '"]');
               if (countEl && j && typeof j.count === 'number') { countEl.textContent = j.count.toString(); }
+              var coinEl = document.querySelector('.coin-count[data-campaign-id="' + id + '"]');
+              if (coinEl && j && typeof j.count === 'number') { coinEl.textContent = String(Math.floor(j.count / 100)); }
               if (j && j.ok) { if (window.showToast) window.showToast('Endorsed successfully','success'); }
               btn.disabled = false;
             }).catch(function(){ btn.disabled = false; if (window.showToast) window.showToast('Please log in to endorse','error'); });

@@ -399,7 +399,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
                       <div class="detail"><span class="d-label">Location</span><span class="d-value"><?= $locText ?></span></div>
                       <div class="detail"><span class="d-label">Crowd Size</span><span class="d-value"><?= ($csVal !== null ? h((string)$csVal) : '—') ?></span></div>
                       <div class="detail"><span class="d-label">Closing Time</span><span class="d-value"><?= h($c['closing_time'] ?? '—') ?></span></div>
-                      <div class="detail"><span class="d-label"><span class="coin-icon" aria-hidden="true"></span>Karma Coins</span><span class="d-value"><?= (int)($c['coins_received'] ?? 0) ?></span></div>
+                      <div class="detail"><span class="d-label"><span class="coin-icon" aria-hidden="true"></span>Karma Coins</span><span class="d-value coin-count" data-campaign-id="<?= (int)$c['id'] ?>"><?php $endorse = (int)($c['endorse_campaign'] ?? 0); echo (int)floor($endorse / 100); ?></span></div>
                     </div>
                   </div>
                 </article>
