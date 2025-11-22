@@ -1453,6 +1453,28 @@ ul { list-style: none; padding-left: 0; }
 .info-card .item .left { display:flex; align-items:center; gap:8px; }
 /* Navbar search overrides: compact, non-glass */
 .nav-search { margin: 0; padding: 0; background: transparent; border: 0; box-shadow: none; backdrop-filter: none; width: auto; }
+/* Wallet */
+.wallet-hero { display: grid; gap: 10px; }
+.wallet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.wallet-balance { display: grid; gap: 4px; }
+.wallet-label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 700; }
+.wallet-value { font-size: clamp(1.6rem, 3vw + 0.8rem, 2.2rem); font-weight: 800; line-height: 1; }
+.wallet-sub { color: var(--muted); font-weight: 700; }
+.wallet-actions { display: inline-flex; align-items: center; gap: 8px; }
+.wallet-progress { margin-top: 6px; }
+.progress-head { display:flex; align-items:center; justify-content:space-between; font-weight:700; }
+.progress-track { position: relative; height: 10px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e5e7eb; overflow: hidden; }
+.progress-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, #38bdf8, #6366f1); }
+.progress-foot { margin-top: 6px; color: var(--muted); }
+.wallet-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); }
+.wallet-row .cell { flex: 1; }
+.wallet-row .cell.time { max-width: 160px; color: var(--muted); }
+.wallet-row .cell.reason { flex: 2; padding: 0 8px; }
+.wallet-row .cell.amount { max-width: 140px; text-align: right; font-weight: 800; }
+.wallet-row .cell.amount.pos { color: #16a34a; }
+.wallet-row .cell.amount.neg { color: #b91c1c; }
+.wallet-chart { width: 100%; }
+.wallet-chart svg { display:block; }
 .nav-search .search-input { position: relative; width: clamp(220px, 28vw, 360px); }
 .site-header.dark .nav-search input { background: #ffffff; color: #111; border-color: #e5e5e5; }
 .nav-search input { height: 30px; border-radius: 8px; padding-right: 40px; border: 1px solid var(--border); }

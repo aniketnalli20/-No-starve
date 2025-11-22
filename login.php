@@ -70,6 +70,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $resetTokenQS = $token;
             }
         }
+    } else if ($action === 'check_email') {
+        header('Content-Type: application/json');
+        $emailIn = trim((string)($_POST['email'] ?? ''));
+        // Reuse checker from google_login via require_once
+        $fixFn = function(string $email){
+            $suggestion = null; $valid = false; $normalized = strtolower(trim($email));
+            if ($normalized !== '' && filter_var($normalized, FILTER_VALIDATE_EMAIL)) { $valid = true; }
+            else {
+                $parts = explode('@', $normalized);
+                if (count($parts) === 2) {
+                    $local = $parts[0]; $dom = $parts[1];
+                    $map = [
+                        'gmial.com' => 'gmail.com', 'gnail.com' => 'gmail.com', 'gmai.com' => 'gmail.com',
+                        'yaho.com' => 'yahoo.com', 'yahho.com' => 'yahoo.com',
+                        'hotmial.com' => 'hotmail.com', 'hotmai.com' => 'hotmail.com',
+                        'outlok.com' => 'outlook.com', 'outllok.com' => 'outlook.com'
+                    ];
+                    if (isset($map[$dom])) {
+                        $normalized = $local . '@' . $map[$dom];
+                        if (filter_var($normalized, FILTER_VALIDATE_EMAIL)) { $suggestion = $normalized; }
+                    }
+                }
+            }
+            return ['valid'=>$valid,'email'=>$normalized,'suggestion'=>$suggestion];
+        };
+        $fix = $fixFn($emailIn);
+        $email = $fix['email']; $suggestion = $fix['suggestion']; $valid = (bool)$fix['valid'];
+        $exists = false; $mxOk = false;
+        if ($email !== '' && strpos($email, '@') !== false) {
+            $parts = explode('@', $email); $domain = $parts[1] ?? '';
+            if ($domain !== '') {
+                try {
+                    $mxRecords = [];
+                    if (function_exists('getmxrr')) { $mxOk = getmxrr($domain, $mxRecords) && !empty($mxRecords); }
+                    if (!$mxOk) {
+                        $dns = @dns_get_record($domain, DNS_MX);
+                        $mxOk = is_array($dns) && count($dns) > 0;
+                    }
+                } catch (Throwable $e) { $mxOk = false; }
+            }
+            try {
+                $st = $pdo->prepare('SELECT 1 FROM users WHERE email = ? LIMIT 1');
+                $st->execute([$email]);
+                $exists = (bool)$st->fetchColumn();
+            } catch (Throwable $e) { $exists = false; }
+        }
+        echo json_encode(['ok'=>true,'valid'=>$valid,'email'=>$email,'suggestion'=>$suggestion,'exists'=>$exists,'mx'=>$mxOk]);
+        exit;
     } else {
         $email = trim((string)($_POST['email'] ?? ''));
         $password = (string)($_POST['password'] ?? '');
@@ -167,10 +215,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
                 <input type="hidden" name="action" value="login">
                 <div class="social-login" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">
-                  <a class="btn-social google" href="<?= h($BASE_PATH) ?>google_login.php<?= $next ? ('?next=' . urlencode($next)) : '' ?>" aria-label="Log in with Google">
+                  <a id="btn-google" class="btn-social google" href="#" aria-label="Continue with Google">
                     <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
-                    <span>Log in with Google</span>
+                    <span>Continue with Google</span>
                   </a>
+                  <div class="input-with-icon">
+                    <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+                    <input placeholder="Your Google email" id="google_email" type="email" class="input" aria-label="Your Google email" />
+                  </div>
+                  <div class="muted" id="google_email_hint">Enter your email to continue with Google</div>
                   <a class="btn-social github" href="<?= h($BASE_PATH) ?>github_login.php<?= $next ? ('?next=' . urlencode($next)) : '' ?>" aria-label="Log in with GitHub">
                     <span class="material-symbols-outlined" aria-hidden="true">terminal</span>
                     <span>Log in with GitHub</span>
@@ -300,6 +353,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       var formForgot = document.getElementById('form-forgot');
       var formReset = document.getElementById('form-reset');
       if (linkForgot) { linkForgot.addEventListener('click', function(ev){ ev.preventDefault(); if (formLogin) formLogin.style.display='none'; if (formForgot) formForgot.style.display='block'; if (formReset) formReset.style.display='none'; }); }
+    })();
+    </script>
+    <script>
+    // Google email live check and redirect
+    (function(){
+      var input = document.getElementById('google_email');
+      var hint = document.getElementById('google_email_hint');
+      var btn = document.getElementById('btn-google');
+      var nextQS = <?= json_encode($next) ?>;
+      var tid = null;
+      function setHint(text){ if (hint) { hint.textContent = text || ''; } }
+      function check(){
+        var val = (input && input.value || '').trim();
+        if (val === '') { setHint('Enter your email to continue with Google'); return; }
+        var body = 'action=' + encodeURIComponent('check_email') + '&email=' + encodeURIComponent(val);
+        fetch('<?= h($BASE_PATH) ?>login.php', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
+          .then(function(r){ return r.json(); })
+          .then(function(j){
+            if (!j || !j.ok) { setHint('Unable to verify email'); return; }
+            var txt = '';
+            if (!j.valid && j.suggestion) { txt = 'Did you mean ' + j.suggestion + '?'; }
+            else if (j.valid && j.mx) { txt = (j.exists ? 'Account found. You can continue.' : 'No account found. We will create one.'); }
+            else if (j.valid && !j.mx) { txt = 'Email looks valid, but domain has no MX record.'; }
+            setHint(txt);
+          })
+          .catch(function(){ setHint('Network error while checking email'); });
+      }
+      if (input) {
+        input.addEventListener('input', function(){ clearTimeout(tid); tid = setTimeout(check, 500); });
+        input.addEventListener('blur', check);
+      }
+      if (btn) {
+        btn.addEventListener('click', function(ev){
+          ev.preventDefault();
+          var val = (input && input.value || '').trim();
+          var url = '<?= h($BASE_PATH) ?>google_login.php?email=' + encodeURIComponent(val || '') + (nextQS ? ('&next=' + encodeURIComponent(nextQS)) : '');
+          window.location.href = url;
+        });
+      }
     })();
     </script>
     <script>
